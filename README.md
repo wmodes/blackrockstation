@@ -64,7 +64,7 @@ The signal network will allow the various controllers to talk with each other an
 -   Apparently MQTT is a thing and requires a Broker
 - Brandon tells us that gRPI is good
 -   HTTP might be the simplest scheme simply because setting up a listener on the clients is well-trod territory. When needed, the Master makes request to clients. The response can return an success/error code. Client devices can register at the Master when they come up or periodically (though they must know who the master is)
--   We can hit port 80 of the Master to see the status, logs, reports, or upcoming events
+-   We can hit port 80 of any of the controllers to see status, logs, reports, or upcoming events
 -   Waterproof Raspi Enclosure: Pinfox Waterproof Electronic ABS Plastic Junction Project Box Enclosure 200mm by 120mm by 75mm (Black), $11.99
 
 ## Central Controller
