@@ -105,7 +105,7 @@ The crossing mast controller handles turning the crossing lights and bell on and
 - Where to place the controller? Is there space or a housing on the crossing masts themselves?
 - Has to be weatherproof since it is outside
 - Is the distance too great for WiFi? Prepare to run ethernet.
-- Since these lights/bells are either on or off, it could be possible to locate the controller in the station and run only switched power to the masts.
+- Since these lights/bells are either on or off, it could be possible to locate the controller in the station and run only switched power to the masts. However, the masts need steady power anyway to power a safety flood light.
 - The masts themselves are a distance apart. I suspect it is simpler to have one controller turn them on and off, with power wiring from the least distant to the most distant.
 - Timing-wise, the lights/bell begins some number of seconds before a train "arrives" and turns off as soon as a train passes the station.
 
