@@ -22,12 +22,7 @@ Considerations for shared resources among the entire network.
 -   Establishing a reliable power network
 -   Establishing a reliable & robust data network
 -   Creating a dependable signal network, i.e., broker and clients
--   Creating autonomous triggerable clients:
--   Crossing masts w lights and signal
--   Video controller
--   Interior and outdoor light controller
--   Audio controller
--   Train audio controller
+-   Creating autonomous triggerable clients.
 -   Create a logging and error reporting system
 -   Create an app controller/configuration utility
 -   Making tech setup invisible, foolproof, and easy
