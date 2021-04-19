@@ -94,19 +94,12 @@ Code for Black Rock Station, honorarium art project for Burning Man 2021
 ##Scheduling
 
 -   A schedule of events can be kept in a database coordinated with timestamps
-
 -   "Random" events can be randomly seeded through the database. This ensures they don't collide with other events. It also allows us to know when the next event is.
-
 -   The length of each event can be recorded in the database, so we can prevent collisions. Though the controllers themselves can be the final arbiter.
-
 -   We keep a database of the schedule of events
-
 -   We also keep a database of the events themselves, including length, clients involved, and commands for clients, and any tricky timing (like a little asynchronous  recipe?)
-
 -   How events work will require some thought because they have their own timing and desire to avoid collisions
-
 -   If event scheduling can be simplified, scheduling will be easier. For instance, crossing bells and announcements happen before, during and after a train event every time. Maybe rules rather than explicit scheduling? Then we have to be more careful about collisions.
-
 -   Care should be taken to choose a database that is least likely to be corrupted by sudden power interruptions
 
 ##Light Controller
