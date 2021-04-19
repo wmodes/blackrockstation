@@ -65,6 +65,8 @@ We need the following controllers:
 
 ## Central Controller
 
+The central controller controls the scheduling of both trains and time-slips. It sends signals to each of the other subservient controllers.
+
 ### Scheduling
 
 -   A schedule of events can be kept in a database coordinated with timestamps
@@ -84,7 +86,7 @@ The train audio controller handles the sounds of trains. It needs to be given sc
 - The distance to the trackside powered speakers is considerable and might require a pre-amp.
 - Must be located in the station because the separation of the speakers and the subwoofer.
 - Must be coordinated with the crossing mast controllers
-- It cannot be interrupted by a time transition
+- It cannot be interrupted by a time-slips
 
 ### Field Recording
 
@@ -92,9 +94,31 @@ The train audio controller handles the sounds of trains. It needs to be given sc
 -   For the mic small diaphragm condenser microphones with a cardioid pattern are preferred, though others may work
 -   Good wind protection is necessary
 
+## Crossing Mast Controller
+
+The crossing mast controller handles turning the crossing lights and bell on and off. It operates on scheduled train events from the central controller. Additional considerations:
+
+- Where to place the controller? Is there space or a housing on the crossing masts themselves?
+- Has to be weatherproof since it is outside
+- Is the distance too great for WiFi? Prepare to run ethernet.
+- Since these lights/bells are either on or off, it could be possible to locate the controller in the station and run only switched power to the masts.
+- The masts themselves are a distance apart. I suspect it is simpler to have one controller turn them on and off, with power wiring from the least distant to the most distant.
+- Timing-wise, the lights/bell begins some number of seconds before a train "arrives" and turns off as soon as a train passes the station.
+
+## Signal Bridge Controller
+
+The signal bridge controller handles turning the lights on the signal bridge. Unlike the crossing mast controller, the signal lights are more complicated. It responds to timed events from the central controller. The light is always on in one of two settings, highball/go (upper light) or stop (lower light). Considerations include:
+
+- Where to place the controller? Need a housing on the signla bridge.
+- Has to be weatherproof since it is outside
+- Is the distance too great for WiFi?
+- The default setting of the signal bridge lights when no train is passing or present is...?
+- When a train is passing, the lights are set to highball.
+- Timing-wise, the lights go from highball to stop after the train passes the station.
+
 ## Internal Light Controller
 
-The light controller controls the internal lighting. It has recipes for glitch transitions as well as recipes for what lighting it provides during different eras. Additional notes:
+The light controller controls the internal lighting. It has recipes for glitch effects during time-slips as well as recipes for what lighting it provides during different eras. Additional notes:
 
 -   Relay boards JBtek 4 or 8 Channel DC 5V Relay Module for Arduino Raspberry Pi DSP AVR PIC ARM at 10A capacity
 -   Can put in fully sealed box with external plugs for wiring simplicity
@@ -104,7 +128,7 @@ The light controller controls the internal lighting. It has recipes for glitch t
 
 The radio controller handles audio coming from the radio. It only needs to know what era it is operating in to play period-appropriate music, announcements, and news. Additional considerations are:
 
-- Glitch/static sounds during transitions
+- Glitch/static sounds during time-slips
 - Possibly keeping track of announcements, news, and music to mix them up as necessary.
 
 ## TV Controller
