@@ -91,7 +91,7 @@ Code for Black Rock Station, honorarium art project for Burning Man 2021
 
 -   Waterproof Raspi Enclosure: Pinfox Waterproof Electronic ABS Plastic Junction Project Box Enclosure 200mm by 120mm by 75mm (Black), $11.99
 
-##Scheduling
+## Scheduling
 
 -   A schedule of events can be kept in a database coordinated with timestamps
 -   "Random" events can be randomly seeded through the database. This ensures they don't collide with other events. It also allows us to know when the next event is.
