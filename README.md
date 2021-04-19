@@ -1,7 +1,9 @@
-# blackrockstation
+# Black Rock Station
 Code for Black Rock Station, honorarium art project for Burning Man 2021
 
 ## General and Network-wide
+
+Considerations for shared resources among the entire network.
 
 ### General Technical Questions
 
@@ -38,9 +40,8 @@ Note that data "wires" may be WiFi, though for more remote systems (Crossing Mas
 
 ### Controllers
 
-Each discrete system has an semi-independent subservient controller.
+Each discrete system has an semi-independent subservient controller. We need the following controllers:
 
-We need the following controllers:
   1. Internal light controller
   2. Crossing mast controller
   3. Track sound controller
