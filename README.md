@@ -57,6 +57,9 @@ Each discrete system has an semi-independent subservient controller. We need the
 
 ### Signal Network
 
+The signal network will allow the various controllers to talk with each other and coordinate events.
+
+- Looking for dead simplicity, and robustness under harsh conditions
 -   OSC has worked well in the past
 -   Apparently MQTT is a thing and requires a Broker
 - Brandon tells us that gRPI is good
