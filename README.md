@@ -1,8 +1,7 @@
 # blackrockstation
 Code for Black Rock Station, honorarium art project for Burning Man 2021
 
-Technical Questions
--------------------
+##Technical Questions
 
 -   How do we keep this powered 24/7?
 
@@ -20,8 +19,7 @@ Technical Questions
 
 -   If there is a light controller, how many channels does it need? Can everything flicker at the same time, or is it more disorienting if the lights are independent?
 
-Technical Challenges to Overcome
---------------------------------
+##Technical Challenges to Overcome
 
 -   Recording quality multi-channel train sounds
 
@@ -49,8 +47,7 @@ Technical Challenges to Overcome
 
 -   Making tech setup invisible, foolproof, and easy
 
-Field Recording
----------------
+##Field Recording
 
 -   Low-cost digital recorders are fine as long as they are matched and have XLR mic inputs
 
@@ -58,19 +55,19 @@ Field Recording
 
 -   Good wind protection is necessary
 
-Data Network
-------------
+##Data Network
 
 -   Wi-Fi should work well enough to connect a bunch of Raspi3b+'s if there is a router.
 
 -   Network will remain unadvertised
 
-Signal Network
---------------
+##Signal Network
 
 -   OSC has worked well in the past
 
 -   Apparently MQTT is a thing and requires a Broker
+
+- Bradon tells us that gRPI is good
 
 -   HTTP might be the simplest scheme simply because setting up a listener on the clients is well-trod territory. When needed, the Master makes request to clients. The response can return an success/error code. Client devices can register at the Master when they come up or periodically (though they must know who the master is)
 
@@ -78,32 +75,29 @@ Signal Network
 
 -   Need controllers for the following:
 
--   Internal light controller
+  1. Internal light controller
 
--   External light controller
+  2. Signal mast controller
 
--   Track sound controller 1
+  3. Track sound controller
 
--   Track sound controller 2
+  4. Announcement controller
 
--   Announcement controller
+  5. TV controller
 
--   TV controller
+  6. Radio controller
 
--   Radio controller
-
--   Signal bridge controller
+  7. Signal bridge controller
 
 -   Waterproof Raspi Enclosure: Pinfox Waterproof Electronic ABS Plastic Junction Project Box Enclosure 200mm by 120mm by 75mm (Black), $11.99
 
-Scheduling
-----------
+##Scheduling
 
 -   A schedule of events can be kept in a database coordinated with timestamps
 
 -   "Random" events can be randomly seeded through the database. This ensures they don't collide with other events. It also allows us to know when the next event is.
 
--   The length of each event can be recorded in the database, so we can prevent collisions
+-   The length of each event can be recorded in the database, so we can prevent collisions. Though the controllers themselves can be the final arbiter.
 
 -   We keep a database of the schedule of events
 
@@ -115,8 +109,7 @@ Scheduling
 
 -   Care should be taken to choose a database that is least likely to be corrupted by sudden power interruptions
 
-Light Controller
-----------------
+##Light Controller
 
 -   Relay boards JBtek 4 or 8 Channel DC 5V Relay Module for Arduino Raspberry Pi DSP AVR PIC ARM at 10A capacity
 
@@ -124,7 +117,6 @@ Light Controller
 
 -   Control low wattage LED blubs and fluorescent lights
 
-Wiring Diagram
---------------
+##Wiring Diagram
 
 ![Black Rock Station Wiring Diagram](https://raw.githubusercontent.com/wmodes/blackrockstation/main/images/wiring-diagram.png)
