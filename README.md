@@ -127,4 +127,4 @@ Light Controller
 Wiring Diagram
 --------------
 
-![Black Rock Station Wiring Diagram](/images/Black Rock Station Wiring Diagram.png)
+![Black Rock Station Wiring Diagram](/images/wiring-diagram.png)
