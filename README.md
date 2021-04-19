@@ -111,13 +111,13 @@ The crossing mast controller handles turning the crossing lights and bell on and
 
 ## Signal Bridge Controller
 
-The signal bridge controller handles turning the lights on the signal bridge. Unlike the crossing mast controller, the signal lights are more complicated. It responds to timed events from the central controller. The light is always on in one of two settings, highball/go (upper light) or stop (lower light). Considerations include:
+The signal bridge controller handles turning the lights on the signal bridge. Unlike the crossing mast controller, the signal lights are more complicated. It responds to timed events from the central controller. The light is always on in one of two settings, highball/go (green/upper light) or stop (red/lower light). Considerations include:
 
 - Where to place the controller? Need a housing on the signla bridge.
 - Has to be weatherproof since it is outside
 - Is the distance too great for WiFi?
-- The default setting of the signal bridge lights when no train is passing or present is...?
-- When a train is passing, the lights are set to highball.
+- The default setting of the signal bridge lights when no train is passing or present is stop.
+- 5-10 minutes before a train passes, the signal would go to highball.
 - Timing-wise, the lights go from highball to stop after the train passes the station.
 
 ## Internal Light Controller
