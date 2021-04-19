@@ -1,7 +1,9 @@
 # blackrockstation
 Code for Black Rock Station, honorarium art project for Burning Man 2021
 
-## Technical Questions
+## General and Network-wide
+
+### General Technical Questions
 
 -   How do we keep this powered 24/7?
 -   How much power will it use? With the AC? Without the AC?
@@ -12,7 +14,7 @@ Code for Black Rock Station, honorarium art project for Burning Man 2021
 -   If there is a master controller, how will it signal everything else? MQTT w Ack? OSC? HTTP? (Note that there is nothing that the clients need to communicate back to the broker, except maybe a simple .)
 -   If there is a light controller, how many channels does it need? Can everything flicker at the same time, or is it more disorienting if the lights are independent?
 
-## Technical Challenges to Consider
+### General Technical Challenges to Consider
 
 -   Recording quality multi-channel train sounds
 -   Establishing a reliable power network
@@ -28,27 +30,32 @@ Code for Black Rock Station, honorarium art project for Burning Man 2021
 -   Create an app controller/configuration utility
 -   Making tech setup invisible, foolproof, and easy
 
-##Field Recording
+### Wiring Diagram
 
--   Low-cost digital recorders are fine as long as they are matched and have XLR mic inputs
--   For the mic small diaphragm condenser microphones with a cardioid pattern are preferred, though others may work
--   Good wind protection is necessary
+![Black Rock Station Wiring Diagram](https://raw.githubusercontent.com/wmodes/blackrockstation/main/images/wiring-diagram.png)
 
-##Data Network
+Note that data "wires" may be WiFi, though for more remote systems (Crossing Mast and Signal Bridge) should be prepared to run ethernet.
 
--   Wi-Fi should work well enough to connect a bunch of Raspi3b+'s if there is a router.
--   Network will remain unadvertised
+### Controllers
 
-##Signal Network
+Each discrete system has an semi-independent subservient controller.
 
--   Need controllers for the following:
+We need the following controllers:
   1. Internal light controller
-  2. Signal mast controller
+  2. Crossing mast controller
   3. Track sound controller
   4. Announcement controller
   5. TV controller
   6. Radio controller
   7. Signal bridge controller
+
+### Data Network
+
+-   Wi-Fi should work well enough to connect a bunch of Raspi3b+'s if there is a router.
+-   Network will remain unadvertised
+
+### Signal Network
+
 -   OSC has worked well in the past
 -   Apparently MQTT is a thing and requires a Broker
 - Brandon tells us that gRPI is good
@@ -56,7 +63,9 @@ Code for Black Rock Station, honorarium art project for Burning Man 2021
 -   We can hit port 80 of the Master to see the status, logs, reports, or upcoming events
 -   Waterproof Raspi Enclosure: Pinfox Waterproof Electronic ABS Plastic Junction Project Box Enclosure 200mm by 120mm by 75mm (Black), $11.99
 
-## Scheduling
+## Central Controller
+
+### Scheduling
 
 -   A schedule of events can be kept in a database coordinated with timestamps
 -   "Random" events can be randomly seeded through the database. This ensures they don't collide with other events. It also allows us to know when the next event is.
@@ -67,12 +76,37 @@ Code for Black Rock Station, honorarium art project for Burning Man 2021
 -   If event scheduling can be simplified, scheduling will be easier. For instance, crossing bells and announcements happen before, during and after a train event every time. Maybe rules rather than explicit scheduling? Then we have to be more careful about collisions.
 -   Care should be taken to choose a database that is least likely to be corrupted by sudden power interruptions
 
-##Light Controller
+## Train Audio Controller
+
+The train audio controller handles the sounds of trains. It needs to be given scheduled events from the central controller describing the audio and type of train passing. Additional considerations are:
+
+- Has to send line audio to the two stereo speakers mounted trackside and the subwoofer mounted to the station.
+- The distance to the trackside powered speakers is considerable and might require a pre-amp.
+- Must be located in the station because the separation of the speakers and the subwoofer.
+- Must be coordinated with the crossing mast controllers
+- It cannot be interrupted by a time transition
+
+### Field Recording
+
+-   Low-cost digital recorders are fine as long as they are matched and have XLR mic inputs
+-   For the mic small diaphragm condenser microphones with a cardioid pattern are preferred, though others may work
+-   Good wind protection is necessary
+
+## Internal Light Controller
+
+The light controller controls the internal lighting. It has recipes for glitch transitions as well as recipes for what lighting it provides during different eras. Additional notes:
 
 -   Relay boards JBtek 4 or 8 Channel DC 5V Relay Module for Arduino Raspberry Pi DSP AVR PIC ARM at 10A capacity
 -   Can put in fully sealed box with external plugs for wiring simplicity
 -   Control low wattage LED blubs and fluorescent lights
 
-##Wiring Diagram
+## Radio Controller
 
-![Black Rock Station Wiring Diagram](https://raw.githubusercontent.com/wmodes/blackrockstation/main/images/wiring-diagram.png)
+The radio controller handles audio coming from the radio. It only needs to know what era it is operating in to play period-appropriate music, announcements, and news. Additional considerations are:
+
+- Glitch/static sounds during transitions
+- Possibly keeping track of announcements, news, and music to mix them up as necessary.
+
+## TV Controller
+
+The TV controller handles audio/video coming from the TV. Like the radio, it only needs to know what era it is operating in. It has the same considerations as the radio controller.
