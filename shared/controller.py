@@ -1,5 +1,7 @@
 # announce - a controller for announcement system
-# authors: Wes Modes <wmodes@gmail.com>
+# authors:
+#   Wes Modes <wmodes@gmail.com>
+#   Brandon Kinman <Brandon@kinmantech.org>
 # date: Apr 2021
 # license: MIT
 

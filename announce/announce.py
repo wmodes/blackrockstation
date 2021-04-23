@@ -1,11 +1,14 @@
 # announce - a controller for announcement system
-# authors: Wes Modes <wmodes@gmail.com>
+# authors:
+#   Wes Modes <wmodes@gmail.com>
+#   Brandon Kinman <Brandon@kinmantech.org>
 # date: Apr 2021
 # license: MIT
 
 # goddamn it, what's the proper way to do this??????
 from ..shared import config
 from ..shared.controller import Controller
+# and how do I run this package properly to test it??
 
 import logging
 import pprint
