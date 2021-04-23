@@ -5,8 +5,9 @@
 # license: MIT
 
 # goddamn it, what's the proper way to do this??????
-from ..shared import config
-from ..shared.controller import Controller
+# given that we want to run announce/main.py to also to test the class?
+from blackrockstation.shared import config
+from blackrockstation.shared.controller import Controller
 # and how do I run this package properly to test it??
 
 import logging
