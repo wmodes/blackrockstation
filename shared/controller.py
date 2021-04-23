@@ -1,7 +1,6 @@
-# announce - a controller for announcement system
+# controller - parent class for all controllers
 # authors:
-#   Wes Modes <wmodes@gmail.com>
-#   Brandon Kinman <Brandon@kinmantech.org>
+#   Black Rock Transportation Company <info@blackrocktrainstation.com>
 # date: Apr 2021
 # license: MIT
 

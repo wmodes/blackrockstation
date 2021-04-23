@@ -1,7 +1,6 @@
 # announce - a controller for announcement system
 # authors:
-#   Wes Modes <wmodes@gmail.com>
-#   Brandon Kinman <Brandon@kinmantech.org>
+#   Black Rock Transportation Company <info@blackrocktrainstation.com>
 # date: Apr 2021
 # license: MIT
 
@@ -50,7 +49,16 @@ class Announce(Controller):
         """Gets orders and acts on them"""
         pass
 
+    def start(self):
+        logging.info('Starting.')
+        pass
+
+    def stop(self):
+        logging.info('Stopping.')
+        pass
+
 def main():
+    """For testing the class"""
     import sys
     logging.basicConfig(
         filename=sys.stderr,

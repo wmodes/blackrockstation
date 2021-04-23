@@ -1,13 +1,10 @@
 # config.py - settings for all controllers
 # authors:
-#   Wes Modes <wmodes@gmail.com>
-#   Brandon Kinman <Brandon@kinmantech.org>
+#   Black Rock Transportation Company <info@blackrocktrainstation.com>
 # date: Apr 2021
 # license: MIT
 
 import os, sys
-from dotenv import load_dotenv
-load_dotenv()
 if sys.platform == "darwin":
     # OS X
     import fake_rpi
@@ -17,9 +14,12 @@ if sys.platform == "darwin":
 import RPi.GPIO as GPIO
 import logging
 
-# Controller parent class
-LOG_FILENAME = "logs/cr.log"
+# Shared config
+LOG_FILENAME = "logs/controller.log"
 LOG_LEVEL = logging.INFO
+
+# Controller parent class
+
 
 # Scheduler class
 
