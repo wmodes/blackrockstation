@@ -11,7 +11,7 @@ Various subsystems (lights, audio, video, etc) rely on a network of semi-autonom
 
 ## Executing
 
-For example, to start the announce subsystem:
+Use `start.py` to start each subsystem. For example, to start the announce subsystem:
 
 `% python start.py announce`
 
