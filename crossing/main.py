@@ -21,10 +21,9 @@ def main():
         format='%(asctime)s %(levelname)s:%(message)s',
         level=config.LOG_LEVEL
     )
-    logger = logging.getLogger("announce")
+    logger = logging.getLogger("chickenrobot")
     whoami = "Announce"
-
-    # redirect stdout and stderr to log file - do this before production
+    # redirect stdout and stderr to log file
     # sys.stdout = StreamToLogger(logger,logging.INFO)
     # sys.stderr = StreamToLogger(logger,logging.ERROR)
 

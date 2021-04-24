@@ -1,6 +1,5 @@
 """Parent class for all controllers."""
 
-# this fucker. How's this supposed to be???
 import shared.config
 
 import logging
@@ -10,8 +9,8 @@ from datetime import datetime, timedelta
 class Controller(object):
     """Parent class for all controllers."""
 
-    def __init__(self, arg):
-        self.arg = arg
+    def __init__(self):
+        pass
 
     def status(self):
         """Brief one-liner status"""

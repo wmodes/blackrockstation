@@ -1,11 +1,9 @@
-"""Main loop for announcement subsystem."""
+"""Main loop for signal subsystem."""
 
-# goddamn it, what's the proper way to do this??????
 from shared import config
 from shared.controller import Controller
-# and how do I run this package properly to test it??
 
-from announce.announce import Announce
+from signal.signal import Signal
 from shared.streamtologger import StreamToLogger
 
 import sys
@@ -21,21 +19,21 @@ def main():
         format='%(asctime)s %(levelname)s:%(message)s',
         level=config.LOG_LEVEL
     )
-    logger = logging.getLogger("announce")
-    whoami = "Announce"
+    logger = logging.getLogger("signal")
+    whoami = "Signal"
 
     # redirect stdout and stderr to log file - do this before production
     # sys.stdout = StreamToLogger(logger,logging.INFO)
     # sys.stderr = StreamToLogger(logger,logging.ERROR)
 
     # let's get this party started
-    announce = Announce()
+    signal = Signal()
 
     try:
-       announce.start()
+       signal.start()
     except KeyboardInterrupt:
         logging.info(f"%s interrupted." % whoami)
-        announce.stop()
+        signal.stop()
     except:
         logging.exception('Got exception on main handler')
         raise

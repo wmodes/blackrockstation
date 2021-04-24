@@ -1,4 +1,4 @@
-"""Controller class for announcement subsystem."""
+"""Controller class for scheduler subsystem."""
 
 from shared import config
 from shared.controller import Controller
@@ -9,11 +9,11 @@ from datetime import datetime, timedelta
 
 logger = logging.getLogger()
 
-class Announce(Controller):
-    """Announcements controller class."""
+class Scheduler(Controller):
+    """Scheduler controller class."""
 
     def __init__(self):
-        super(Announce, self).__init__()
+        super(Scheduler, self).__init__()
 
     def status(self):
         """Brief one-liner status"""
@@ -43,7 +43,7 @@ class Announce(Controller):
         pass
 
     def start(self):
-        print ("Announce: starting")
+        print ("Scheduler: starting")
         logging.info('Starting.')
         pass
 
@@ -61,8 +61,8 @@ def main():
         level=logging.DEBUG
     )
     logger = logging.getLogger()
-    announce = Announce()
-    announce.order_act_loop()
+    scheduler = Scheduler()
+    scheduler.order_act_loop()
 
 if __name__ == '__main__':
     main()

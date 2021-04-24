@@ -11,6 +11,7 @@ import RPi.GPIO as GPIO
 import logging
 
 # Shared config
+PKG_ROOT = "blackrockstation"
 LOG_FILENAME = "logs/controller.log"
 LOG_LEVEL = logging.INFO
 
