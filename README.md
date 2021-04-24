@@ -9,6 +9,12 @@ Various subsystems (lights, audio, video, etc) rely on a network of semi-autonom
 * Date: Apr 2021
 * License: MIT
 
+## Executing
+
+For example, to start the announce subsystem:
+
+`% python start.py announce`
+
 ## General and Network-wide
 
 Considerations for shared resources among the entire network.
