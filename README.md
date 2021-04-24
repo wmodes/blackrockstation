@@ -3,7 +3,7 @@ Code for Black Rock Station, honorarium art project for Burning Man 2021.
 
 Various subsystems (lights, audio, video, etc) rely on a network of semi-autonomous controller modules receiving commands from a central scheduling controller.
 
-##Authors
+## Authors
 
 * Author: Black Rock Transportation Company <info@blackrocktrainstation.com>
 * Date: Apr 2021
