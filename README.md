@@ -15,6 +15,8 @@ Use `start.py` to start each subsystem. For example, to start the announce subsy
 
 `% python start.py announce`
 
+`start.py` without arguments lists available controllers.
+
 ## General and Network-wide
 
 Considerations for shared resources among the entire network.
