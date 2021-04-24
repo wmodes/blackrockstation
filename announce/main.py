@@ -1,9 +1,7 @@
 """Main loop for announcement subsystem."""
 
-# goddamn it, what's the proper way to do this??????
 from shared import config
 from shared.controller import Controller
-# and how do I run this package properly to test it??
 
 from announce.announce import Announce
 from shared.streamtologger import StreamToLogger

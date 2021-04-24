@@ -1,9 +1,7 @@
 """Main loop for lights subsystem."""
 
-# goddamn it, what's the proper way to do this??????
 from shared import config
 from shared.controller import Controller
-# and how do I run this package properly to test it??
 
 from lights.lights import Lights
 from shared.streamtologger import StreamToLogger
