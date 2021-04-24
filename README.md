@@ -1,6 +1,12 @@
 # Black Rock Station
 Code for Black Rock Station, honorarium art project for Burning Man 2021
 
+##Authors
+
+* Author: Black Rock Transportation Company <info@blackrocktrainstation.com>
+* Date: Apr 2021
+* License: MIT
+
 ## General and Network-wide
 
 Considerations for shared resources among the entire network.

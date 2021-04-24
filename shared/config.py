@@ -1,8 +1,4 @@
-# config.py - settings for all controllers
-# authors:
-#   Black Rock Transportation Company <info@blackrocktrainstation.com>
-# date: Apr 2021
-# license: MIT
+"""Settings for all controllers."""
 
 import os, sys
 if sys.platform == "darwin":

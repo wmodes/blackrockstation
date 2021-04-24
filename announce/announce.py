@@ -1,8 +1,4 @@
-# announce - a controller for announcement system
-# authors:
-#   Black Rock Transportation Company <info@blackrocktrainstation.com>
-# date: Apr 2021
-# license: MIT
+"""Controller class for announcement subsystem."""
 
 # goddamn it, what's the proper way to do this??????
 # given that we want to run announce/main.py to also to test the class?

@@ -1,8 +1,4 @@
-# controller - parent class for all controllers
-# authors:
-#   Black Rock Transportation Company <info@blackrocktrainstation.com>
-# date: Apr 2021
-# license: MIT
+"""Parent class for all controllers."""
 
 # this fucker. How's this supposed to be???
 import shared.config
