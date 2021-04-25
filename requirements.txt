@@ -1,4 +1,6 @@
 fake-rpi==0.7.1
 grpcio==1.37.0
+grpcio-tools==1.37.0
 numpy==1.20.2
+protobuf==3.15.8
 six==1.15.0
