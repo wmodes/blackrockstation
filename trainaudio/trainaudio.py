@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 
 logger = logging.getLogger()
 
+
 class Trainaudio(Controller):
     """Trainaudio controller class."""
 
@@ -43,7 +44,7 @@ class Trainaudio(Controller):
         pass
 
     def start(self):
-        print ("Trainaudio: starting")
+        print("Trainaudio: starting")
         logging.info('Starting.')
         pass
 
@@ -51,18 +52,18 @@ class Trainaudio(Controller):
         logging.info('Stopping.')
         pass
 
+
 def main():
     """For testing the class"""
     import sys
-    logging.basicConfig(
-        filename=sys.stderr,
-        encoding='utf-8',
-        format='%(asctime)s %(levelname)s:%(message)s',
-        level=logging.DEBUG
-    )
+    logging.basicConfig(filename=sys.stderr,
+                        encoding='utf-8',
+                        format='%(asctime)s %(levelname)s:%(message)s',
+                        level=logging.DEBUG)
     logger = logging.getLogger()
     trainaudio = Trainaudio()
     trainaudio.order_act_loop()
+
 
 if __name__ == '__main__':
     main()

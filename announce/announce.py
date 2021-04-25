@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 
 logger = logging.getLogger()
 
+
 class Announce(Controller):
     """Announcements controller class."""
 
@@ -43,7 +44,7 @@ class Announce(Controller):
         pass
 
     def start(self):
-        print ("Announce: starting")
+        print("Announce: starting")
         logging.info('Starting.')
         pass
 
@@ -51,18 +52,18 @@ class Announce(Controller):
         logging.info('Stopping.')
         pass
 
+
 def main():
     """For testing the class"""
     import sys
-    logging.basicConfig(
-        filename=sys.stderr,
-        encoding='utf-8',
-        format='%(asctime)s %(levelname)s:%(message)s',
-        level=logging.DEBUG
-    )
+    logging.basicConfig(filename=sys.stderr,
+                        encoding='utf-8',
+                        format='%(asctime)s %(levelname)s:%(message)s',
+                        level=logging.DEBUG)
     logger = logging.getLogger()
     announce = Announce()
     announce.order_act_loop()
+
 
 if __name__ == '__main__':
     main()

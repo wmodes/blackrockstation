@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 
 logger = logging.getLogger()
 
+
 class Radio(Controller):
     """Radio controller class."""
 
@@ -43,7 +44,7 @@ class Radio(Controller):
         pass
 
     def start(self):
-        print ("Radio: starting")
+        print("Radio: starting")
         logging.info('Starting.')
         pass
 
@@ -51,18 +52,18 @@ class Radio(Controller):
         logging.info('Stopping.')
         pass
 
+
 def main():
     """For testing the class"""
     import sys
-    logging.basicConfig(
-        filename=sys.stderr,
-        encoding='utf-8',
-        format='%(asctime)s %(levelname)s:%(message)s',
-        level=logging.DEBUG
-    )
+    logging.basicConfig(filename=sys.stderr,
+                        encoding='utf-8',
+                        format='%(asctime)s %(levelname)s:%(message)s',
+                        level=logging.DEBUG)
     logger = logging.getLogger()
     radio = Radio()
     radio.order_act_loop()
+
 
 if __name__ == '__main__':
     main()

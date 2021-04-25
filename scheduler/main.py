@@ -11,14 +11,14 @@ import logging
 import pprint
 from datetime import datetime, timedelta
 
+
 def main():
     logging.basicConfig(
         filename=config.LOG_FILENAME,
         # encoding='utf-8',
         filemode='a',
         format='%(asctime)s %(levelname)s:%(message)s',
-        level=config.LOG_LEVEL
-    )
+        level=config.LOG_LEVEL)
     logger = logging.getLogger("scheduler")
     whoami = "Scheduler"
 
@@ -30,13 +30,14 @@ def main():
     scheduler = Scheduler()
 
     try:
-       scheduler.start()
+        scheduler.start()
     except KeyboardInterrupt:
         logging.info(f"%s interrupted." % whoami)
         scheduler.stop()
     except:
         logging.exception('Got exception on main handler')
         raise
+
 
 if __name__ == '__main__':
     main()

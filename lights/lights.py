@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 
 logger = logging.getLogger()
 
+
 class Lights(Controller):
     """Lights controller class."""
 
@@ -43,7 +44,7 @@ class Lights(Controller):
         pass
 
     def start(self):
-        print ("Lights: starting")
+        print("Lights: starting")
         logging.info('Starting.')
         pass
 
@@ -51,18 +52,18 @@ class Lights(Controller):
         logging.info('Stopping.')
         pass
 
+
 def main():
     """For testing the class"""
     import sys
-    logging.basicConfig(
-        filename=sys.stderr,
-        encoding='utf-8',
-        format='%(asctime)s %(levelname)s:%(message)s',
-        level=logging.DEBUG
-    )
+    logging.basicConfig(filename=sys.stderr,
+                        encoding='utf-8',
+                        format='%(asctime)s %(levelname)s:%(message)s',
+                        level=logging.DEBUG)
     logger = logging.getLogger()
     lights = Lights()
     lights.order_act_loop()
+
 
 if __name__ == '__main__':
     main()
