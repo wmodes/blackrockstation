@@ -93,6 +93,16 @@ The central controller controls the scheduling of both trains and time-slips. It
 -   If event scheduling can be simplified, scheduling will be easier. For instance, crossing bells and announcements happen before, during and after a train event every time. Maybe rules rather than explicit scheduling? Then we have to be more careful about collisions.
 -   Care should be taken to choose a database that is least likely to be corrupted by sudden power interruptions
 
+### Commands
+
+Here are the commands the scheduler controller responds to:
+
+- *controller* *command*
+- request future [num_events]
+- request status
+- request log [num_events]
+- request report
+
 ## Train Audio Controller
 
 The train audio controller handles the sounds of trains. It needs to be given scheduled events from the central controller describing the audio and type of train passing. Additional considerations are:
@@ -117,7 +127,7 @@ Here are the commands the trainaudio controller responds to:
 - set on
 - set train direction type year
 - request status
-- request log
+- request log [num_events]
 - request report
 
 ## Crossing Mast Controller
@@ -138,7 +148,7 @@ Here are the commands the crossing controller responds to:
 - set on
 - set off
 - request status
-- request log
+- request log [num_events]
 - request report
 
 ## Signal Bridge Controller
@@ -159,7 +169,7 @@ Here are the commands the signalbridge controller responds to:
 - set go
 - set stop
 - request status
-- request log
+- request log [num_events]
 - request report
 
 ## Internal Light Controller
@@ -178,7 +188,7 @@ Here are the commands the light controller responds to:
 - set on [num]
 - set glitch
 - request status
-- request log
+- request log [num_events]
 - request report
 
 ## Radio Controller
@@ -197,7 +207,7 @@ Here are the commands the radio controller responds to:
 - set glitch
 - set period year
 - request status
-- request log
+- request log [num_events]
 - request report
 
 ## Television Controller
@@ -213,5 +223,5 @@ Here are the commands the television controller responds to:
 - set glitch
 - set period year
 - request status
-- request log
+- request log [num_events]
 - request report
