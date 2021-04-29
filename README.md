@@ -57,7 +57,7 @@ Each discrete system has an semi-independent subservient controller. We need the
   2. Crossing mast controller
   3. Track sound controller
   4. Announcement controller
-  5. TV controller
+  5. television controller
   6. Radio controller
   7. Signal bridge controller
 
@@ -109,6 +109,17 @@ The train audio controller handles the sounds of trains. It needs to be given sc
 -   For the mic small diaphragm condenser microphones with a cardioid pattern are preferred, though others may work
 -   Good wind protection is necessary
 
+### Commands
+
+Here are the commands the trainaudio controller responds to:
+
+- set off
+- set on
+- set train direction type year
+- request status
+- request log
+- request report
+
 ## Crossing Mast Controller
 
 The crossing mast controller handles turning the crossing lights and bell on and off. It operates on scheduled train events from the central controller. Additional considerations:
@@ -119,6 +130,16 @@ The crossing mast controller handles turning the crossing lights and bell on and
 - Since these lights/bells are either on or off, it could be possible to locate the controller in the station and run only switched power to the masts. However, the masts need steady power anyway to power a safety flood light.
 - The masts themselves are a distance apart. I suspect it is simpler to have one controller turn them on and off, with power wiring from the least distant to the most distant.
 - Timing-wise, the lights/bell begin some number of seconds before a train "arrives" and turns off as soon as a train passes the station.
+
+### Commands
+
+Here are the commands the crossing controller responds to:
+
+- set on
+- set off
+- request status
+- request log
+- request report
 
 ## Signal Bridge Controller
 
@@ -131,6 +152,16 @@ The signal bridge controller handles turning the lights on the signal bridge. Un
 - 5-10 minutes before a train passes, the signal would go to highball.
 - Timing-wise, the lights go from highball to stop after the train passes the station.
 
+### Commands
+
+Here are the commands the signalbridge controller responds to:
+
+- set go
+- set stop
+- request status
+- request log
+- request report
+
 ## Internal Light Controller
 
 The light controller controls the internal lighting. It has recipes for glitch effects during time-slips as well as recipes for what lighting it provides during different eras. Additional notes:
@@ -139,6 +170,17 @@ The light controller controls the internal lighting. It has recipes for glitch e
 -   Can put in fully sealed box with external plugs for wiring simplicity
 -   Control low wattage LED blubs and fluorescent lights
 
+### Commands
+
+Here are the commands the light controller responds to:
+
+- set off [num]
+- set on [num]
+- set glitch
+- request status
+- request log
+- request report
+
 ## Radio Controller
 
 The radio controller handles audio coming from the radio. It only needs to know what era it is operating in to play period-appropriate music, announcements, and news. Additional considerations are:
@@ -146,6 +188,30 @@ The radio controller handles audio coming from the radio. It only needs to know 
 - Glitch/static sounds during time-slips
 - Possibly keeping track of announcements, news, and music to mix them up as necessary.
 
-## TV Controller
+### Commands
 
-The TV controller handles audio/video coming from the TV. Like the radio, it only needs to know what era it is operating in. It has the same considerations as the radio controller.
+Here are the commands the radio controller responds to:
+
+- set off
+- set on
+- set glitch
+- set period year
+- request status
+- request log
+- request report
+
+## Television Controller
+
+The television controller handles audio/video coming from the television. Like the radio, it only needs to know what era it is operating in. It has the same considerations as the radio controller.
+
+### Commands
+
+Here are the commands the television controller responds to:
+
+- set off
+- set on
+- set glitch
+- set period year
+- request status
+- request log
+- request report
