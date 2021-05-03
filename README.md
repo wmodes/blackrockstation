@@ -125,7 +125,7 @@ Here are the commands the trainaudio controller responds to:
 
 - set off
 - set on
-- set train direction type year
+- set train *direction* *type* *year*
 - request status
 - request log [num_events]
 - request report

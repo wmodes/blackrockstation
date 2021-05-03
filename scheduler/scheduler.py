@@ -6,6 +6,9 @@ from shared.controller import Controller
 import logging
 import pprint
 from datetime import datetime, timedelta
+import csv
+import time
+from columnar import columnar
 
 logger = logging.getLogger()
 
@@ -15,6 +18,34 @@ class Scheduler(Controller):
 
     def __init__(self):
         super(Scheduler, self).__init__()
+        self.__read_schedule()
+        self.__sort_schedule()
+
+    def __read_schedule(self):
+        logging.info('Reading schedule.')
+        self.schedule = []
+        with open(config.SCHED_DATA, newline='') as csvfile:
+            reader = csv.DictReader(csvfile, config.SCHED_FIELDS)
+            for row in reader:
+                if row['event'] != '':
+                    self.schedule.append(row)
+            del self.schedule[0]
+
+    def __sort_schedule(self):
+        self.schedule = sorted(
+            self.schedule, key=lambda k: time.strptime(k['arrival'], "%H:%M"))
+
+    def print_schedule(self):
+        sched = self.schedule
+        headers = ['Train', 'Arrival', 'Variance', 'Direction', 'Type']
+        # convert dict to array of arrays
+        events = []
+        for event in self.schedule:
+            events.append([event['event'], event['arrival'],
+                          event['variance'], event['direction'], event['type']])
+        #table = columnar(events, headers, terminal_width=100, column_sep='│', row_sep='─')
+        table = columnar(events, headers, no_borders=True, terminal_width=100)
+        print(table)
 
     def status(self):
         """Brief one-liner status"""
@@ -46,7 +77,7 @@ class Scheduler(Controller):
     def start(self):
         print("Scheduler: starting")
         logging.info('Starting.')
-        pass
+        self.print_schedule()
 
     def stop(self):
         logging.info('Stopping.')

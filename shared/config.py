@@ -18,6 +18,8 @@ LOG_LEVEL = logging.INFO
 # Controller parent class
 
 # Scheduler class
+SCHED_DATA = "scheduler/data/schedule.csv"
+SCHED_FIELDS = ['entry','event','arrival','direction','type','variance','notes']
 
 # Announce class
 
