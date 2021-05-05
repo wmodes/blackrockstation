@@ -29,6 +29,12 @@ class Comms(object):
         self.__order_queue.append(order)
 
 
+    def send_order(self, controller, command):
+        """Send an arbitrary order to another controller"""
+        logging.info(f"Sending command to {controller}: {command}")
+        print(f"Sending command to {controller}: {command}")
+
+
 def main():
     import sys
     logging.basicConfig(filename=sys.stderr,

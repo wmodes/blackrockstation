@@ -34,6 +34,7 @@ SCHED_LOOP_DELAY = 0.25
 SCHED_DEFAULT_LOG = 100
 SCHED_YEARS = [1858, 1888, 1938, 1959, 1982, 2014, 2066, 2110]
 SCHED_TIMESLIP_INTERVAL = 26     # time in minutes
+SCHED_TIMESLIP_DELTA = 0.25     # time in minutes
 
 # Announce class
 

@@ -16,6 +16,7 @@ Entry,Event,Arrival,Direction,Type,Variance,Notes,Time Since Last Train,Departs 
 5,Local Oakland to Salt Lake City,19:48,eastbound,passenger-stop,0.25,Local is 38hrs w BRC about 1/3 of the way; 15 min variance,1:29,7:00,38.00,0.337,12.81
 4,Afternoon Express Oakland to SLC,22:13,eastbound,passenger-through,0.50,Leaves Oakland 4pm. Express is 18hrs w BRC about 1/3 of the way. Comes through BRC at 10pm.,2:25,16:00,18.48,0.337,6.23
 12,Night Through Freight (hot),23:19,westbound,freight-through,0.75,,1:05,,,,0.00
+12,Test test test,22:42,westbound,freight-through,0.75,,1:05,,,,0.00
 18,,,,,,,,,,,
 19,,,,,,,,,,,
 20,,,,,,,,,,,
