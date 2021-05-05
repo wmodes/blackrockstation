@@ -194,8 +194,8 @@ class Scheduler(Controller):
         """Gets orders and acts on them"""
         while True:
             self.__act_on_order(self.__receive_orders())
-            check_for_timeslip()
-            check_for_scheduled_train()
+            self.check_for_timeslip()
+            self.check_for_scheduled_train()
             time.sleep(config.SCHED_LOOP_DELAY)
 
 
