@@ -78,7 +78,7 @@ The signal network will allow the various controllers to talk with each other an
 -   We can hit port 80 of any of the controllers to see status, logs, reports, or upcoming events
 -   Waterproof Raspi Enclosure: Pinfox Waterproof Electronic ABS Plastic Junction Project Box Enclosure 200mm by 120mm by 75mm (Black), $11.99
 
-## Central Controller
+## Scheduler Controller
 
 The central controller controls the scheduling of both trains and time-slips. It sends signals to each of the other subservient controllers.
 

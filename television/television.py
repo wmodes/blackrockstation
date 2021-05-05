@@ -44,7 +44,6 @@ class Television(Controller):
         pass
 
     def start(self):
-        print("Television: starting")
         logging.info('Starting.')
         pass
 

@@ -15,11 +15,25 @@ PKG_ROOT = "blackrockstation"
 LOG_FILENAME = "logs/controller.log"
 LOG_LEVEL = logging.INFO
 
+# Start
+CONTROLLERS = [
+    "announce", "crossing", "lights", "radio", "scheduler", "signal",
+    "trainaudio", "television"
+]
+
 # Controller parent class
 
 # Scheduler class
 SCHED_DATA = "scheduler/data/schedule.csv"
 SCHED_FIELDS = ['entry','event','arrival','direction','type','variance','notes']
+SCHED_FILE_TABLE = "scheduler/data/file-table.csv"
+SCHED_TYPES = ["freight-through", "freight-stop", "passenger-through", "passenger-stop"]
+SCHED_FILE_FIELDS = ['year', 'type', 'filename']
+SCHED_AUDIO_DIR = "scheduler/audio/"
+SCHED_LOOP_DELAY = 0.25
+SCHED_DEFAULT_LOG = 100
+SCHED_YEARS = [1858, 1888, 1938, 1959, 1982, 2014, 2066, 2110]
+SCHED_TIMESLIP_INTERVAL = 26     # time in minutes
 
 # Announce class
 
