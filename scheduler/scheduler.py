@@ -10,6 +10,7 @@ import csv
 from columnar import columnar
 import time
 import re
+import random
 
 logger = logging.getLogger()
 
@@ -238,7 +239,16 @@ class Scheduler(Controller):
                 self.delayed_events.remove(event)
 
     def check_for_random_events(self):
-        pass
+        """
+        randomly calculate the chances of any of a list of events happening /right now/
+        """
+        denominator = 24 * 60 * 60 * (1/config.SCHED_LOOP_DELAY)
+        for event in config.SCHED_PERIODIC:
+            # an N in 345600 chance
+            if random.random() < event["times_per_day"]/denominator:
+                # lucky you! you get chosen!
+                self.trigger_event(event)
+                break
 
     """
         EVENTS

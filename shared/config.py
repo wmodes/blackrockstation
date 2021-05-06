@@ -32,6 +32,11 @@ SCHED_YEARS = [1858, 1888, 1938, 1959, 1982, 2014, 2066, 2110]
 SCHED_TIMESLIP_INTERVAL = 26     # time in minutes
 SCHED_TIMESLIP_DELTA = 0.25     # time in minutes
 SCHED_TIMESLIP_GLITCH = 0.5       # time in minutes
+SCHED_PERIODIC = [
+    {"controller": "announce", "announceid": "periodic-paging-announcement-1", "times_per_day": 3},
+    {"controller": "announce", "announceid": "periodic-paging-announcement-2", "times_per_day": 3},
+    {"controller": "announce", "announceid": "periodic-safety-announcement", "times_per_day": 8},
+]
 
 # Announce class
 
