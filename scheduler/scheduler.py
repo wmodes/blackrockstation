@@ -248,6 +248,7 @@ class Scheduler(Controller):
             if random.random() < event["times_per_day"]/denominator:
                 # lucky you! you get chosen!
                 self.trigger_event(event)
+                # only one winner at a time, thank you
                 break
 
     """
