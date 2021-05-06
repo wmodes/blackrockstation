@@ -1,6 +1,6 @@
 """Parent class for all controllers."""
 
-import shared.config
+from shared import config
 from shared.comms import Comms
 
 import logging
@@ -14,17 +14,76 @@ class Controller(object):
     def __init__(self):
         logging.info(f"Controller initiated")
         self.comms = Comms()
+        self.whoami = ""
+
+    """
+        REPORTS
+    """
 
     def status(self):
         """Brief one-liner status"""
-        pass
+        return f"{self.whoami} is running."
 
-    def logs(self):
-        """Recent log of activity"""
-        pass
+    def tail(f, window=1):
+        """
+        Returns the last `window` lines of file `f` as a list of bytes.
+        """
+        if window == 0:
+            return b''
+        BUFSIZE = 1024
+        f.seek(0, 2)
+        end = f.tell()
+        nlines = window + 1
+        data = []
+        while nlines > 0 and end > 0:
+            i = max(0, end - BUFSIZE)
+            nread = min(end, BUFSIZE)
+            f.seek(i)
+            chunk = f.read(nread)
+            data.append(chunk)
+            nlines -= chunk.count(b'\n')
+            end -= nread
+        return b'\n'.join(b''.join(reversed(data)).splitlines()[-window:])
+
+    def logs(self, num=config.SCHED_DEFAULT_LOG):
+        """
+        Recent log of activity.
+        """
+        with open(config.LOG_FILENAME, 'rb') as file:
+            logs = tail(file, num).decode('utf-8')
+        return(logs)
 
     def report(self):
-        """Full multi-line readable report of activity"""
+        """
+        Full multi-line readable report of activity.
+        """
+        self.status()
+        self.logs(10)
+
+    """
+        ORDERS
+    """
+
+    def receive_order(self):
+        """
+        Receives orders.
+        """
+        order = self.comms.get_order()
+        if not order:
+            return None
+        return order
+
+    """
+        MAIN LOOP
+    """
+
+    def start(self):
+        logging.info('Starting.')
+        self.main_loop()
+
+
+    def stop(self):
+        logging.info('Stopping.')
         pass
 
 

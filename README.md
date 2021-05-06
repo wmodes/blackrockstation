@@ -111,7 +111,7 @@ The train audio controller handles the sounds of trains. It needs to be given sc
 - The distance to the trackside powered speakers is considerable and might require a pre-amp.
 - Must be located in the station because the separation of the speakers and the subwoofer.
 - Must be coordinated with the crossing mast controllers
-- It cannot be interrupted by a time-slips
+- It cannot be interrupted by time-slips
 
 ### Field Recording
 
@@ -126,6 +126,26 @@ Here are the commands the trainaudio controller responds to:
 - set off
 - set on
 - set train *direction* *type* *year*
+- request status
+- request log [num_events]
+- request report
+
+## Announce Controller
+
+The announce controller handles announcements. It needs to be given scheduled events from the scheduler controller describing which announcement to play. Additional considerations are:
+
+- Has to send line audio to a small amp and out to the speaker horns inside and outside the station.
+- Must be coordinated with scheduled trains
+- It will not be interrupted by time-slips (or will it?)
+
+### Commands
+
+Here are the commands the trainaudio controller responds to:
+
+- set off
+- set on
+- set glitch
+- set announce *id* *year*
 - request status
 - request log [num_events]
 - request report

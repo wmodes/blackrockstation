@@ -14,7 +14,8 @@ class Television(Controller):
     """Television controller class."""
 
     def __init__(self):
-        super(Television, self).__init__()
+        super().__init__()
+        self.whoami = "television"
 
     def status(self):
         """Brief one-liner status"""
@@ -27,13 +28,6 @@ class Television(Controller):
     def report(self):
         """Full multi-line readable report of activity"""
         pass
-
-    def __receive_orders(self):
-        """Receives orders"""
-        pass
-
-    def __ack_orders(self):
-        """Acknowledges orders received"""
 
     def __act_on_orders(arg, orders):
         """Takes action based on orders"""

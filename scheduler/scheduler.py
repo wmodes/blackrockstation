@@ -17,14 +17,18 @@ class Scheduler(Controller):
     """Scheduler controller class."""
 
     def __init__(self):
-        super(Scheduler, self).__init__()
+        super().__init__()
+        self.whoami = "scheduler"
         self.__read_schedule()
         self.__sort_schedule()
-        self.__read_filetable()
-        self.upcoming_events = []
+        self.delayed_events = []
         self.current_year = config.SCHED_YEARS[0]
-        self.last_train = ""
+        self.last_event = ""
         self.last_timeslip = datetime.now()
+
+    """
+        SETUP
+    """
 
     def __read_schedule(self):
         logging.info('Reading schedule')
@@ -40,147 +44,67 @@ class Scheduler(Controller):
 
     def __sort_schedule(self):
         self.schedule = sorted(
-            self.schedule, key=lambda k: time.strptime(k['arrival'], "%H:%M"))
+            self.schedule, key=lambda k: time.strptime(k['time'], "%H:%M"))
 
+    """
+        REPORTS
+    """
 
-    def print_schedule(self):
-        sched = self.schedule
-        headers = ['Train', 'Arrival', 'Variance', 'Direction', 'Type']
+    def display_train_schedule(self, event_list=None):
+        if not event_list:
+            event_list = self.schedule
+        headers = ['Train', 'Arrival', 'Var', 'Direction', 'Type', 'Notes']
         # convert dict to array of arrays
         events = []
-        for event in self.schedule:
-            events.append([event['event'], event['arrival'],
-                          event['variance'], event['direction'], event['type']])
-        #table = columnar(events, headers, terminal_width=100, column_sep='│', row_sep='─')
-        table = columnar(events, headers, no_borders=True, terminal_width=100)
-        print(table)
-
-    # TODO: This should be moved to trainaudio controller
-    def __read_filetable(self):
-        logging.info('Reading file table')
-        self.filetable = {}
-        with open(config.SCHED_FILE_TABLE, newline='') as csvfile:
-            reader = csv.DictReader(csvfile, config.SCHED_FILE_FIELDS)
-            # skips the header line
-            next(reader)
-            for row in reader:
-                # skip blank lines
-                if row['year'] != '':
-                    # skip unregistered types
-                    if row['type'] not in config.SCHED_TYPES:
-                        logger.info(f"skipped unregistered type: {row['type']}")
-                        continue
-                    # add filename to filetable
-                    index = f"{row['year']}-{row['type']}"
-                    self.filetable[index] = row['filename']
-            pprint(self.filetable)
-
-
-    def status(self):
-        """Brief one-liner status"""
-        print("Scheduler is running.")
-
-
-    def tail(f, window=1):
-        """
-        Returns the last `window` lines of file `f` as a list of bytes.
-        """
-        if window == 0:
-            return b''
-        BUFSIZE = 1024
-        f.seek(0, 2)
-        end = f.tell()
-        nlines = window + 1
-        data = []
-        while nlines > 0 and end > 0:
-            i = max(0, end - BUFSIZE)
-            nread = min(end, BUFSIZE)
-            f.seek(i)
-            chunk = f.read(nread)
-            data.append(chunk)
-            nlines -= chunk.count(b'\n')
-            end -= nread
-        return b'\n'.join(b''.join(reversed(data)).splitlines()[-window:])
-
-
-    def logs(self, num=config.SCHED_DEFAULT_LOG):
-        """Recent log of activity"""
-        with open(config.LOG_FILENAME, 'rb') as file:
-            logs = tail(file, num).decode('utf-8')
-        print(logs)
-
-
-    def report(self):
-        """Full multi-line readable report of activity"""
-        self.status()
-        self.logs(10)
-
-
-    def future(self):
-        pass
-
-
-    def send_order_to_controller(self, controller, command):
-        """send an arbitrary order to another controller"""
-        self.comms.send_order(controller, command)
-
-
-    def check_for_timeslip(self):
-        now = datetime.now()
-        # prevent bounce: if the time in H:M is the same as the last timeslip, return
-        if now.strftime("%H:%M") == self.last_timeslip.strftime("%H:%M"):
+        for event in event_list:
+            if event['controller'] == "trainaudio":
+                events.append([event['event'], event['time'],
+                              event['variance'], event['direction'], event['traintype'], event['notes']])
+        if not len(events):
             return
-        next_timeslip_min = self.last_timeslip + timedelta(minutes=config.SCHED_TIMESLIP_INTERVAL)
-        next_timeslip_max = next_timeslip_min + timedelta(minutes=config.SCHED_TIMESLIP_DELTA)
-        if next_timeslip_min < now < next_timeslip_max:
-            # find out what the index of the current year is
-            index = config.SCHED_YEARS.index(self.current_year)
-            # increment one
-            index += 1
-            # make sure we don't have index overrun
-            if index >= len(config.SCHED_YEARS):
-                index = 0
-            self.current_year = config.SCHED_YEARS[index]
-            # record the timne of the timeslip to pervent bounce
-            self.last_timeslip = now
-            logging.info(f"Timeslip to {self.current_year}")
-            print(f"Timeslip to {self.current_year}")
+        #table = columnar(events, headers, terminal_width=100, column_sep='│', row_sep='─')
+        table = columnar(events, headers, no_borders=True, terminal_width=110, wrap_max=8)
+        #table = columnar(events, headers, terminal_width=110, column_sep='|', row_sep='─')
+        return table
 
-
-    def check_for_scheduled_event(self):
-        pass
-
-
-    def check_for_scheduled_train(self):
-        """check for scheduled train and send command to trainaudio controller. Matches now() in H:M format with train schedule arrival time and records last event to prevent bounce"""
-
+    def future_trains(self, n=10):
+        future_list = []
         # search through train schedule for time that matches H:M
         now = datetime.now().time()
-        nowstr = now.strftime("%H:%M")
-        for train in self.schedule:
-            # if scheduled event already last_train, return
-            if nowstr == train["arrival"]:
-                if self.last_train == train['event'] + train["arrival"]:
-                    return
-                # record this train as last_train
-                self.last_train = train['event'] + train["arrival"]
-                # send command to trainaudio controller
-                #   form: set train *direction* *type* *year*
-                order = f"set train {train['direction']} {train['type']} {self.current_year}"
-                self.comms.send_order("trainaudio", order)
+        for event in self.schedule:
+            # if this event is not a train event, skip
+            if event["controller"] != "trainaudio":
+                continue
+            # if this event is already in the past, skip
+            if datetime.strptime(event["time"], "%H:%M").time() < now:
+                continue
+            # all the following events are in the future
+            # if we have n events, stop
+            if len(future_list) >= n:
                 break
+            future_list.append(event)
+        # if we don't have
+        if len(future_list) < n:
+            for event in self.schedule:
+                # if this event is not a train event, skip
+                if event["controller"] != "trainaudio":
+                    continue
+                # if this event is not in the past, stop (i.e., we've wrapped around)
+                if datetime.strptime(event["time"], "%H:%M").time() > now:
+                    break
+                # if we have n events, stop
+                if len(future_list) >= n:
+                    break
+                future_list.append(event)
+        return self.display_train_schedule(future_list)
 
-
-    def __receive_orders(self):
-        """Receives orders"""
-        order = self.comms.get_order()
-        if not order:
-            return None
-        return order
-
+    """
+        ORDERS
+    """
 
     def __act_on_order(arg, order):
-        """Takes action based on orders
+        """
+        Takes action based on orders
 
         Possible comnmands:
             - *controller* *order*
@@ -191,7 +115,7 @@ class Scheduler(Controller):
         """
         if not order:
             return
-        logging.debug(f"acting on order: {order}")
+        logging.debug(f"Acting on order: {order}")
         #
         # request future schedule
         #
@@ -235,25 +159,98 @@ class Scheduler(Controller):
             logging.info(f"invalid order received: {order}")
 
 
-    def order_act_loop(self):
+    def send_order_to_controller(self, controller, command):
+        """
+        Send an arbitrary order to another controller.
+        """
+        self.comms.send_order(controller, command)
+
+    """
+        TIME CHECKS
+    """
+
+    def check_for_scheduled_event(self):
+        """
+        check for scheduled event and send command to appropriate controller. Matches now() in H:M format with train schedule arrival time and records last event to prevent bounce. Note: Two events shouldn't share the same time.
+        """
+        # TODO: Implement variance
+        # search through train schedule for time that matches H:M
+        now = datetime.now().time()
+        for event in self.schedule:
+            # if this event matches current time
+            if now.strftime("%H:%M") == event["time"]:
+                # if scheduled event already happened, return
+                if self.last_event == event['event'] + event["time"]:
+                    return
+                # record this event as last_event
+                self.last_event = event['event'] + event["time"]
+                # make event happen
+                self.trigger_event(event)
+                break
+
+
+    def check_for_timeslip(self):
+        now = datetime.now()
+        # prevent bounce: if the time in H:M is the same as the last timeslip, return
+        if now.strftime("%H:%M") == self.last_timeslip.strftime("%H:%M"):
+            return
+        next_timeslip_min = self.last_timeslip + timedelta(minutes=config.SCHED_TIMESLIP_INTERVAL)
+        next_timeslip_max = next_timeslip_min + timedelta(minutes=config.SCHED_TIMESLIP_DELTA)
+        if next_timeslip_min < now < next_timeslip_max:
+            # find out what the index of the current year is
+            index = config.SCHED_YEARS.index(self.current_year)
+            # increment one
+            index += 1
+            # make sure we don't have index overrun
+            if index >= len(config.SCHED_YEARS):
+                index = 0
+            self.current_year = config.SCHED_YEARS[index]
+            # record the timne of the timeslip to pervent bounce
+            self.last_timeslip = now
+            logging.info(f"Timeslip to {self.current_year}")
+            print(f"Timeslip to {self.current_year}")
+
+
+    def check_for_delayed_events(self):
+        pass
+
+    """
+        EVENTS
+    """
+
+    def trigger_event(self, event):
+        """
+        Constuct order and send to appropriate controller.
+        """
+        if event['controller'] == "trainaudio":
+            # send command to trainaudio controller
+            #   form: set train *direction* *traintype* *year*
+            order = f"set train {event['direction']} {event['traintype']} {self.current_year}"
+            self.comms.send_order("trainaudio", order)
+        elif event['controller'] == "announce":
+            # send command to announce controller
+            #   form: set announce *id* *year*
+            order = f"set announce {event['announceid']} {self.current_year}"
+            self.comms.send_order("announce", order)
+
+    """
+        MAIN LOOP
+    """
+
+    def main_loop(self):
         """Gets orders and acts on them"""
         while True:
-            self.__act_on_order(self.__receive_orders())
+            self.__act_on_order(self.receive_order())
             self.check_for_timeslip()
             self.check_for_scheduled_event()
-            self.check_for_scheduled_train()
             time.sleep(config.SCHED_LOOP_DELAY)
 
 
     def start(self):
         logging.info('Starting.')
-        self.print_schedule()
-        self.order_act_loop()
+        print(self.future_trains(5))
+        self.main_loop()
 
-
-    def stop(self):
-        logging.info('Stopping.')
-        pass
 
 
 def main():
