@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 import csv
 from columnar import columnar
 import time
+import re
 
 logger = logging.getLogger()
 
@@ -49,6 +50,22 @@ class Scheduler(Controller):
     """
         REPORTS
     """
+
+    def full_report(self):
+        """
+        Full multi-line readable report of activity.
+        """
+        report = self.report_status() + "\n"
+        report += self.report_current_year() + "\n\n"
+        report += self.report_next_train() + "\n"
+        report += self.report_logs(10) + "\n"
+        return report
+
+    def report_current_year(self):
+        return (f"Current year is {self.current_year}.")
+
+    def report_next_train(self):
+        return (f"NEXT TRAIN\n==========\n{self.future_trains(1)}")
 
     def display_train_schedule(self, event_list=None):
         if not event_list:
@@ -129,21 +146,21 @@ class Scheduler(Controller):
         # request status
         #
         elif order.startswith("request status"):
-            self.status()
+            self.report_status()
         #
         # request log
         #
         elif order.startswith("request log"):
             order_list = order.split()
             if len(order_list) > 2:
-                self.logs(order_list[2])
+                self.report_logs(order_list[2])
             else:
-                self.logs()
+                self.report_logs()
         #
         # request status
         #
         elif order.startswith("request report"):
-            self.report()
+            self.full_report()
         #
         # send order to other controller
         #
@@ -205,13 +222,22 @@ class Scheduler(Controller):
             if index >= len(config.SCHED_YEARS):
                 index = 0
             self.current_year = config.SCHED_YEARS[index]
-            # record the timne of the timeslip to pervent bounce
+            # record the time of the timeslip to prevent bounce
             self.last_timeslip = now
-            logging.info(f"Timeslip to {self.current_year}")
-            print(f"Timeslip to {self.current_year}")
+            self.trigger_timeslip()
 
+    def delay_event(self, event):
+        self.delayed_events.append(event)
 
     def check_for_delayed_events(self):
+        now = datetime.now()
+        now_delta = now + timedelta(minutes=config.SCHED_TIMESLIP_DELTA)
+        for event in self.delayed_events:
+            if now < event['time'] < now_delta:
+                self.trigger_event(event)
+                self.delayed_events.remove(event)
+
+    def check_for_random_events(self):
         pass
 
     """
@@ -232,6 +258,34 @@ class Scheduler(Controller):
             #   form: set announce *id* *year*
             order = f"set announce {event['announceid']} {self.current_year}"
             self.comms.send_order("announce", order)
+        elif re.search('radio|television|lights', event['controller']):
+            # send command to radio, tv, or lights controller
+            #   form:
+            #       set glitch
+            #       set year *year*
+            if event['event'] == "glitch":
+                order = "set glitch"
+            elif event['event'] == "year":
+                order = f"set year {self.current_year}"
+            else:
+                return
+            self.comms.send_order(event['controller'], order)
+
+    def trigger_timeslip(self):
+        logging.info(f"Timeslip to {self.current_year}")
+        print(f"Timeslip to {self.current_year}")
+        # trigger glitch events and schedule year event
+        for controller in ["radio", "television", "lights"]:
+            self.trigger_event({
+                "controller": controller,
+                "event": "glitch"
+            })
+            self.delay_event({
+                "controller": controller,
+                "event": "year",
+                "time": datetime.now() + timedelta(minutes=config.SCHED_TIMESLIP_GLITCH)
+            })
+        #pprint(self.delayed_events)
 
     """
         MAIN LOOP
@@ -241,14 +295,17 @@ class Scheduler(Controller):
         """Gets orders and acts on them"""
         while True:
             self.__act_on_order(self.receive_order())
+            self.check_for_delayed_events()
             self.check_for_timeslip()
+            self.check_for_random_events()
             self.check_for_scheduled_event()
             time.sleep(config.SCHED_LOOP_DELAY)
 
 
     def start(self):
         logging.info('Starting.')
-        print(self.future_trains(5))
+        print(self.full_report())
+        self.trigger_timeslip()
         self.main_loop()
 
 

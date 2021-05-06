@@ -20,11 +20,11 @@ class Controller(object):
         REPORTS
     """
 
-    def status(self):
+    def report_status(self):
         """Brief one-liner status"""
         return f"{self.whoami} is running."
 
-    def tail(f, window=1):
+    def tail(self, f, window=1):
         """
         Returns the last `window` lines of file `f` as a list of bytes.
         """
@@ -45,20 +45,21 @@ class Controller(object):
             end -= nread
         return b'\n'.join(b''.join(reversed(data)).splitlines()[-window:])
 
-    def logs(self, num=config.SCHED_DEFAULT_LOG):
+    def report_logs(self, num=config.SCHED_DEFAULT_LOG):
         """
         Recent log of activity.
         """
         with open(config.LOG_FILENAME, 'rb') as file:
-            logs = tail(file, num).decode('utf-8')
-        return(logs)
+            logs = self.tail(file, num).decode('utf-8')
+        return(f"RECENT LOGS\n===========\n{logs}")
 
-    def report(self):
+    def full_report(self):
         """
         Full multi-line readable report of activity.
         """
-        self.status()
-        self.logs(10)
+        report = self.report_status() + "\n\n"
+        report += self.report_logs(10)
+        return report
 
     """
         ORDERS

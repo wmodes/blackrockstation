@@ -207,6 +207,7 @@ Here are the commands the light controller responds to:
 - set off [num]
 - set on [num]
 - set glitch
+- set year *year*
 - request status
 - request log [num_events]
 - request report
@@ -225,7 +226,7 @@ Here are the commands the radio controller responds to:
 - set off
 - set on
 - set glitch
-- set period year
+- set year *year*
 - request status
 - request log [num_events]
 - request report
@@ -241,7 +242,7 @@ Here are the commands the television controller responds to:
 - set off
 - set on
 - set glitch
-- set period year
+- set year *year*
 - request status
 - request log [num_events]
 - request report
