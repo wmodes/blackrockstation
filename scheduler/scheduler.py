@@ -216,7 +216,7 @@ class Scheduler(Controller):
         if now.strftime("%H:%M") == self.last_timeslip.strftime("%H:%M"):
             return
         next_timeslip_min = self.last_timeslip + timedelta(minutes=config.SCHED_TIMESLIP_INTERVAL)
-        next_timeslip_max = next_timeslip_min + timedelta(minutes=config.SCHED_TIMESLIP_DELTA)
+        next_timeslip_max = next_timeslip_min + timedelta(minutes=config.SCHED_TIME_DELTA)
         if next_timeslip_min < now < next_timeslip_max:
             # find out what the index of the current year is
             index = config.SCHED_YEARS.index(self.current_year)
@@ -230,12 +230,9 @@ class Scheduler(Controller):
             self.last_timeslip = now
             self.trigger_timeslip()
 
-    def delay_event(self, event):
-        self.delayed_events.append(event)
-
     def check_for_delayed_events(self):
         now = datetime.now()
-        now_delta = now + timedelta(minutes=config.SCHED_TIMESLIP_DELTA)
+        now_delta = now + timedelta(minutes=config.SCHED_TIME_DELTA)
         for event in self.delayed_events:
             if now < event['time'] < now_delta:
                 self.trigger_event(event)
@@ -257,6 +254,9 @@ class Scheduler(Controller):
     """
         EVENTS
     """
+
+    def delay_event(self, event):
+        self.delayed_events.append(event)
 
     def trigger_event(self, event):
         """
@@ -307,40 +307,71 @@ class Scheduler(Controller):
         trigger the events that happen with a train
         train_event: train event from schedule
         """
+        # let's calculate the timing of some things to schedule the next few events
+        now = datetime.now()
+        # time_announce_arrival = now
+        # time_signal_is_go = now
+        time_we_hear_train = now +  timedelta(minutes=config.SCHED_SIGNAL_BEFORE)
+        time_crossing_is_on = time_we_hear_train  + timedelta(minutes=config.SCHED_CROSSING_DELAY)
+        time_departure_announce = time_we_hear_train + timedelta(minutes=float(train_event['duration'])/2)
+        time_signal_is_stop = time_we_hear_train + timedelta(minutes=float(train_event['duration'])) - timedelta(minutes=config.SCHED_DEPART_TIME)
+        time_crossing_is_off = time_we_hear_train + timedelta(minutes=float(train_event['duration'])) - timedelta(minutes=config.SCHED_CROSSING_DELAY)
         #
-        # trainaudio starts immediately
-        self.trigger_event(train_event)
-        #
-        # crossing comes on as soon as we can hear the train
-        self.trigger_event({
-            "controller": "crossing",
-            "event": "on"
-        })
-        #
-        # crossing turns off as soon as the train passes
-        # i.e., at the end of the train's duration
-        self.delay_event({
-            "controller": "crossing",
-            "event": "off",
-            "time": datetime.now() + timedelta(minutes=float(train_event['duration']))
-        })
-        #
-        # signal bridge turns green as soon as train enters the block
-        # i.e., as soon as we can hear it
+        # 1) SIGNAL turns green as soon as train enters the block
+        #   i.e., several minutes before we can hear it
         self.trigger_event({
             "controller": "signal",
             "event": "go",
             "direction": train_event['direction']
         })
         #
-        # signal bridge turns red as soon as the train passes the station
-        # i.e., some minutes before end of duration
+        # 2) ANNOUNCE arrival when train approached station
+        #   i.e., we when begin to hear it
+        if train_event['announceid'] != "":
+            self.delay_event({
+                "controller": "announce",
+                "announceid": train_event['announceid'] + "-arrival",
+                "time": time_we_hear_train
+            })
+        #
+        # 3) TRAINAUDIO starts
+        train_event['time'] = time_we_hear_train
+        self.delay_event(train_event)
+        #
+        # 4) CROSSING comes on as soon as train nears crossing
+        #   i.e., some minutes after we can hear it
+        self.delay_event({
+            "controller": "crossing",
+            "event": "on",
+            "time": time_crossing_is_on
+        })
+        #
+        # 5) ANNOUNCE departure before train leaves station
+        #   i.e., halfway through duration
+        if train_event['announceid'] != "":
+            self.delay_event({
+                "controller": "announce",
+                "announceid": train_event['announceid'] + "-departure",
+                "time": time_departure_announce
+            })
+        #
+        # 6) SIGNAL turns red as soon as the train passes the station
+        #   i.e., some minutes before end of duration
         self.delay_event({
             "controller": "signal",
             "event": "stop",
             "direction": train_event['direction'],
-            "time": datetime.now() + timedelta(minutes=float(train_event['duration'])) - timedelta(minutes=config.SCHED_DEPART_TIME)
+            "time": time_signal_is_stop
         })
+        #
+        # 7) CROSSING turns off as soon as the train passes
+        # i.e., at the end of the train's duration
+        self.delay_event({
+            "controller": "crossing",
+            "event": "off",
+            "time": time_crossing_is_off
+        })
+
 
     def trigger_timeslip(self):
         logging.info(f"Timeslip to {self.current_year}")

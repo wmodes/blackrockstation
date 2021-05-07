@@ -29,15 +29,17 @@ SCHED_FIELDS = ['event', 'controller', 'time', 'duration', 'direction', 'trainty
 SCHED_LOOP_DELAY = 0.25
 SCHED_DEFAULT_LOG = 100
 SCHED_YEARS = [1858, 1888, 1938, 1959, 1982, 2014, 2066, 2110]
-SCHED_TIMESLIP_INTERVAL = 26     # time in minutes
-SCHED_TIMESLIP_DELTA = 0.25     # time in minutes
-SCHED_TIMESLIP_GLITCH = 0.5       # time in minutes
+SCHED_TIMESLIP_INTERVAL = 26        # time in minutes
+SCHED_TIME_DELTA = 0.24999          # time in minutes
+SCHED_TIMESLIP_GLITCH = 0.5         # time in minutes
 SCHED_PERIODIC = [
     {"controller": "announce", "announceid": "periodic-paging-announcement-1", "times_per_day": 3},
     {"controller": "announce", "announceid": "periodic-paging-announcement-2", "times_per_day": 3},
     {"controller": "announce", "announceid": "periodic-safety-announcement", "times_per_day": 8},
 ]
-SCHED_DEPART_TIME = 1.5   # time in minutes
+SCHED_DEPART_TIME = 1.5      # time in minutes
+SCHED_SIGNAL_BEFORE = 3       # time in minutes
+SCHED_CROSSING_DELAY = 1     # time in minutes
 
 # Announce class
 
