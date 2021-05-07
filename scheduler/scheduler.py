@@ -203,7 +203,10 @@ class Scheduler(Controller):
                 # record this event as last_event
                 self.last_event = event['event'] + event["time"]
                 # make event happen
-                self.trigger_event(event)
+                if event['controller'] == "trainaudio":
+                    self.trigger_train(event)
+                else:
+                    self.trigger_event(event)
                 break
 
 
@@ -269,6 +272,23 @@ class Scheduler(Controller):
             #   form: set announce *id* *year*
             order = f"set announce {event['announceid']} {self.current_year}"
             self.comms.send_order("announce", order)
+        elif event['controller'] == "crossing":
+            # send command to crossing controller
+            #   form:
+            #       set on
+            #       set off
+            order = f"set {event['event']}"
+            self.comms.send_order("crossing", order)
+        elif event['controller'] == "signal":
+            # send command to signal controller
+            #   form:
+            #       set go *direction*
+            #       set stop
+            if event['event'] == "stop":
+                order = "set stop"
+            else:
+                order = f"set {event['event']} {event['direction']}"
+            self.comms.send_order("signal", order)
         elif re.search('radio|television|lights', event['controller']):
             # send command to radio, tv, or lights controller
             #   form:
@@ -282,9 +302,48 @@ class Scheduler(Controller):
                 return
             self.comms.send_order(event['controller'], order)
 
+    def trigger_train(self, train_event):
+        """
+        trigger the events that happen with a train
+        train_event: train event from schedule
+        """
+        #
+        # trainaudio starts immediately
+        self.trigger_event(train_event)
+        #
+        # crossing comes on as soon as we can hear the train
+        self.trigger_event({
+            "controller": "crossing",
+            "event": "on"
+        })
+        #
+        # crossing turns off as soon as the train passes
+        # i.e., at the end of the train's duration
+        self.delay_event({
+            "controller": "crossing",
+            "event": "off",
+            "time": datetime.now() + timedelta(minutes=float(train_event['duration']))
+        })
+        #
+        # signal bridge turns green as soon as train enters the block
+        # i.e., as soon as we can hear it
+        self.trigger_event({
+            "controller": "signal",
+            "event": "go",
+            "direction": train_event['direction']
+        })
+        #
+        # signal bridge turns red as soon as the train passes the station
+        # i.e., some minutes before end of duration
+        self.delay_event({
+            "controller": "signal",
+            "event": "stop",
+            "direction": train_event['direction'],
+            "time": datetime.now() + timedelta(minutes=float(train_event['duration'])) - timedelta(minutes=config.SCHED_DEPART_TIME)
+        })
+
     def trigger_timeslip(self):
         logging.info(f"Timeslip to {self.current_year}")
-        print(f"Timeslip to {self.current_year}")
         # trigger glitch events and schedule year event
         for controller in ["radio", "television", "lights"]:
             self.trigger_event({

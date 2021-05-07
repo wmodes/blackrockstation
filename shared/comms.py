@@ -4,7 +4,7 @@ import shared.config
 
 import logging
 import pprint
-
+from datetime import datetime
 
 class Comms(object):
     """Comm class for all controllers."""
@@ -32,7 +32,7 @@ class Comms(object):
     def send_order(self, controller, command):
         """Send an arbitrary order to another controller"""
         logging.info(f"Sending command to {controller}: {command}")
-        print(f"Sending command to {controller}: {command}")
+        print(f"{datetime.now().strftime('%H:%M:%S')} Sending command to {controller}: {command}")
 
 
 def main():

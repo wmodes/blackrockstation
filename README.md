@@ -186,7 +186,7 @@ The signal bridge controller handles turning the lights on the signal bridge. Un
 
 Here are the commands the signalbridge controller responds to:
 
-- set go
+- set go *direction*
 - set stop
 - request status
 - request log [num_events]
