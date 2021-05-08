@@ -66,7 +66,7 @@ class Scheduler(Controller):
         return (f"Current year is {self.current_year}.")
 
     def report_next_train(self):
-        return (f"NEXT TRAIN\n==========\n{self.future_trains(1)}")
+        return (f"NEXT TRAIN\n==========\n{self.report_future_trains(1)}")
 
     def display_train_schedule(self, event_list=None):
         if not event_list:
@@ -75,7 +75,7 @@ class Scheduler(Controller):
         # convert dict to array of arrays
         events = []
         for event in event_list:
-            if event['controller'] == "trainaudio":
+            if event['controller'] == "train":
                 events.append([event['event'], event['time'],
                               event['variance'], event['direction'], event['traintype'], event['notes']])
         if not len(events):
@@ -85,13 +85,13 @@ class Scheduler(Controller):
         #table = columnar(events, headers, terminal_width=110, column_sep='|', row_sep='─')
         return table
 
-    def future_trains(self, n=10):
+    def report_future_trains(self, n=10):
         future_list = []
         # search through train schedule for time that matches H:M
         now = datetime.now().time()
         for event in self.schedule:
             # if this event is not a train event, skip
-            if event["controller"] != "trainaudio":
+            if event["controller"] != "train":
                 continue
             # if this event is already in the past, skip
             if datetime.strptime(event["time"], "%H:%M").time() < now:
@@ -105,7 +105,7 @@ class Scheduler(Controller):
         if len(future_list) < n:
             for event in self.schedule:
                 # if this event is not a train event, skip
-                if event["controller"] != "trainaudio":
+                if event["controller"] != "train":
                     continue
                 # if this event is not in the past, stop (i.e., we've wrapped around)
                 if datetime.strptime(event["time"], "%H:%M").time() > now:
@@ -120,7 +120,7 @@ class Scheduler(Controller):
         ORDERS
     """
 
-    def __act_on_order(arg, order):
+    def __act_on_order(self, order):
         """
         Takes action based on orders
 
@@ -133,35 +133,35 @@ class Scheduler(Controller):
         """
         if not order:
             return
-        logging.debug(f"Acting on order: {order}")
+        logging.info(f"Acting on order: {order}")
         #
         # request future schedule
         #
         if order.startswith("request future"):
             order_list = order.split()
             if len(order_list) > 2:
-                self.future(order_list[2])
+                print(self.report_future_trains(order_list[2]))
             else:
-                self.future()
+                print(self.report_future_trains())
         #
         # request status
         #
         elif order.startswith("request status"):
-            self.report_status()
+            print(self.report_status())
         #
         # request log
         #
         elif order.startswith("request log"):
             order_list = order.split()
             if len(order_list) > 2:
-                self.report_logs(order_list[2])
+                print(self.report_logs(int(order_list[2])))
             else:
-                self.report_logs()
+                print(self.report_logs())
         #
         # request status
         #
         elif order.startswith("request report"):
-            self.full_report()
+            print(self.full_report())
         #
         # send order to other controller
         #
@@ -203,7 +203,7 @@ class Scheduler(Controller):
                 # record this event as last_event
                 self.last_event = event['event'] + event["time"]
                 # make event happen
-                if event['controller'] == "trainaudio":
+                if event['controller'] == "train":
                     self.trigger_train(event)
                 else:
                     self.trigger_event(event)
@@ -262,11 +262,11 @@ class Scheduler(Controller):
         """
         Constuct order and send to appropriate controller.
         """
-        if event['controller'] == "trainaudio":
-            # send command to trainaudio controller
+        if event['controller'] == "train":
+            # send command to train controller
             #   form: set train *direction* *traintype* *year*
             order = f"set train {event['direction']} {event['traintype']} {self.current_year}"
-            self.comms.send_order("trainaudio", order)
+            self.comms.send_order("train", order)
         elif event['controller'] == "announce":
             # send command to announce controller
             #   form: set announce *id* *year*

@@ -14,11 +14,12 @@ import logging
 PKG_ROOT = "blackrockstation"
 LOG_FILENAME = "logs/controller.log"
 LOG_LEVEL = logging.INFO
+ORDER_FILE = ".order"   # temp solution for comms orders
 
 # Start
 CONTROLLERS = [
     "announce", "crossing", "lights", "radio", "scheduler", "signal",
-    "trainaudio", "television"
+    "train", "television"
 ]
 
 # Controller parent class
@@ -42,6 +43,12 @@ SCHED_SIGNAL_BEFORE = 3       # time in minutes
 SCHED_CROSSING_DELAY = 1     # time in minutes
 
 # Announce class
+ANNOUNCE_FILE_TABLE = "announce/data/file-table.csv"
+ANNOUNCE_FILE_FIELDS = ['announcement', 'announceid', 'year', 'filename', 'notes']
+ANNOUNCE_AUDIO_DIR = "announce/data/"
+ANNOUNCE_LOOP_DELAY = 0.25
+ANNOUNCE_AUDIO_EXT = ".mp3"
+ANNOUNCE_VOLUME = "0.8"
 
 # Crossing class
 
@@ -49,11 +56,14 @@ SCHED_CROSSING_DELAY = 1     # time in minutes
 
 # Signal class
 
-# Trainaudio class
-TRAIN_FILE_TABLE = "scheduler/data/file-table.csv"
-TRAIN_TYPES = ["freight-through", "freight-stop", "passenger-through", "passenger-stop"]
+# Train class
+TRAIN_FILE_TABLE = "train/data/file-table.csv"
 TRAIN_FILE_FIELDS = ['year', 'type', 'filename']
-TRAIN_AUDIO_DIR = "scheduler/audio/"
+TRAIN_TYPES = ["freight-through", "freight-stop", "passenger-through", "passenger-stop"]
+TRAIN_AUDIO_DIR = "train/data/"
+TRAIN_LOOP_DELAY = 0.25
+TRAIN_AUDIO_EXT = ".mp3"
+TRAIN_VOLUME = "0.9"
 
 # Radio class
 

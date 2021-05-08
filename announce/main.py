@@ -32,7 +32,7 @@ def main():
     try:
         announce.start()
     except KeyboardInterrupt:
-        logging.info(f"%s interrupted." % whoami)
+        logging.info(f"{whoami} interrupted.")
         announce.stop()
     except:
         logging.exception('Got exception on main handler')

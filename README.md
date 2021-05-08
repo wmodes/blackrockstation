@@ -121,7 +121,7 @@ The train audio controller handles the sounds of trains. It needs to be given sc
 
 ### Commands
 
-Here are the commands the trainaudio controller responds to:
+Here are the commands the train controller responds to:
 
 - set off
 - set on
@@ -140,7 +140,7 @@ The announce controller handles announcements. It needs to be given scheduled ev
 
 ### Commands
 
-Here are the commands the trainaudio controller responds to:
+Here are the commands the train controller responds to:
 
 - set off
 - set on

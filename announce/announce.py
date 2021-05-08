@@ -4,8 +4,11 @@ from shared import config
 from shared.controller import Controller
 
 import logging
-import pprint
+from pprint import pprint
 from datetime import datetime, timedelta
+from pygame import mixer
+import csv
+import time
 
 logger = logging.getLogger()
 
@@ -14,43 +17,129 @@ class Announce(Controller):
     """Announcements controller class."""
 
     def __init__(self):
-        super(Announce, self).__init__()
+        super().__init__()
+        self.whoami = "announce"
+        self.enabled = True
+        self.filetable = self.__read_filetable()
+        mixer.init()
+        mixer.music.set_volume(float(config.ANNOUNCE_VOLUME))
 
-    def status(self):
-        """Brief one-liner status"""
+    """
+        SETUP
+    """
+
+    def __read_filetable(self):
+        logging.info('Reading file table')
+        filetable = {}
+        with open(config.ANNOUNCE_FILE_TABLE, newline='') as csvfile:
+            reader = csv.DictReader(csvfile, config.ANNOUNCE_FILE_FIELDS)
+            # skips the header line
+            next(reader)
+            for row in reader:
+                # skip blank lines
+                if row['announcement'] == '':
+                    continue;
+                index = row['announceid']
+                filetable[index] = row['filename']
+        return filetable
+
+    """
+        ORDERS
+    """
+
+    def __act_on_order(self, order):
+        """
+        Takes action based on order.
+
+        Possible comnmands:
+            - set off
+            - set on
+            - set glitch
+            - set announce *id* *year*
+            - request status
+            - request log [num_events]
+            - request report
+        """
+        if not order:
+            return
+        logging.debug(f"Acting on order: {order}")
+        #
+        # request status
+        #
+        if order.startswith("request status"):
+            print(self.report_status())
+        #
+        # request log
+        #
+        elif order.startswith("request log"):
+            order_list = order.split()
+            if len(order_list) > 2:
+                print(self.report_logs(int(order_list[2])))
+            else:
+                print(self.report_logs())
+        #
+        # request status
+        #
+        elif order.startswith("request report"):
+            print(self.full_report())
+        #
+        # request off
+        #
+        elif order.startswith("request off"):
+            self.enabled = False
+        #
+        # request on
+        #
+        elif order.startswith("request on"):
+            self.enabled = True
+        #
+        # set glitch
+        #
+        elif order.startswith("set glitch"):
+            self.set_glitch()
+        #
+        # set announce
+        #
+        elif order.startswith("set announce"):
+            order_list = order.split()
+            announceid = order_list[2]
+            year = int(order_list[3])
+            self.set_announce(announceid, year)
+        #
+        # invalid order
+        #
+        else:
+            logging.info(f"invalid order received: {order}")
+
+    """
+        PLAY STUFF
+    """
+
+    def set_glitch(self):
         pass
 
-    def logs(self):
-        """Recent log of activity"""
-        pass
+    def set_announce(self, announceid, year):
+        filepath = config.ANNOUNCE_AUDIO_DIR
+        filename = f"{str(year)}-{announceid}{config.ANNOUNCE_AUDIO_EXT}"
+        logging.info(f"Playing audio: {filename}")
+        mixer.music.load(filepath + filename)
+        mixer.music.play()
 
-    def report(self):
-        """Full multi-line readable report of activity"""
-        pass
+    """
+        MAIN LOOP
+    """
 
-    def __receive_orders(self):
-        """Receives orders"""
-        pass
-
-    def __ack_orders(self):
-        """Acknowledges orders received"""
-
-    def __act_on_orders(arg, orders):
-        """Takes action based on orders"""
-        pass
-
-    def order_act_loop(self):
+    def main_loop(self):
         """Gets orders and acts on them"""
-        pass
+        while True:
+            self.__act_on_order(self.receive_order())
+            time.sleep(config.ANNOUNCE_LOOP_DELAY)
+
 
     def start(self):
-        print("Announce: starting")
         logging.info('Starting.')
-        pass
-
-    def stop(self):
-        logging.info('Stopping.')
-        pass
+        print(self.full_report)
+        self.main_loop()
 
 
 def main():

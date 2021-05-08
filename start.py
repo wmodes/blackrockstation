@@ -10,7 +10,7 @@ import logging
 
 controllers = [
     "announce", "crossing", "lights", "radio", "scheduler", "signal",
-    "trainaudio", "television"
+    "train", "television"
 ]
 
 
@@ -43,8 +43,8 @@ def main():
     # sys.stderr = StreamToLogger(logger,logging.ERROR)
     #
     # load appropriate controller module
-    class_module = f"%s.%s" % (controller, controller.title())
-    main_module = f"%s.main" % controller
+    class_module = f"{controller}.{controller.title()}"
+    main_module = f"{controller}.main"
     import_main = importlib.import_module(main_module)
 
     # start main loop of controller
