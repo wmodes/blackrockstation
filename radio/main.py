@@ -32,7 +32,7 @@ def main():
     try:
         radio.start()
     except KeyboardInterrupt:
-        logging.info(f"%s interrupted." % whoami)
+        logging.info(f"{whoami} interrupted.")
         radio.stop()
     except:
         logging.exception('Got exception on main handler')

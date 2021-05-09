@@ -32,7 +32,7 @@ def main():
     try:
         television.start()
     except KeyboardInterrupt:
-        logging.info(f"%s interrupted." % whoami)
+        logging.info(f"{whoami} interrupted.")
         television.stop()
     except:
         logging.exception('Got exception on main handler')

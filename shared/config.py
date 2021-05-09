@@ -66,5 +66,14 @@ TRAIN_AUDIO_EXT = ".mp3"
 TRAIN_VOLUME = "0.9"
 
 # Radio class
+# TV class
+RADIO_AUDIO_DIR = "radio/data/"
+RADIO_LOOP_DELAY = 0.25
+RADIO_AUDIO_EXT = ".mp3"
+RADIO_VOLUME = "0.8"
 
 # TV class
+TV_VIDEO_DIR = "television/data/"
+TV_LOOP_DELAY = 0.25
+TV_VIDEO_EXT = ".mp4"
+TV_VOLUME = "0.8"

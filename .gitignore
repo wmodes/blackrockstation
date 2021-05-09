@@ -128,3 +128,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 experiments/grpc/
+radio/data/2014/107.1 WFHN - Fairhaven, MA - 2014-06-23 - 12.00 - Scott Reiniche - Back In The Day Cafe.mp3
+radio/data/2014/wendy wreck 10 01 14.mp3
+radio/data/2014/cftp-2011-02-18.mp3
+radio/data/2014/WSTZ 106.7 FM 3_4_2017.mp3
