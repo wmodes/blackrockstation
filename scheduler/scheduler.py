@@ -59,7 +59,6 @@ class Scheduler(Controller):
         report = self.report_status() + "\n"
         report += self.report_current_year() + "\n\n"
         report += self.report_next_train() + "\n"
-        report += self.report_logs(10) + "\n"
         return report
 
     def report_current_year(self):
