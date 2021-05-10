@@ -34,7 +34,6 @@ def main():
 
     # handle logging
     logging.basicConfig(filename=config.LOG_FILENAME,
-                        encoding='utf-8',
                         format=f"%(asctime)s {controller}: %(levelname)s: %(message)s",
                         level=logging.DEBUG)
     logger = logging.getLogger()
