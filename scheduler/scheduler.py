@@ -20,7 +20,7 @@ class Scheduler(Controller):
 
     def __init__(self):
         super().__init__()
-        self.whoami = "scheduler"
+        self.whoami = "Scheduler"
         self.__read_schedule()
         self.__sort_schedule()
         self.delayed_events = []

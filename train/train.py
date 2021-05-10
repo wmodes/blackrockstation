@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from pygame import mixer
 import csv
 import time
+import sox
 
 logger = logging.getLogger()
 
@@ -42,7 +43,7 @@ class Train(Controller):
                 # add filename to filetable
                 index = f"{row['year']}-{row['type']}"
                 filetable[index] = row['filename']
-        pprint(filetable)
+        #pprint(filetable)
         return filetable
 
     """
@@ -115,10 +116,26 @@ class Train(Controller):
     def set_train(self, direction, type, year):
         logging.debug(f"Setting train: {direction} {type} {year}")
         filepath = config.TRAIN_AUDIO_DIR
-        filename = self.filetable[f"{year}-{type}"]
+        filename = filepath + self.filetable[f"{year}-{type}"]
         logging.debug(f"Train audio filename: {filename}")
+        # by default, train recordings are recorded left-to-right or eastbound
+        # if direction is westbound, swap the channels
+        if direction == "westbound":
+            # Note that the transform and rewrite takes at least 1/2 a second,
+            #  but will probably be fine in this context
+            # create transformer
+            tfm = sox.Transformer()
+            # swap channels
+            tfm.swap()
+            # create an tmp output file
+            tfm.build_file(filename, config.TRAIN_TMP_FILE)
+            logging.info(f"Swapping audio channels for westbound train")
+            playfile = config.TRAIN_TMP_FILE
+        # if direction is eastbound, we don't have to do anything
+        else:
+            playfile = filename
         logging.info(f"Playing audio: {filename}")
-        mixer.music.load(filepath + filename)
+        mixer.music.load(playfile)
         mixer.music.play()
 
     """

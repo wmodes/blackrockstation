@@ -61,6 +61,7 @@ TRAIN_FILE_TABLE = "train/data/file-table.csv"
 TRAIN_FILE_FIELDS = ['year', 'type', 'filename']
 TRAIN_TYPES = ["freight-through", "freight-stop", "passenger-through", "passenger-stop"]
 TRAIN_AUDIO_DIR = "train/data/"
+TRAIN_TMP_FILE = "train/data/tmp-audio.mp3"
 TRAIN_LOOP_DELAY = 0.25
 TRAIN_AUDIO_EXT = ".mp3"
 TRAIN_VOLUME = "0.9"
