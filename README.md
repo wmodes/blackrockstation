@@ -31,6 +31,14 @@ Install the python module requirements with:
 
 `(blackrockstation) ~/dev/blackrockstation/% pip install -r requirements.txt`
 
+You'll probably need the media files for testing. Download the mediafiles to the root:
+
+[media-files.tar.gz](https://drive.google.com/file/d/1_eMsQjETB9L_u6GMdJ2qZpQZf2TpKboU/view?usp=sharing)
+
+And unpack with:
+
+`tar xvf media-files.tar.gz`
+
 ## Executing
 
 Use `start.py` to start each subsystem. For example, to start the announce subsystem:
