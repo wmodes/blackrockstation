@@ -9,6 +9,28 @@ Various subsystems (lights, audio, video, etc) rely on a network of semi-autonom
 * Date: Apr 2021
 * License: MIT
 
+## Installation
+
+Because python 3.7 is the latest pre-built version for the Raspberry Pi, we use version 3.7. You should too for this project if you don't want to have to make subtle adjustments. We suggest you use `pyenv` to manage your python versions. Confirm you have 3.7 with:
+
+`python --version`
+
+It should report python 3.10.x
+
+Create a virtual environment in your envs folder with:
+
+`~/dev/envs% python3 -m venv blackrockstation`
+
+Activate the venv with:
+
+`source ~/dev/envs/blackrockstation/bin/activate`
+
+Clone the repo and `cd blackrockstation` into this folder.
+
+Install the python module requirements with:
+
+`(blackrockstation) ~/dev/blackrockstation/% pip install -r requirements.txt`
+
 ## Executing
 
 Use `start.py` to start each subsystem. For example, to start the announce subsystem:
