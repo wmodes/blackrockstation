@@ -32,8 +32,7 @@ import vlc
 # from network import Client
 
 
-
-class MiniPlayer(QtWidgets.QMainWindow):
+class Player(QtWidgets.QMainWindow):
     """Stripped-down PyQt5-based media player class to sync with "master" video.
     """
 
@@ -48,31 +47,54 @@ class MiniPlayer(QtWidgets.QMainWindow):
         ]
         self.current_index = 0
 
+        # PyQy prep stuff
+        #
+        # set fullscreen mode (we could do this after the object, but let's do this early)
+        #self.showFullScreen()
+        self.resize(680, 420)
         self.setWindowTitle("Mini Player")
-
-        # Create a basic vlc instance
-        self.instance = vlc.Instance()
-
-        self.media = None
-
-        # Create an empty vlc media player
-        self.mediaplayer = self.instance.media_player_new()
-
         self.init_ui()
 
+        # VLC prep stuff
+        #
+        # VLC Options
+        vlc_options = [
+            "--embedded-video",
+            "--no-audio",
+            "--autoscale",
+            #"--fullscreen",
+            "--video-on-top",
+            "--no-video-title-show",
+            "--random",
+            "--verbose -1",
+            "--canvas-aspect 3:4",
+            "--no-canvas-padd"
+        ]
+        # Create a basic vlc instance
+        self.instance = vlc.Instance(" ".join(vlc_options))
+        # later used to store media object, for now blank
+        self.media = None
+        # Create an empty vlc media player
+        self.player = self.instance.media_player_new()
+        # self.mediaplayer = vlc.MediaPlayer()
+        # Set to fullscreen
+        #self.player.set_fullscreen(True)
+        #
         # The media player has to be 'connected' to the QFrame (otherwise the
         # video would be displayed in it's own window). This is platform
         # specific, so we must give the ID of the QFrame (or similar object) to
         # vlc. Different platforms have different functions for this
         if platform.system() == "Linux":  # for Linux using the X Server
-            self.mediaplayer.set_xwindow(int(self.videoframe.winId()))
+            self.player.set_xwindow(int(self.videoframe.winId()))
         elif platform.system() == "Windows":  # for Windows
-            self.mediaplayer.set_hwnd(int(self.videoframe.winId()))
+            self.player.set_hwnd(int(self.videoframe.winId()))
         elif platform.system() == "Darwin":  # for MacOS
-            self.mediaplayer.set_nsobject(int(self.videoframe.winId()))
+            self.player.set_nsobject(int(self.videoframe.winId()))
 
+        # load media
         self.open_file(self.media_files[self.current_index])
 
+        # create a timer to refresh video
         self.timer = QtCore.QTimer(self)
         self.timer.setInterval(5000)
         self.timer.timeout.connect(self.next_video)
@@ -82,13 +104,13 @@ class MiniPlayer(QtWidgets.QMainWindow):
     def init_ui(self):
         """Set up the user interface
         """
-        self.widget = QtWidgets.QWidget(self)
-        self.setCentralWidget(self.widget)
+        self.window = QtWidgets.QWidget(self)
+        self.setCentralWidget(self.window)
 
-        p = self.widget.palette()
+        p = self.window.palette()
         p.setColor(QtGui.QPalette.Window, QtGui.QColor(0, 0, 0))
-        self.widget.setPalette(p)
-        self.widget.setAutoFillBackground(True)
+        self.window.setPalette(p)
+        self.window.setAutoFillBackground(True)
 
         # In this widget, the video will be drawn
         if platform.system() == "Darwin":  # for MacOS
@@ -103,7 +125,8 @@ class MiniPlayer(QtWidgets.QMainWindow):
 
         self.vboxlayout = QtWidgets.QVBoxLayout()
         self.vboxlayout.addWidget(self.videoframe)
-        self.widget.setLayout(self.vboxlayout)
+        self.window.setLayout(self.vboxlayout)
+
 
     def open_file(self, filename):
         """Open a media file in a MediaPlayer
@@ -119,13 +142,13 @@ class MiniPlayer(QtWidgets.QMainWindow):
         self.media = self.instance.media_new(filename)
 
         # Put the media in the media player
-        self.mediaplayer.set_media(self.media)
+        self.player.set_media(self.media)
 
         # Parse the metadata of the file
         self.media.parse()
 
         # Start playing the video as soon as it loads
-        self.mediaplayer.play()
+        self.player.play()
 
     def next_video(self):
         self.current_index += 1
@@ -144,19 +167,19 @@ class MiniPlayer(QtWidgets.QMainWindow):
         print("data_queue got value")
 
         if val == '<':
-            self.mediaplayer.set_rate(self.mediaplayer.get_rate() * 0.5)
+            self.player.set_rate(self.player.get_rate() * 0.5)
             return
         if val == '>':
-            self.mediaplayer.set_rate(self.mediaplayer.get_rate() * 2)
+            self.player.set_rate(self.player.get_rate() * 2)
             return
         if val == 'P':
-            self.mediaplayer.play()
+            self.player.play()
             return
         if val == 'p':
-            self.mediaplayer.pause()
+            self.player.pause()
             return
         if val == 'S':
-            self.mediaplayer.stop()
+            self.player.stop()
             return
         if val == 'n':
             self.current_index += 1
@@ -166,8 +189,8 @@ class MiniPlayer(QtWidgets.QMainWindow):
             return
 
         val = int(val)
-        if val != self.mediaplayer.get_time():
-            self.mediaplayer.set_time(val)
+        if val != self.player.get_time():
+            self.player.set_time(val)
 
 
 def main():
@@ -175,12 +198,10 @@ def main():
     """
     app = QtWidgets.QApplication(sys.argv)
 
-    player = MiniPlayer()
+    player = Player()
     player.show()
-    player.resize(680, 420)
-    #player.showFullScreen()
-
-
+    # player.resize(680, 420)
+    # player.showFullScreen()
 
     # _ = Client("localhost", 10000, data_queue)
     sys.exit(app.exec_())
