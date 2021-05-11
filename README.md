@@ -9,6 +9,17 @@ Various subsystems (lights, audio, video, etc) rely on a network of semi-autonom
 * Date: Apr 2021
 * License: MIT
 
+## Dependencies
+
+You must have the following software installed before you attempt to install the python modules:
+
+* Sox
+* VLC
+* Sip
+* PyQt5
+
+If you are developing on MacOS, use `brew install`. If you are installing on the Raspberry Pi, use `apt-get install`.
+
 ## Installation
 
 Because python 3.7 is the latest pre-built version for the Raspberry Pi, we use version 3.7. You should too for this project if you don't want to have to make subtle adjustments. We suggest you use `pyenv` to manage your python versions. Confirm you have 3.7 with:
