@@ -1,26 +1,7 @@
-#
-# PyQt5-based video-sync example for VLC Python bindings
-# Copyright (C) 2009-2010 the VideoLAN team
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
-#
+
 """
 This module contains a bare-bones VLC player class to play videos.
-
-Author: Saveliy Yusufov, Columbia University, sy2685@columbia.edu
-Date: 25 January 2019
+Adapted  from an example by Saveliy Yusufov, Columbia University, sy2685@columbia.edu
 """
 
 import os
@@ -29,11 +10,9 @@ import platform
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 import vlc
-# from network import Client
-
 
 class Player(QtWidgets.QMainWindow):
-    """Stripped-down PyQt5-based media player class to sync with "master" video.
+    """Stripped-down PyQt5-based media player class
     """
 
     def __init__(self, master=None):
@@ -50,9 +29,13 @@ class Player(QtWidgets.QMainWindow):
         # PyQy prep stuff
         #
         # set fullscreen mode (we could do this after the object, but let's do this early)
-        #self.showFullScreen()
-        self.resize(680, 420)
-        self.setWindowTitle("Mini Player")
+        #
+        # in fullscreen mode, videos show up in the bottom left corner
+        self.showFullScreen()
+        #
+        # in this window, videos are scaled only when window is manually resized
+        #self.resize(680, 420)
+        #
         self.init_ui()
 
         # VLC prep stuff
@@ -62,7 +45,7 @@ class Player(QtWidgets.QMainWindow):
             "--embedded-video",
             "--no-audio",
             "--autoscale",
-            #"--fullscreen",
+            "--fullscreen",
             "--video-on-top",
             "--no-video-title-show",
             "--random",
@@ -106,47 +89,37 @@ class Player(QtWidgets.QMainWindow):
         """
         self.window = QtWidgets.QWidget(self)
         self.setCentralWidget(self.window)
-
+        # set window color
         p = self.window.palette()
         p.setColor(QtGui.QPalette.Window, QtGui.QColor(0, 0, 0))
         self.window.setPalette(p)
         self.window.setAutoFillBackground(True)
-
         # In this widget, the video will be drawn
         if platform.system() == "Darwin":  # for MacOS
             self.videoframe = QtWidgets.QMacCocoaViewContainer(0)
         else:
             self.videoframe = QtWidgets.QFrame()
-
+        # set videoframe color
         self.palette = self.videoframe.palette()
         self.palette.setColor(QtGui.QPalette.Window, QtGui.QColor(0, 0, 0))
         self.videoframe.setPalette(self.palette)
         self.videoframe.setAutoFillBackground(True)
-
+        # layout
         self.vboxlayout = QtWidgets.QVBoxLayout()
         self.vboxlayout.addWidget(self.videoframe)
         self.window.setLayout(self.vboxlayout)
 
-
     def open_file(self, filename):
         """Open a media file in a MediaPlayer
         """
-        # dialog_txt = "Choose Media File"
-        # filename = QtWidgets.QFileDialog.getOpenFileName(self, dialog_txt, os.path.expanduser('~'))
-        if not filename[0]:
+        if not filename:
             return
-
-        # here
-
         # getOpenFileName returns a tuple, so use only the actual file name
         self.media = self.instance.media_new(filename)
-
         # Put the media in the media player
         self.player.set_media(self.media)
-
         # Parse the metadata of the file
         self.media.parse()
-
         # Start playing the video as soon as it loads
         self.player.play()
 
@@ -157,41 +130,6 @@ class Player(QtWidgets.QMainWindow):
         self.open_file(self.media_files[self.current_index])
         return
 
-    def update_ui(self):
-
-        try:
-            val = self.data_queue.get(block=False)
-        except queue.Empty:
-            return
-
-        print("data_queue got value")
-
-        if val == '<':
-            self.player.set_rate(self.player.get_rate() * 0.5)
-            return
-        if val == '>':
-            self.player.set_rate(self.player.get_rate() * 2)
-            return
-        if val == 'P':
-            self.player.play()
-            return
-        if val == 'p':
-            self.player.pause()
-            return
-        if val == 'S':
-            self.player.stop()
-            return
-        if val == 'n':
-            self.current_index += 1
-            if self.current_index >= len(self.media_files):
-                current_index = 0
-            self.open_file(self.media_files[self.current_index])
-            return
-
-        val = int(val)
-        if val != self.player.get_time():
-            self.player.set_time(val)
-
 
 def main():
     """Entry point for our simple vlc player
@@ -200,8 +138,6 @@ def main():
 
     player = Player()
     player.show()
-    # player.resize(680, 420)
-    # player.showFullScreen()
 
     # _ = Client("localhost", 10000, data_queue)
     sys.exit(app.exec_())
