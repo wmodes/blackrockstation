@@ -53,7 +53,8 @@ class Player(QtWidgets.QMainWindow):
             "--verbose -1",
             "--canvas-aspect 3:4",
             "--crop=3:4",
-            "--canvas-pad"
+            "--qt-video-autoresize",    # Resize interface to the native video size
+            #"--canvas-pad"
         ]
         # Create a basic vlc instance
         self.instance = vlc.Instance(" ".join(vlc_options))
