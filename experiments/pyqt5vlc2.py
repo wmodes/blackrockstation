@@ -43,8 +43,8 @@ class Player(QtWidgets.QMainWindow):
         #
         # VLC Options
         vlc_options = [
-            #"--embedded-video",
-            "--no-audio",
+            "--embedded-video",
+            #"--no-audio",
             "--no-autoscale",
             "--fullscreen",
             "--video-on-top",
@@ -53,7 +53,7 @@ class Player(QtWidgets.QMainWindow):
             "--verbose -1",
             "--canvas-aspect 3:4",
             "--crop=3:4",
-            "--no-canvas-pad"
+            "--canvas-pad"
         ]
         # Create a basic vlc instance
         self.instance = vlc.Instance(" ".join(vlc_options))
