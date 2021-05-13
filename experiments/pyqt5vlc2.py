@@ -31,10 +31,11 @@ class Player(QtWidgets.QMainWindow):
         # set fullscreen mode (we could do this after the object, but let's do this early)
         #
         # in fullscreen mode, videos show up in the bottom left corner
-        self.showFullScreen()
+        # self.showFullScreen()
         #
         # in this window, videos are scaled only when window is manually resized
-        #self.resize(680, 420)
+        self.resize(680, 420)
+        self.showFullScreen()
         #
         self.init_ui()
 
@@ -42,16 +43,17 @@ class Player(QtWidgets.QMainWindow):
         #
         # VLC Options
         vlc_options = [
-            "--embedded-video",
+            #"--embedded-video",
             "--no-audio",
-            "--autoscale",
-            "--fullscreen",
+            "--no-autoscale",
+            #"--fullscreen",
             "--video-on-top",
             "--no-video-title-show",
             "--random",
             "--verbose -1",
             "--canvas-aspect 3:4",
-            "--no-canvas-padd"
+            #"--crop=3:4",
+            "--no-canvas-pad"
         ]
         # Create a basic vlc instance
         self.instance = vlc.Instance(" ".join(vlc_options))
@@ -59,6 +61,8 @@ class Player(QtWidgets.QMainWindow):
         self.media = None
         # Create an empty vlc media player
         self.player = self.instance.media_player_new()
+        # set aspect ratio - nope, stretches video not crops
+        # self.player.video_set_aspect_ratio("4:3")
         # self.mediaplayer = vlc.MediaPlayer()
         # Set to fullscreen
         #self.player.set_fullscreen(True)
@@ -79,7 +83,7 @@ class Player(QtWidgets.QMainWindow):
 
         # create a timer to refresh video
         self.timer = QtCore.QTimer(self)
-        self.timer.setInterval(5000)
+        self.timer.setInterval(3000)
         self.timer.timeout.connect(self.next_video)
 
         self.timer.start()
@@ -87,27 +91,19 @@ class Player(QtWidgets.QMainWindow):
     def init_ui(self):
         """Set up the user interface
         """
-        self.window = QtWidgets.QWidget(self)
-        self.setCentralWidget(self.window)
-        # set window color
-        p = self.window.palette()
-        p.setColor(QtGui.QPalette.Window, QtGui.QColor(0, 0, 0))
-        self.window.setPalette(p)
-        self.window.setAutoFillBackground(True)
-        # In this widget, the video will be drawn
         if platform.system() == "Darwin":  # for MacOS
             self.videoframe = QtWidgets.QMacCocoaViewContainer(0)
         else:
             self.videoframe = QtWidgets.QFrame()
         # set videoframe color
-        self.palette = self.videoframe.palette()
-        self.palette.setColor(QtGui.QPalette.Window, QtGui.QColor(0, 0, 0))
-        self.videoframe.setPalette(self.palette)
-        self.videoframe.setAutoFillBackground(True)
-        # layout
-        self.vboxlayout = QtWidgets.QVBoxLayout()
-        self.vboxlayout.addWidget(self.videoframe)
-        self.window.setLayout(self.vboxlayout)
+        # self.palette = self.videoframe.palette()
+        # self.palette.setColor(QtGui.QPalette.Window, QtGui.QColor(0, 0, 0))
+        # self.videoframe.setPalette(self.palette)
+        # self.videoframe.setAutoFillBackground(True)
+        #
+        # How do I set aspectRatioMode = KeepAspectRatioByExpanding
+        #
+        self.setCentralWidget(self.videoframe)
 
     def open_file(self, filename):
         """Open a media file in a MediaPlayer
