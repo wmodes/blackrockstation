@@ -34,7 +34,7 @@ class Player(QtWidgets.QMainWindow):
         # self.showFullScreen()
         #
         # in this window, videos are scaled only when window is manually resized
-        self.resize(680, 420)
+        #self.resize(680, 420)
         self.showFullScreen()
         #
         self.init_ui()
@@ -46,13 +46,13 @@ class Player(QtWidgets.QMainWindow):
             #"--embedded-video",
             "--no-audio",
             "--no-autoscale",
-            #"--fullscreen",
+            "--fullscreen",
             "--video-on-top",
             "--no-video-title-show",
             "--random",
             "--verbose -1",
             "--canvas-aspect 3:4",
-            #"--crop=3:4",
+            "--crop=3:4",
             "--no-canvas-pad"
         ]
         # Create a basic vlc instance

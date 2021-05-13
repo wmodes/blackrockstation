@@ -24,23 +24,23 @@ If you are developing on MacOS, use `brew install`. If you are installing on the
 
 Because python 3.7 is the latest pre-built version for the Raspberry Pi, we use version 3.7. You should too for this project if you don't want to have to make subtle adjustments. We suggest you use `pyenv` to manage your python versions. Confirm you have 3.7 with:
 
-`python --version`
+`% python --version`
 
 It should report python 3.10.x
 
 Create a virtual environment in your envs folder with:
 
-`~/dev/envs% python3 -m venv blackrockstation`
+`% python3 -m venv blackrockstation`
 
 Activate the venv with:
 
-`source ~/dev/envs/blackrockstation/bin/activate`
+`% source ~/dev/envs/blackrockstation/bin/activate`
 
 Clone the repo and `cd blackrockstation` into this folder.
 
 Install the python module requirements with:
 
-`(blackrockstation) ~/dev/blackrockstation/% pip install -r requirements.txt`
+`% pip install -r requirements.txt`
 
 You'll probably need the media files for testing. Download the mediafiles to the root:
 
@@ -48,7 +48,20 @@ You'll probably need the media files for testing. Download the mediafiles to the
 
 And unpack with:
 
-`tar xvf media-files.tar.gz`
+`% tar xvf media-files.tar.gz`
+
+## Raspberry Pi
+
+To prep your Raspberry Pi, see my guide [Raspberry Pi Standard Install for Development or Projects](https://github.com/wmodes/raspi-install).
+
+There are all sorts of tricky things about installing on the Raspberry Pi. On one hand, it is a pretty standard Debian variant. On the other hand, some packages are not yet available for the Pi and require extra work.
+
+Here's the list of installation requirements:
+
+```
+sudo apt-get install -y sox vlc python3-vlc
+sudo apt-get install -y qt5-default pyqt5-dev pyqt5-dev-tools python3-pyqt5 python3-pyqt5.qsci python3-pyqt5.qsci python3-pyqt5.qtmultimedia
+```
 
 ## Executing
 
