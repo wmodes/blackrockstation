@@ -15,6 +15,8 @@ PKG_ROOT = "blackrockstation"
 LOG_FILENAME = "logs/controller.log"
 LOG_LEVEL = logging.INFO
 ORDER_FILE = ".order"   # temp solution for comms orders
+OFF = 0
+ON = 1
 
 # Start
 CONTROLLERS = [
@@ -53,6 +55,47 @@ ANNOUNCE_VOLUME = "0.8"
 # Crossing class
 
 # Lights class
+LIGHTS_LOOP_DELAY = 0.25
+LIGHTS_GLITCH_LENGTH = 2        # longest glitch in seconds
+LIGHTS_TOTAL = 2
+LIGHTS_INCAN = 0         # Incandescent
+LIGHTS_FLUOR = 1         # Fluorescent
+LIGHTS_TABLE = {
+    "1858": {
+        LIGHTS_INCAN: ON,
+        LIGHTS_FLUOR: OFF
+    },
+    "1888": {
+        LIGHTS_INCAN: ON,
+        LIGHTS_FLUOR: OFF
+    },
+    "1938": {
+        LIGHTS_INCAN: ON,
+        LIGHTS_FLUOR: OFF
+    },
+    "1959": {
+        LIGHTS_INCAN: ON,
+        LIGHTS_FLUOR: ON
+    },
+    "1982": {
+        LIGHTS_INCAN: OFF,
+        LIGHTS_FLUOR: ON
+    },
+    "2014": {
+        LIGHTS_INCAN: OFF,
+        LIGHTS_FLUOR: ON
+    },
+    "2066": {
+        LIGHTS_INCAN: OFF,
+        LIGHTS_FLUOR: OFF
+    },
+    "2110": {
+        LIGHTS_INCAN: ON,
+        LIGHTS_FLUOR: OFF
+    }
+}
+LIGHTS_PINOUT_SCHEME = GPIO.BCM   # Broadcom pin numbering (NOT Wiring Pin numbering)
+LIGHTS_PIN_TABLE = [19, 26]
 
 # Signal class
 
@@ -67,7 +110,6 @@ TRAIN_AUDIO_EXT = ".mp3"
 TRAIN_VOLUME = "0.9"
 
 # Radio class
-# TV class
 RADIO_AUDIO_DIR = "radio/data/"
 RADIO_LOOP_DELAY = 0.25
 RADIO_AUDIO_EXT = ".mp3"

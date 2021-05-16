@@ -7,9 +7,20 @@ Adapted  from an example by Saveliy Yusufov, Columbia University, sy2685@columbi
 import os
 import sys
 import platform
+from time import sleep
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 import vlc
+
+
+media_files = [
+    "data/Tv Static Noise HD 720p.mp4",
+    "data/070_SHARP_Titles_Flower_Titles.mp4",
+    "data/072_SHARP_Footage_Shantyboat_Flyby_Titles.mp4",
+    "data/1900 Victorian Time Machine - Parade with Brass Bands (Speed Corrected w_ Sound).mp4"
+]
+current_index = 0
+
 
 class Player(QtWidgets.QMainWindow):
     """Stripped-down PyQt5-based media player class
@@ -17,14 +28,6 @@ class Player(QtWidgets.QMainWindow):
 
     def __init__(self, master=None):
         QtWidgets.QMainWindow.__init__(self, master)
-
-        self.media_files = [
-            "data/Tv Static Noise HD 720p.mp4",
-            "data/070_SHARP_Titles_Flower_Titles.mp4",
-            "data/072_SHARP_Footage_Shantyboat_Flyby_Titles.mp4",
-            "data/1900 Victorian Time Machine - Parade with Brass Bands (Speed Corrected w_ Sound).mp4"
-        ]
-        self.current_index = 0
 
         # PyQy prep stuff
         #
@@ -50,10 +53,9 @@ class Player(QtWidgets.QMainWindow):
             "--video-on-top",
             "--no-video-title-show",
             "--random",
-            "--verbose -1",
+            "--verbose 0",
             "--canvas-aspect 3:4",
-            "--crop=3:4",
-            "--qt-video-autoresize",    # Resize interface to the native video size
+            "--crop=3:4"
             #"--canvas-pad"
         ]
         # Create a basic vlc instance
@@ -79,15 +81,14 @@ class Player(QtWidgets.QMainWindow):
         elif platform.system() == "Darwin":  # for MacOS
             self.player.set_nsobject(int(self.videoframe.winId()))
 
-        # load media
-        self.open_file(self.media_files[self.current_index])
-
-        # create a timer to refresh video
-        self.timer = QtCore.QTimer(self)
-        self.timer.setInterval(3000)
-        self.timer.timeout.connect(self.next_video)
-
-        self.timer.start()
+        # # load media
+        # self.open_file(self.media_files[self.current_index])
+        #
+        # # create a timer to refresh video
+        # self.timer = QtCore.QTimer(self)
+        # self.timer.setInterval(3000)
+        # self.timer.timeout.connect(self.next_video)
+        # self.timer.start()
 
     def init_ui(self):
         """Set up the user interface
@@ -120,12 +121,13 @@ class Player(QtWidgets.QMainWindow):
         # Start playing the video as soon as it loads
         self.player.play()
 
-    def next_video(self):
-        self.current_index += 1
-        if self.current_index >= len(self.media_files):
-            self.current_index = 0
-        self.open_file(self.media_files[self.current_index])
-        return
+
+def next_video():
+    global current_index
+    current_index += 1
+    if current_index >= len(media_files):
+        current_index = 0
+    return media_files[current_index]
 
 
 def main():
@@ -135,6 +137,11 @@ def main():
 
     player = Player()
     player.show()
+    while True:
+        next = next_video()
+        print (f"Next file: {next}")
+        player.open_file(next_video())
+        sleep(3000)
 
     # _ = Client("localhost", 10000, data_queue)
     sys.exit(app.exec_())
