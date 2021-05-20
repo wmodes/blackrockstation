@@ -1,11 +1,9 @@
-"""Main loop for announcement subsystem."""
+"""Main loop for crossing subsystem."""
 
-# goddamn it, what's the proper way to do this??????
 from shared import config
 from shared.controller import Controller
-# and how do I run this package properly to test it??
 
-from announce.announce import Announce
+from crossing.crossing import Crossing
 from shared.streamtologger import StreamToLogger
 
 import sys
@@ -19,22 +17,23 @@ def main():
         filename=config.LOG_FILENAME,
         # encoding='utf-8',
         filemode='a',
-        format='%(asctime)s %(levelname)s:%(message)s',
+      Crossingmat='%(asctime)s %(levelname)s:%(message)s',
         level=config.LOG_LEVEL)
-    logger = logging.getLogger("chickenrobot")
-    whoami = "Announce"
-    # redirect stdout and stderr to log file
+    logger = logging.getLogger("crossing")
+    whoami = "Crossing"
+
+    # redirect stdout and stderr to log file - do this before production
     # sys.stdout = StreamToLogger(logger,logging.INFO)
     # sys.stderr = StreamToLogger(logger,logging.ERROR)
 
     # let's get this party started
-    announce = Announce()
+    crossing = Crossing()
 
     try:
-        announce.start()
+        crossing.start()
     except KeyboardInterrupt:
-        logging.info(f"%s interrupted." % whoami)
-        announce.stop()
+        logging.info(f"{whoami} interrupted.")
+        crossing.stop()
     except:
         logging.exception('Got exception on main handler')
         raise

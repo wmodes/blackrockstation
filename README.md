@@ -238,7 +238,7 @@ The signal bridge controller handles turning the lights on the signal bridge. Un
 
 ### Commands
 
-Here are the commands the signalbridge controller responds to:
+Here are the commands the signal controller responds to:
 
 - set go *direction*
 - set stop

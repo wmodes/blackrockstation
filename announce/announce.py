@@ -83,14 +83,14 @@ class Announce(Controller):
         elif order.startswith("request report"):
             print(self.full_report())
         #
-        # request off
+        # set off
         #
-        elif order.startswith("request off"):
+        elif order.startswith("set off"):
             self.enabled = False
         #
-        # request on
+        # set on
         #
-        elif order.startswith("request on"):
+        elif order.startswith("set on"):
             self.enabled = True
         #
         # set glitch

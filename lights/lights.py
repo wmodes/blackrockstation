@@ -20,6 +20,7 @@ GPIO_ON = 0
 
 logger = logging.getLogger()
 
+TODO: full_report should report state (as should status)
 
 class Lights(Controller):
     """Lights controller class."""
@@ -31,15 +32,14 @@ class Lights(Controller):
         self.glitch_state = config.OFF
         self.current_year = str(config.SCHED_YEARS[0])
         print(f"Current year: {self.current_year}")
-        self.config_lights()
+        self.init_lights()
         self.set_lights_for_year()
-        # TODO: config GPIO pins to trigger relays
 
     """
         SETUP
     """
 
-    def config_lights(self):
+    def init_lights(self):
         GPIO.setmode(config.LIGHTS_PINOUT_SCHEME)
         for light in range(config.LIGHTS_TOTAL):
             GPIO.setup(config.LIGHTS_PIN_TABLE[light], GPIO.OUT)
@@ -87,12 +87,12 @@ class Lights(Controller):
         #
         # request off
         #
-        elif order.startswith("request off"):
+        elif order.startswith("set off"):
             self.enabled = False
         #
         # request on
         #
-        elif order.startswith("request on"):
+        elif order.startswith("set on"):
             self.enabled = True
         #
         # set glitch

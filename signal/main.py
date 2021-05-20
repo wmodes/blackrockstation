@@ -17,7 +17,7 @@ def main():
         filename=config.LOG_FILENAME,
         # encoding='utf-8',
         filemode='a',
-        format='%(asctime)s %(levelname)s:%(message)s',
+      Signalmat='%(asctime)s %(levelname)s:%(message)s',
         level=config.LOG_LEVEL)
     logger = logging.getLogger("signal")
     whoami = "Signal"
@@ -32,7 +32,7 @@ def main():
     try:
         signal.start()
     except KeyboardInterrupt:
-        logging.info(f"%s interrupted." % whoami)
+        logging.info(f"{whoami} interrupted.")
         signal.stop()
     except:
         logging.exception('Got exception on main handler')

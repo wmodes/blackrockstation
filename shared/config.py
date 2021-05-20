@@ -53,6 +53,11 @@ ANNOUNCE_AUDIO_EXT = ".mp3"
 ANNOUNCE_VOLUME = "0.8"
 
 # Crossing class
+CROSS_LOOP_DELAY = 0.25
+CROSS_OFF = 0
+CROSS_ON = 1
+CROSS_PINOUT_SCHEME = GPIO.BCM   # Broadcom pin numbering (NOT Wiring Pin numbering)
+CROSS_PIN = 19
 
 # Lights class
 LIGHTS_LOOP_DELAY = 0.25
@@ -98,6 +103,13 @@ LIGHTS_PINOUT_SCHEME = GPIO.BCM   # Broadcom pin numbering (NOT Wiring Pin numbe
 LIGHTS_PIN_TABLE = [19, 26]
 
 # Signal class
+SIGNAL_LOOP_DELAY = 0.25
+SIGNAL_WB_STOP = 0          # Westbound stop signal
+SIGNAL_WB_GO = 1            # Westbound go signal
+SIGNAL_EB_STOP = 2          # Eastbound stop signal
+SIGNAL_EB_GO = 3            # Eastbound go signal
+SIGNAL_PINOUT_SCHEME = GPIO.BCM   # Broadcom pin numbering (NOT Wiring Pin numbering)
+SIGNAL_PIN_TABLE = [19, 20, 21, 26]
 
 # Train class
 TRAIN_FILE_TABLE = "train/data/file-table.csv"
