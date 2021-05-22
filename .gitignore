@@ -134,4 +134,5 @@ experiments/grpc/
 *.wav
 media-files.tar.gz
 *.DS_Store
+*/.DS_Store
 experiments/python-vlc/

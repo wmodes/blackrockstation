@@ -1,0 +1,15 @@
+[Unit]
+Description=Black Rock Station
+After=network.target
+
+[Service]
+User=pi
+ExecStart=/usr/bin/python3 -u start.py scheduler
+WorkingDirectory=/home/pi/blackrockstation
+StandardOutput=inherit
+StandardError=inherit
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
