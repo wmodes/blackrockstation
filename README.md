@@ -81,9 +81,7 @@ In the root dir, edit the file `brs.service`. Find the line:
 
   `ExecStart=/usr/bin/python3 -u start.py scheduler`
 
-Change `scheduler` to whichever of the controllers you want your Rpi to take on the identity. Available controllers are **announce, crossing, lights, radio, scheduler, signal, train,** and **television.**
-
-Note that the radio, television, announce, and train controllers will each need their media files in their respective data directories.
+Change `scheduler` to whichever of the controllers you want your Rpi to take on the identity. Available controllers are `announce`, `crossing`, `lights`, `radio`, `scheduler`, `signal`, `train`, and `television`. (Note that the radio, television, announce, and train controllers will each need their media files in their respective data directories.)
 
 Finally, from the blackrockstation root, enable `brs.service`:
 
