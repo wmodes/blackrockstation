@@ -65,13 +65,15 @@ sudo apt-get install -y qt5-default pyqt5-dev pyqt5-dev-tools python3-pyqt5 pyth
 
 ## Executing
 
+### Testing on the command line
+
 Use `start.py` to start each subsystem. For example, to start the announce subsystem:
 
 `% python start.py announce`
 
 `start.py` without arguments lists available controllers.
 
-## Run on Boot
+### Running from systemd during production
 
 After testing, you probably want the Rpi to run the controller on boot. We'll add a unit file to `systemd`. A sample unit file is included in the repo.
 
@@ -79,18 +81,7 @@ In the root dir, edit the file `brs.service`. Find the line:
 
   `ExecStart=/usr/bin/python3 -u start.py scheduler`
 
-Change `scheduler` to whichever of the controllers you want your Rpi to take on the identity. Available controllers are:
-
-```
-  announce
-  crossing
-  lights
-  radio
-  scheduler
-  signal
-  train
-  television
-```
+Change `scheduler` to whichever of the controllers you want your Rpi to take on the identity. Available controllers are **announce, crossing, lights, radio, scheduler, signal, train,** and **television.**
 
 Note that the radio, television, announce, and train controllers will each need their media files in their respective data directories.
 
