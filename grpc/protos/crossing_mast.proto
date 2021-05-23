@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+message LogMessage {
+    int32 date = 1;
+    enum Level {
+        INFO = 0;
+        WARNING = 1;
+        ERROR = 2;
+    }
+    Level level = 2;
+    string component = 3;
+    string message = 4;
+}
+
+message SetOnRequest {}
+
+message SetOffRequest {}
+
+message SetOnResponse {
+    bool succeeded = 1;
+}
+
+message SetOffResponse {
+    bool succeeded = 1;
+}
+
+message GetLogsRequest {
+    int32 num_events = 1;
+}
+
+message GetLogsResponse {
+    bool succeeded = 1;
+    repeated LogMessage messages = 2;
+}
+
+message StreamLogsRequest {}
+
+service CrossingMast {
+   rpc SetOn(SetOnRequest) returns (SetOnResponse) {}
+   rpc SetOff (SetOnRequest) returns (SetOffResponse) {}
+   rpc GetLogs(GetLogsRequest) returns (GetLogsResponse) {}
+   rpc StreamLogs(StreamLogsRequest) returns (stream LogMessage) {}
+}
