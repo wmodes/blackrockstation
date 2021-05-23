@@ -77,13 +77,17 @@ Use `start.py` to start each subsystem. For example, to start the announce subsy
 
 After testing, you probably want the Rpi to run the controller on boot. We'll add a unit file to `systemd`. A sample unit file is included in the repo.
 
-In the root dir, edit the file `brs.service`. Find the line:
+First copy this file out of the repo (lest your modified version be overwritten by a `git pull`):
+
+  `cp brs.service ~`
+
+Edit your copied unit file `brs.service`. Find the line:
 
   `ExecStart=/usr/bin/python3 -u start.py scheduler`
 
 Change `scheduler` to whichever of the controllers you want your Rpi to take on the identity. Available controllers are `announce`, `crossing`, `lights`, `radio`, `scheduler`, `signal`, `train`, and `television`. (Note that the radio, television, announce, and train controllers will each need their media files in their respective data directories.)
 
-Finally, from the blackrockstation root, enable `brs.service`:
+From your home directory, using the modified unit file, enable `brs.service`:
 
 ```
 sudo systemctl enable brs.service
