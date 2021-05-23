@@ -77,7 +77,7 @@ Use `start.py` to start each subsystem. For example, to start the announce subsy
 
 After testing, you probably want the Rpi to run the controller on boot. We'll add a unit file to `systemd`. A sample unit file is included in the repo.
 
-First copy this file out of the repo (lest your modified version be overwritten by a `git pull`):
+First copy this file out of the repo (lest your modified version be overwritten by a `git pull`) to your home directory:
 
   `cp brs.service ~`
 
