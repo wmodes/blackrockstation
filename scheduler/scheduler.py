@@ -12,13 +12,15 @@ import time
 import re
 import random
 
-logger = logging.getLogger()
+# TODO: All reports and status should return objects to easily passs to source.
 
+logger = logging.getLogger()
 
 class Scheduler(Controller):
     """Scheduler controller class."""
 
     def __init__(self):
+        """Initialize Scheduler class."""
         super().__init__()
         self.whoami = "Scheduler"
         self.__read_schedule()
@@ -52,39 +54,20 @@ class Scheduler(Controller):
         REPORTS
     """
 
-    def full_report(self):
-        """
-        Full multi-line readable report of activity.
-        """
-        report = self.report_status() + "\n"
-        report += self.report_current_year() + "\n\n"
-        report += self.report_next_train() + "\n"
-        return report
+    def get_status(self):
+        """Full status for controller."""
+        return {
+            "status" : "running",
+            "currentYear" : self.current_year,
+            "nextTrain" : self.get_next_train()
+        }
 
-    def report_current_year(self):
-        return (f"Current year is {self.current_year}.")
+    def get_next_train(self):
+        """Return an obj representing next train."""
+        return (self.get_future_trains(1)[0])
 
-    def report_next_train(self):
-        return (f"NEXT TRAIN\n==========\n{self.report_future_trains(1)}")
-
-    def display_train_schedule(self, event_list=None):
-        if not event_list:
-            event_list = self.schedule
-        headers = ['Train', 'Arrival', 'Var', 'Direction', 'Type', 'Notes']
-        # convert dict to array of arrays
-        events = []
-        for event in event_list:
-            if event['controller'] == "train":
-                events.append([event['event'], event['time'],
-                              event['variance'], event['direction'], event['traintype'], event['notes']])
-        if not len(events):
-            return
-        #table = columnar(events, headers, terminal_width=100, column_sep='│', row_sep='─')
-        table = columnar(events, headers, no_borders=True, terminal_width=110, wrap_max=8)
-        #table = columnar(events, headers, terminal_width=110, column_sep='|', row_sep='─')
-        return table
-
-    def report_future_trains(self, n=10):
+    def get_future_trains(self, n=10):
+        """Return array of objects representing future trains."""
         future_list = []
         # search through train schedule for time that matches H:M
         now = datetime.now().time()
@@ -115,60 +98,79 @@ class Scheduler(Controller):
                 future_list.append(event)
         return self.display_train_schedule(future_list)
 
+    def display_train_schedule(self, event_list=None):
+        """Return human-readable schedule of future trains."""
+        if not event_list:
+            event_list = self.schedule
+        headers = ['Train', 'Arrival', 'Var', 'Direction', 'Type', 'Notes']
+        # convert dict to array of arrays
+        events = []
+        for event in event_list:
+            if event['controller'] == "train":
+                events.append([event['event'], event['time'],
+                              event['variance'], event['direction'], event['traintype'], event['notes']])
+        if not len(events):
+            return
+        #table = columnar(events, headers, terminal_width=100, column_sep='│', row_sep='─')
+        table = columnar(events, headers, no_borders=True, terminal_width=110, wrap_max=8)
+        #table = columnar(events, headers, terminal_width=110, column_sep='|', row_sep='─')
+        return table
+
     """
         ORDERS
     """
 
     def __act_on_order(self, order):
         """
-        Takes action based on orders
+        Take action based on orders.
 
         Possible comnmands:
-            - *controller* *order*
-            - request future [num_events]
-            - request status
-            - request log [num_events]
-            - request report
+            - order *controller* *order*
+            - reqTrains [num_events]
+            - reqStatus
+            - reqLog [num_events]
         """
         if not order:
             return
         logging.info(f"Acting on order: {order}")
         #
         # request future schedule
+        # Format: {
+        #   "cmd" : "reqTrains",
+        #   "qty" : **integer**
+        # }
         #
-        if order.startswith("request future"):
-            order_list = order.split()
-            if len(order_list) > 2:
-                print(self.report_future_trains(order_list[2]))
+        if order.cmd.lower() == "reqtrains":
+            if "qty" in order:
+                print(self.get_future_trains(order.qty))
             else:
-                print(self.report_future_trains())
+                print(self.get_future_trains())
         #
         # request status
         #
-        elif order.startswith("request status"):
-            print(self.report_status())
+        elif order.cmd.lower() == "reqstatus":
+            print(self.get_status())
         #
         # request log
+        # Format: {
+        #   "cmd" : "reqLog",
+        #   "qty" : **integer**
+        # }
         #
-        elif order.startswith("request log"):
-            order_list = order.split()
-            if len(order_list) > 2:
-                print(self.report_logs(int(order_list[2])))
+        elif order.cmd.lower() == "reqlog":
+            if "qty" in order:
+                print(self.get_logs(order.qty))
             else:
-                print(self.report_logs())
-        #
-        # request status
-        #
-        elif order.startswith("request report"):
-            print(self.full_report())
+                print(self.get_logs())
         #
         # send order to other controller
-        #
-        elif list(filter(order.startswith, config.CONTROLLERS)) != []:
-            order_list = order.split()
-            controller = order_list.pop(0)
-            order = ' '.join(order_list)
-            self.send_order_to_controller(controller, order)
+        # Format: {
+        #   "cmd" : "order",
+        #   "controller" : **str**,
+        #   "relay" : **order_obj**
+        # }
+        elif order.cmd.lower() == "order":
+            self.send_order_to_controller(order.controller, order.relay)
         #
         # invalid order
         #
@@ -177,9 +179,7 @@ class Scheduler(Controller):
 
 
     def send_order_to_controller(self, controller, command):
-        """
-        Send an arbitrary order to another controller.
-        """
+        """Send an arbitrary order to another controller."""
         self.comms.send_order(controller, command)
 
     """
@@ -188,7 +188,9 @@ class Scheduler(Controller):
 
     def check_for_scheduled_event(self):
         """
-        check for scheduled event and send command to appropriate controller. Matches now() in H:M format with train schedule arrival time and records last event to prevent bounce. Note: Two events shouldn't share the same time.
+        Check for scheduled event and send command to appropriate controller.
+
+        Matches now() in H:M format with train schedule arrival time and records last event to prevent bounce. Note: Two events shouldn't share the same time.
         """
         # TODO: Implement variance
         # search through train schedule for time that matches H:M
@@ -210,6 +212,7 @@ class Scheduler(Controller):
 
 
     def check_for_timeslip(self):
+        """Check to see if it is time for a timeslip."""
         now = datetime.now()
         # prevent bounce: if the time in H:M is the same as the last timeslip, return
         if now.strftime("%H:%M") == self.last_timeslip.strftime("%H:%M"):
@@ -230,6 +233,7 @@ class Scheduler(Controller):
             self.trigger_timeslip()
 
     def check_for_delayed_events(self):
+        """Check if it is time for delayed events."""
         now = datetime.now()
         now_delta = now + timedelta(minutes=config.SCHED_TIME_DELTA)
         for event in self.delayed_events:
@@ -239,7 +243,9 @@ class Scheduler(Controller):
 
     def check_for_random_events(self):
         """
-        randomly calculate the chances of any of a list of events happening /right now/
+        Check if it is time for random events.
+
+        Randomly calculate the chances of any of a list of events happening /right now/
         """
         denominator = 24 * 60 * 60 * (1/config.SCHED_LOOP_DELAY)
         for event in config.SCHED_PERIODIC:
@@ -255,28 +261,49 @@ class Scheduler(Controller):
     """
 
     def delay_event(self, event):
+        """
+        Add an event to the delayed queue.
+
+        The time is a key within the object.
+        """
         self.delayed_events.append(event)
 
     def trigger_event(self, event):
-        """
-        Constuct order and send to appropriate controller.
-        """
+        """Constuct order and send to appropriate controller."""
+        #TODO: Convert orders to objects
         if event['controller'] == "train":
             # send command to train controller
             #   form: set train *direction* *traintype* *year*
-            order = f"set train {event['direction']} {event['traintype']} {self.current_year}"
+            order = {
+                "cmd" : "setTrain",
+                "direction" :  event['direction'],
+                "traintype" : event['traintype'],
+                "year" : self.current_year
+            }
             self.comms.send_order("train", order)
         elif event['controller'] == "announce":
             # send command to announce controller
             #   form: set announce *id* *year*
-            order = f"set announce {event['announceid']} {self.current_year}"
+            order = {
+                "cmd" : "setAnnounce",
+                "announceid" : event['announceid'],
+                "year" : self.current_year
+            }
             self.comms.send_order("announce", order)
         elif event['controller'] == "crossing":
             # send command to crossing controller
             #   form:
             #       set on
             #       set off
-            order = f"set {event['event']}"
+            if event['event'] == "on":
+                order = {
+                    "cmd" : "setOn"
+                }
+            elif event['event'] == "off":
+                order = {
+                    "cmd" : "setOff"
+                }
+            #TODO: Convert above to True/False?
             self.comms.send_order("crossing", order)
         elif event['controller'] == "signal":
             # send command to signal controller
@@ -284,9 +311,14 @@ class Scheduler(Controller):
             #       set go *direction*
             #       set stop
             if event['event'] == "stop":
-                order = "set stop"
-            else:
-                order = f"set {event['event']} {event['direction']}"
+                order = {
+                    "cmd" : "setStop"
+                }
+            elif event['event'] == "go":
+                order = {
+                    "cmd" : "setGo",
+                    "direction" : event['direction']
+                }
             self.comms.send_order("signal", order)
         elif re.search('radio|television|lights', event['controller']):
             # send command to radio, tv, or lights controller
@@ -294,17 +326,23 @@ class Scheduler(Controller):
             #       set glitch
             #       set year *year*
             if event['event'] == "glitch":
-                order = "set glitch"
+                order = {
+                    "cmd" : "setGlitch"
+                }
             elif event['event'] == "year":
-                order = f"set year {self.current_year}"
+                order = {
+                    "cmd" : "setYear",
+                    "year" : self.current_year
+                }
             else:
                 return
             self.comms.send_order(event['controller'], order)
 
     def trigger_train(self, train_event):
         """
-        trigger the events that happen with a train
-        train_event: train event from schedule
+        Trigger the events that happen with a train.
+
+        train_event comes from the schedule
         """
         # let's calculate the timing of some things to schedule the next few events
         now = datetime.now()
@@ -373,6 +411,7 @@ class Scheduler(Controller):
 
 
     def trigger_timeslip(self):
+        """Trigger a timeslip event and the things that go with it."""
         logging.info(f"Timeslip to {self.current_year}")
         # trigger glitch events and schedule year event
         for controller in ["radio", "television", "lights"]:
@@ -392,7 +431,7 @@ class Scheduler(Controller):
     """
 
     def main_loop(self):
-        """Gets orders and acts on them"""
+        """Get orders and acts on them."""
         while True:
             self.__act_on_order(self.receive_order())
             self.check_for_delayed_events()
@@ -403,6 +442,7 @@ class Scheduler(Controller):
 
 
     def start(self):
+        """Get the party started."""
         logging.info('Starting.')
         print(self.full_report())
         self.trigger_timeslip()
@@ -411,7 +451,7 @@ class Scheduler(Controller):
 
 
 def main():
-    """For testing the class"""
+    """Test the class."""
     import sys
     logging.basicConfig(filename=sys.stderr,
                         encoding='utf-8',
