@@ -2,7 +2,7 @@
 
 from shared import config
 
-from shared.streamtologger import StreamToLogger
+# from shared.streamtologger import StreamToLogger
 
 import sys
 import importlib
@@ -15,19 +15,20 @@ controllers = [
 
 
 def help():
+    """Provide help to user."""
     print("Available controllers:")
     for controller in controllers:
         print(f"\t%s" % controller)
 
 
 def main():
-
+    """Get everything going."""
     # handle args
     if len(sys.argv) < 2:
         help()
         return
     elif sys.argv[1] not in controllers:
-        print(f"Error: Unknown controller: %s." % sys.argv[1])
+        print(f"Error: Unknown controller: {sys.argv[1]}.")
         help()
         return
     controller = sys.argv[1]
@@ -36,13 +37,13 @@ def main():
     logging.basicConfig(filename=config.LOG_FILENAME,
                         format=f"%(asctime)s {controller}: %(levelname)s: %(message)s",
                         level=logging.DEBUG)
-    logger = logging.getLogger()
+    # logger = logging.getLogger()
     # redirect stdout and stderr to log file
     # sys.stdout = StreamToLogger(logger,logging.INFO)
     # sys.stderr = StreamToLogger(logger,logging.ERROR)
     #
     # load appropriate controller module
-    class_module = f"{controller}.{controller.title()}"
+    # class_module = f"{controller}.{controller.title()}"
     main_module = f"{controller}.main"
     import_main = importlib.import_module(main_module)
 

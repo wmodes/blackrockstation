@@ -4,14 +4,8 @@ from shared import config
 from shared.controller import Controller
 
 import logging
-from pprint import pprint
-from datetime import datetime, timedelta
-import csv
 import time
-import os
-import glob
 import random
-import re
 import RPi.GPIO as GPIO
 
 # CONSTANTS
@@ -20,12 +14,13 @@ GPIO_ON = 0
 
 logger = logging.getLogger()
 
-TODO: full_report should report state (as should status)
+#TODO: full_report should report state (as should status)
 
 class Lights(Controller):
     """Lights controller class."""
 
     def __init__(self):
+        """Initialize."""
         super().__init__()
         self.whoami = "Lights"
         self.enabled = True
@@ -40,6 +35,7 @@ class Lights(Controller):
     """
 
     def init_lights(self):
+        """Initialize lighting system."""
         GPIO.setmode(config.LIGHTS_PINOUT_SCHEME)
         for light in range(config.LIGHTS_TOTAL):
             GPIO.setup(config.LIGHTS_PIN_TABLE[light], GPIO.OUT)
@@ -51,7 +47,7 @@ class Lights(Controller):
 
     def __act_on_order(self, order):
         """
-        Takes action based on order.
+        Take action based on order.
 
         Possible comnmands:
             - set off
@@ -118,7 +114,9 @@ class Lights(Controller):
 
     def check_for_glitch(self):
         """
-        Glitch randomly blinks all the lights on and off, by randomly calculating the chances of changing light state in this moment
+        Glitch randomly blinks all the lights on and off.
+
+        Randomly calculates the chances of changing light state in this moment
         """
         if self.current_year != "glitch":
             return
@@ -133,11 +131,13 @@ class Lights(Controller):
     """
 
     def set_glitch(self):
+        """Set glitch mode by setting year attribute."""
         logging.info("Setting glitch")
         print("Setting glitch")
         self.current_year = "glitch"
 
     def set_year(self, year):
+        """Set year attribute."""
         logging.info(f"Setting year: {year}")
         print(f"Setting year: {year}")
         self.current_year = str(year)
@@ -148,9 +148,11 @@ class Lights(Controller):
     """
 
     def onoff(self, value):
+        """Convert boolean to off/on."""
         return ("on" if value else "off")
 
     def set_lights_for_year(self):
+        """Using light table, set appropriate lights for current year."""
         logging.info(f"Setting lights for {self.current_year}: ({config.LIGHTS_TABLE[self.current_year]})")
         print(f"Setting lights for {self.current_year}: ({config.LIGHTS_TABLE[self.current_year]})")
         light_config_this_year = config.LIGHTS_TABLE[self.current_year]
@@ -160,6 +162,7 @@ class Lights(Controller):
                 self.switch_light_to(light, light_config_this_year[light])
 
     def glitch_state_change(self):
+        """Toggle glitch state."""
         # if current state is on, make it off, otherwise make it on
         if self.glitch_state == config.ON:
             self.glitch_state = config.OFF
@@ -169,6 +172,7 @@ class Lights(Controller):
         self.switch_all_lights_to(self.glitch_state)
 
     def switch_all_lights_to(self, status):
+        """Set all lights to on/off."""
         logging.info(f"Switching all lights to {self.onoff(status)}")
         print(f"Switching all lights to {self.onoff(status)}")
         if status == config.ON:
@@ -181,8 +185,8 @@ class Lights(Controller):
         except:
             logging.warning("Failed to switch all lights (GPIO) to {self.onoff(status)}")
 
-
     def switch_light_to(self, light, status):
+        """Set a particular light to on/off."""
         logging.info(f"Switching light {light} to {self.onoff(status)}")
         print(f"Switching light {light} to {self.onoff(status)}")
         if status == config.ON:
@@ -199,9 +203,7 @@ class Lights(Controller):
     """
 
     def main_loop(self):
-        """
-        Gets orders and acts on them
-        """
+        """Get orders and act on them."""
         while True:
             self.__act_on_order(self.receive_order())
             self.check_for_glitch()
@@ -209,19 +211,19 @@ class Lights(Controller):
 
 
     def start(self):
+        """Get the party started."""
         logging.info('Starting.')
         print(self.full_report)
         self.main_loop()
 
 
 def main():
-    """For testing the class"""
+    """Test the class."""
     import sys
     logging.basicConfig(filename=sys.stderr,
                         encoding='utf-8',
                         format='%(asctime)s %(levelname)s:%(message)s',
                         level=logging.DEBUG)
-    logger = logging.getLogger()
     lights = Lights()
     lights.order_act_loop()
 

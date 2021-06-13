@@ -132,6 +132,8 @@ class Scheduler(Controller):
         """
         if not order:
             return
+        if "cmd" not in order:
+            logging.info(f"No 'cmd' in order received: {order}")
         logging.info(f"Acting on order: {order}")
         #
         # request future schedule
@@ -167,7 +169,7 @@ class Scheduler(Controller):
         # Format: {
         #   "cmd" : "order",
         #   "controller" : **str**,
-        #   "relay" : **order_obj**
+        #   "relay" : **order**
         # }
         elif order.cmd.lower() == "order":
             self.send_order_to_controller(order.controller, order.relay)
@@ -457,7 +459,6 @@ def main():
                         encoding='utf-8',
                         format='%(asctime)s %(levelname)s:%(message)s',
                         level=logging.DEBUG)
-    logger = logging.getLogger()
     scheduler = Scheduler()
     scheduler.order_act_loop()
 

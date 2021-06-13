@@ -1,18 +1,19 @@
 """Main loop for scheduler subsystem."""
 
 from shared import config
-from shared.controller import Controller
+# from shared.controller import Controller
 
 from scheduler.scheduler import Scheduler
-from shared.streamtologger import StreamToLogger
+# from shared.streamtologger import StreamToLogger
 
-import sys
+# import sys
 import logging
-import pprint
-from datetime import datetime, timedelta
+# import pprint
+# from datetime import datetime, timedelta
 
 
 def main():
+    """Set up main function."""
     logging.basicConfig(
         filename=config.LOG_FILENAME,
         # encoding='utf-8',
@@ -32,7 +33,7 @@ def main():
     try:
         scheduler.start()
     except KeyboardInterrupt:
-        logging.info(f"%s interrupted." % whoami)
+        logging.info(f"{whoami} interrupted.")
         scheduler.stop()
     except:
         logging.exception('Got exception on main handler')

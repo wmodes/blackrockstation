@@ -4,15 +4,17 @@ from shared import config
 from shared.comms import Comms
 
 import logging
-import pprint
-from datetime import datetime, timedelta
+# import pprint
+# from datetime import datetime, timedelta
 
+logger = logging.getLogger()
 
 class Controller(object):
     """Parent class for all controllers."""
 
     def __init__(self):
-        logging.info(f"Controller initiated")
+        """Initialize controller."""
+        logging.info("Controller initiated")
         self.comms = Comms()
         self.whoami = ""
 
@@ -21,13 +23,11 @@ class Controller(object):
     """
 
     def report_status(self):
-        """Brief one-liner status"""
+        """Brief one-liner status."""
         return f"{self.whoami} is running."
 
     def tail(self, f, window=1):
-        """
-        Returns the last `window` lines of file `f` as a list of bytes.
-        """
+        """Return the last `window` lines of file `f` as a list of bytes."""
         if window == 0:
             return b''
         BUFSIZE = 1024
@@ -46,17 +46,13 @@ class Controller(object):
         return b'\n'.join(b''.join(reversed(data)).splitlines()[-window:])
 
     def report_logs(self, num=config.SCHED_DEFAULT_LOG):
-        """
-        Recent log of activity.
-        """
+        """Recent log of activity."""
         with open(config.LOG_FILENAME, 'rb') as file:
             logs = self.tail(file, num).decode('utf-8')
         return(f"RECENT LOGS\n===========\n{logs}")
 
     def full_report(self):
-        """
-        Full multi-line readable report of activity.
-        """
+        """Full multi-line readable report of activity."""
         report = self.report_status() + "\n\n"
         report += self.report_logs(10)
         return report
@@ -66,9 +62,7 @@ class Controller(object):
     """
 
     def receive_order(self):
-        """
-        Receives orders.
-        """
+        """Receive orders."""
         order = self.comms.get_order()
         if not order:
             return None
@@ -79,24 +73,26 @@ class Controller(object):
     """
 
     def start(self):
+        """Get the party started."""
         logging.info('Starting.')
         self.main_loop()
 
 
     def stop(self):
+        """Stop the controller."""
         logging.info('Stopping.')
         pass
 
 
 def main():
+    """Test the controller class."""
     import sys
     logging.basicConfig(filename=sys.stderr,
                         encoding='utf-8',
                         format='%(asctime)s %(levelname)s:%(message)s',
                         level=logging.DEBUG)
-    logger = logging.getLogger()
-    announce = Announce()
-    announce.order_act_loop()
+    controller = Controller()
+    controller.start()
 
 
 if __name__ == '__main__':
