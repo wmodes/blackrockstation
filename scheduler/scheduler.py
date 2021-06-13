@@ -57,7 +57,7 @@ class Scheduler(Controller):
     def get_status(self):
         """Full status for controller."""
         return {
-            "status" : "running",
+            "running" : True,
             "currentYear" : self.current_year,
             "nextTrain" : self.get_next_train()
         }
@@ -67,7 +67,16 @@ class Scheduler(Controller):
         return (self.get_future_trains(1)[0])
 
     def get_future_trains(self, n=10):
-        """Return array of objects representing future trains."""
+        """
+        Return array of objects representing future trains.
+
+        We do this in a few steps:
+        1) Interate through train schedule until we find the item just after the current now() time
+        2) Add each item to a list
+        3) If we have n items already, we can stop, but
+        4) If we hit the end of the records before n items,
+        5) We iterate from the beginning of the schedule appending items to our list until we either get n items or hit where we started
+        """
         future_list = []
         # search through train schedule for time that matches H:M
         now = datetime.now().time()
@@ -96,7 +105,8 @@ class Scheduler(Controller):
                 if len(future_list) >= n:
                     break
                 future_list.append(event)
-        return self.display_train_schedule(future_list)
+        return future_list
+        #return self.display_train_schedule(future_list)
 
     def display_train_schedule(self, event_list=None):
         """Return human-readable schedule of future trains."""
@@ -133,7 +143,7 @@ class Scheduler(Controller):
         if not order:
             return
         if "cmd" not in order:
-            logging.info(f"No 'cmd' in order received: {order}")
+            logging.warning(f"No 'cmd' in order received: {order}")
         logging.info(f"Acting on order: {order}")
         #
         # request future schedule
@@ -142,15 +152,18 @@ class Scheduler(Controller):
         #   "qty" : **integer**
         # }
         #
-        if order.cmd.lower() == "reqtrains":
+        if order['cmd'].lower() == "reqtrains":
             if "qty" in order:
                 print(self.get_future_trains(order.qty))
             else:
                 print(self.get_future_trains())
         #
         # request status
+        # Format: {
+        #   "cmd" : "reqStatus"
+        # }
         #
-        elif order.cmd.lower() == "reqstatus":
+        elif order['cmd'].lower() == "reqstatus":
             print(self.get_status())
         #
         # request log
@@ -159,7 +172,7 @@ class Scheduler(Controller):
         #   "qty" : **integer**
         # }
         #
-        elif order.cmd.lower() == "reqlog":
+        elif order['cmd'].lower() == "reqlog":
             if "qty" in order:
                 print(self.get_logs(order.qty))
             else:
@@ -171,13 +184,13 @@ class Scheduler(Controller):
         #   "controller" : **str**,
         #   "relay" : **order**
         # }
-        elif order.cmd.lower() == "order":
+        elif order['cmd'].lower() == "order":
             self.send_order_to_controller(order.controller, order.relay)
         #
         # invalid order
         #
         else:
-            logging.info(f"invalid order received: {order}")
+            logging.warning(f"invalid order received: {order}")
 
 
     def send_order_to_controller(self, controller, command):
@@ -201,10 +214,10 @@ class Scheduler(Controller):
             # if this event matches current time
             if now.strftime("%H:%M") == event["time"]:
                 # if scheduled event already happened, return
-                if self.last_event == event['event'] + event["time"]:
+                if self.last_event == event:
                     return
                 # record this event as last_event
-                self.last_event = event['event'] + event["time"]
+                self.last_event = event
                 # make event happen
                 if event['controller'] == "train":
                     self.trigger_train(event)
@@ -446,7 +459,6 @@ class Scheduler(Controller):
     def start(self):
         """Get the party started."""
         logging.info('Starting.')
-        print(self.full_report())
         self.trigger_timeslip()
         self.main_loop()
 

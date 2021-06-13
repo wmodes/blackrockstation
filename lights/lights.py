@@ -11,6 +11,11 @@ import RPi.GPIO as GPIO
 # CONSTANTS
 GPIO_OFF = 1
 GPIO_ON = 0
+POWER_MODE = {
+    "off" : 0,
+    "on" : 1,
+    "auto" : -1
+}
 
 logger = logging.getLogger()
 
@@ -23,7 +28,8 @@ class Lights(Controller):
         """Initialize."""
         super().__init__()
         self.whoami = "Lights"
-        self.enabled = True
+        self.mode = POWER_MODE["auto"]
+        self.light_model = []
         self.glitch_state = config.OFF
         self.current_year = str(config.SCHED_YEARS[0])
         print(f"Current year: {self.current_year}")
@@ -36,9 +42,29 @@ class Lights(Controller):
 
     def init_lights(self):
         """Initialize lighting system."""
+        self.light_model = [config.OFF] * config.LIGHTS_TOTAL
         GPIO.setmode(config.LIGHTS_PINOUT_SCHEME)
         for light in range(config.LIGHTS_TOTAL):
             GPIO.setup(config.LIGHTS_PIN_TABLE[light], GPIO.OUT)
+
+    """
+        REPORTS
+    """
+
+    def get_status(self):
+        """Full status for controller."""
+        lights_status = []
+        for light_num in range(config.LIGHTS_TOTAL):
+            lights_status.append({
+                "number" : light_num,
+                "name" : config.LIGHT_NAME_TABLE[light_num],
+                "state" : self.onoff(self.light_model[light_num])
+            })
+        return {
+            "running" : True,
+            "currentYear" : self.current_year,
+            "lights" : lights_status
+        }
 
 
     """
@@ -50,63 +76,87 @@ class Lights(Controller):
         Take action based on order.
 
         Possible comnmands:
-            - set off
-            - set on
-            - set glitch
-            - set year *year*
-            - request status
-            - request log [num_events]
-            - request report
+            - setOff
+            - setOn
+            - setGlitch
+            - setYear *year*
+            - reqStatus
+            - reqLog [num_events]
         """
         if not order:
             return
-        logging.debug(f"Acting on order: {order}")
+        if "cmd" not in order:
+            logging.info(f"No 'cmd' in order received: {order}")
+        logging.info(f"Acting on order: {order}")
         #
         # request status
+        # Format: {
+        #   "cmd" : "reqStatus"
+        # }
         #
-        if order.startswith("request status"):
-            print(self.report_status())
+        if order['cmd'].lower() == "reqstatus":
+            print(self.get_status())
         #
         # request log
+        # Format: {
+        #   "cmd" : "reqLog",
+        #   "qty" : **integer**
+        # }
         #
-        elif order.startswith("request log"):
-            order_list = order.split()
-            if len(order_list) > 2:
-                print(self.report_logs(int(order_list[2])))
+        elif order['cmd'].lower() == "reqlog":
+            if "qty" in order:
+                print(self.get_logs(order.qty))
             else:
-                print(self.report_logs())
+                print(self.get_logs())
         #
-        # request status
+        # set off
+        # Format: {
+        #   "cmd" : "setOff"
+        # }
         #
-        elif order.startswith("request report"):
-            print(self.full_report())
+        elif order['cmd'].lower() == "setoff":
+            self.mode = POWER_MODE["off"]
         #
-        # request off
+        # set on
+        # Format: {
+        #   "cmd" : "setOn"
+        # }
         #
-        elif order.startswith("set off"):
-            self.enabled = False
+        elif order['cmd'].lower() == "seton":
+            self.mode = POWER_MODE["on"]
         #
-        # request on
+        # set auto
+        # Format: {
+        #   "cmd" : "setAuto"
+        # }
         #
-        elif order.startswith("set on"):
-            self.enabled = True
+        elif order['cmd'].lower() == "setauto":
+            self.mode = POWER_MODE["auto"]
         #
-        # set glitch
+        # set glitch mode
+        # Format: {
+        #   "cmd" : "setGlitch"
+        # }
         #
-        elif order.startswith("set glitch"):
+        elif order['cmd'].lower() == "setglitch":
             self.set_glitch()
         #
         # set year
+        # Format: {
+        #   "cmd" : "setYear",
+        #   "year" : *year*
+        # }
         #
-        elif order.startswith("set year"):
-            order_list = order.split()
-            year = order_list[2]
-            self.set_year(year)
+        elif order['cmd'].lower() == "setyear":
+            if not "year" in order:
+                logging.warning(f"invalid order received: {order}")
+                return
+            self.set_year(order['year'])
         #
         # invalid order
         #
         else:
-            logging.info(f"invalid order received: {order}")
+            logging.warning(f"invalid order received: {order}")
 
     """
         CHECKS
@@ -140,6 +190,9 @@ class Lights(Controller):
         """Set year attribute."""
         logging.info(f"Setting year: {year}")
         print(f"Setting year: {year}")
+        if str(year) not in config.VALID_YEARS:
+            logging.warning("Invalid year: {year}")
+            return
         self.current_year = str(year)
         self.set_lights_for_year()
 
@@ -152,14 +205,16 @@ class Lights(Controller):
         return ("on" if value else "off")
 
     def set_lights_for_year(self):
-        """Using light table, set appropriate lights for current year."""
-        logging.info(f"Setting lights for {self.current_year}: ({config.LIGHTS_TABLE[self.current_year]})")
-        print(f"Setting lights for {self.current_year}: ({config.LIGHTS_TABLE[self.current_year]})")
-        light_config_this_year = config.LIGHTS_TABLE[self.current_year]
-        if self.current_year != "glitch":
-            # iterate over light_config
-            for light in light_config_this_year:
-                self.switch_light_to(light, light_config_this_year[light])
+        """Set appropriate lights for current year."""
+        light_config_for_year = config.LIGHTS_TABLE[self.current_year]
+        logging.info(f"Setting lights for {self.current_year}: ({light_config_for_year})")
+        print(f"Setting lights for {self.current_year}: ({light_config_for_year})")
+        if self.current_year == "glitch":
+            return
+        # iterate over light_config
+        for light_num in range(config.LIGHTS_TOTAL):
+            self.switch_light_to(light_num, light_config_for_year[light_num])
+            self.light_model[light_num] = light_config_for_year[light_num]
 
     def glitch_state_change(self):
         """Toggle glitch state."""
@@ -182,11 +237,16 @@ class Lights(Controller):
         try:
             for light in range(config.LIGHTS_TOTAL):
                 GPIO.output(config.LIGHTS_PIN_TABLE[light], pin_status)
+                self.light_model[light] = status
         except:
             logging.warning("Failed to switch all lights (GPIO) to {self.onoff(status)}")
 
     def switch_light_to(self, light, status):
-        """Set a particular light to on/off."""
+        """
+        Set a particular light to on/off.
+
+        light (integer) specifies the light number
+        """
         logging.info(f"Switching light {light} to {self.onoff(status)}")
         print(f"Switching light {light} to {self.onoff(status)}")
         if status == config.ON:
@@ -195,6 +255,7 @@ class Lights(Controller):
             pin_status = GPIO_OFF
         try:
             GPIO.output(config.LIGHTS_PIN_TABLE[light], pin_status)
+            self.light_model[light] = status
         except:
             logging.warning(f"Failed to switch light (GPIO): light {light} to {self.onoff(status)}")
 
@@ -213,7 +274,7 @@ class Lights(Controller):
     def start(self):
         """Get the party started."""
         logging.info('Starting.')
-        print(self.full_report)
+        print(self.get_status())
         self.main_loop()
 
 

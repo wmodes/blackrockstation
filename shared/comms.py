@@ -26,11 +26,11 @@ class Comms(object):
             os.remove(config.ORDER_FILE)
             try:
                 order = json.loads(order_json)
-                self.__order_queue += order
+                self.__order_queue.append(order)
                 logging.info(f"Order proper syntax: {order}")
                 print(f"Order proper syntax: {order}")
             except:
-                logging.info(f"Order syntax error: {order_json}")
+                logging.warning(f"Order syntax error: {order_json}")
                 print(f"Order syntax error: {order_json}")
         #
         # we return you to your regularly scheduled code

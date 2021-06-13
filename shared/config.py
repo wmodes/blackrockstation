@@ -25,6 +25,7 @@ CONTROLLERS = [
 ]
 
 # Controller parent class
+VALID_YEARS = ['glitch', '1858', '1888', '1938', '1959', '1982', '2014', '2066', '2110']
 
 # Scheduler class
 SCHED_DATA = "scheduler/data/schedule.csv"
@@ -62,45 +63,20 @@ CROSS_PIN = 19
 # Lights class
 LIGHTS_LOOP_DELAY = 0.25
 LIGHTS_GLITCH_LENGTH = 2        # longest glitch in seconds
-LIGHTS_TOTAL = 2
-LIGHTS_INCAN = 0         # Incandescent
-LIGHTS_FLUOR = 1         # Fluorescent
+LIGHTS_TOTAL = 4
 LIGHTS_TABLE = {
-    "1858": {
-        LIGHTS_INCAN: ON,
-        LIGHTS_FLUOR: OFF
-    },
-    "1888": {
-        LIGHTS_INCAN: ON,
-        LIGHTS_FLUOR: OFF
-    },
-    "1938": {
-        LIGHTS_INCAN: ON,
-        LIGHTS_FLUOR: OFF
-    },
-    "1959": {
-        LIGHTS_INCAN: ON,
-        LIGHTS_FLUOR: ON
-    },
-    "1982": {
-        LIGHTS_INCAN: OFF,
-        LIGHTS_FLUOR: ON
-    },
-    "2014": {
-        LIGHTS_INCAN: OFF,
-        LIGHTS_FLUOR: ON
-    },
-    "2066": {
-        LIGHTS_INCAN: OFF,
-        LIGHTS_FLUOR: OFF
-    },
-    "2110": {
-        LIGHTS_INCAN: ON,
-        LIGHTS_FLUOR: OFF
-    }
+    "1858": [ON, OFF, OFF, OFF],
+    "1888": [ON, OFF, OFF, OFF],
+    "1938": [ON, OFF, OFF, OFF],
+    "1959": [ON, ON, OFF, OFF],
+    "1982": [OFF, ON, OFF, OFF],
+    "2014": [OFF, ON, OFF, OFF],
+    "2066": [OFF, OFF, OFF, OFF],
+    "2110": [ON, OFF, OFF, OFF]
 }
+LIGHT_NAME_TABLE = ["Pendant", "Fluorescent", "Undefined3", "Undefined4"]
 LIGHTS_PINOUT_SCHEME = GPIO.BCM   # Broadcom pin numbering (NOT Wiring Pin numbering)
-LIGHTS_PIN_TABLE = [19, 26]
+LIGHTS_PIN_TABLE = [19, 20, 21, 26]
 
 # Signal class
 SIGNAL_LOOP_DELAY = 0.25

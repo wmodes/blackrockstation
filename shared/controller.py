@@ -22,7 +22,7 @@ class Controller(object):
         REPORTS
     """
 
-    def report_status(self):
+    def get_status(self):
         """Brief one-liner status."""
         return f"{self.whoami} is running."
 
@@ -45,17 +45,11 @@ class Controller(object):
             end -= nread
         return b'\n'.join(b''.join(reversed(data)).splitlines()[-window:])
 
-    def report_logs(self, num=config.SCHED_DEFAULT_LOG):
+    def get_logs(self, num=config.SCHED_DEFAULT_LOG):
         """Recent log of activity."""
         with open(config.LOG_FILENAME, 'rb') as file:
             logs = self.tail(file, num).decode('utf-8')
         return(f"RECENT LOGS\n===========\n{logs}")
-
-    def full_report(self):
-        """Full multi-line readable report of activity."""
-        report = self.report_status() + "\n\n"
-        report += self.report_logs(10)
-        return report
 
     """
         ORDERS
