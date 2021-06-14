@@ -4,10 +4,7 @@ from shared import config
 from shared.controller import Controller
 
 import logging
-from pprint import pprint
-from datetime import datetime, timedelta
 import pygame
-import csv
 import time
 import os
 import glob
@@ -20,11 +17,13 @@ class Television(Controller):
     """Television controller class."""
 
     def __init__(self):
+        """Initialize."""
         super().__init__()
         self.whoami = "television"
         self.enabled = True
         self.filetable = self.__read_files()
         self.current_year = "config.SCHED_YEARS[0]"
+        self.current_video = ""
         # used by audio mixer
         # pygame.mixer.init()
         # pygamemixer.music.set_volume(float(config.TV_VOLUME))
@@ -57,6 +56,17 @@ class Television(Controller):
             file_dict[subdir] = file_list
         return file_dict
 
+    """
+        REPORTS
+    """
+
+    def get_status(self):
+        """Full status for controller."""
+        return {
+            "running" : True,
+            "currentYear" : self.current_year,
+            "video" : self.current_video
+        }
 
     """
         ORDERS
@@ -64,85 +74,127 @@ class Television(Controller):
 
     def __act_on_order(self, order):
         """
-        Takes action based on order.
+        Take action based on order.
 
         Possible comnmands:
-            - set off
-            - set on
-            - set glitch
-            - set year *year*
-            - request status
-            - request log [num_events]
-            - request report
+            - setOff
+            - setOn
+            - setGlitch
+            - setYear *year*
+            - reqStatus
+            - reqLog [num_events]
         """
         if not order:
             return
-        logging.debug(f"Acting on order: {order}")
+        if "cmd" not in order:
+            logging.info(f"No 'cmd' in order received: {order}")
+        logging.info(f"Acting on order: {order}")
         #
         # request status
+        # Format: {
+        #   "cmd" : "reqStatus"
+        # }
         #
-        if order.startswith("request status"):
-            print(self.report_status())
+        if order['cmd'].lower() == "reqstatus":
+            print(self.get_status())
         #
         # request log
+        # Format: {
+        #   "cmd" : "reqLog",
+        #   "qty" : **integer**
+        # }
         #
-        elif order.startswith("request log"):
-            order_list = order.split()
-            if len(order_list) > 2:
-                print(self.report_logs(int(order_list[2])))
+        elif order['cmd'].lower() == "reqlog":
+            if "qty" in order:
+                print(self.get_logs(order.qty))
             else:
-                print(self.report_logs())
+                print(self.get_logs())
         #
-        # request status
+        # set off
+        # Format: {
+        #   "cmd" : "setOff"
+        # }
         #
-        elif order.startswith("request report"):
-            print(self.full_report())
+        elif order['cmd'].lower() == "setoff":
+            self.mode = config.MODE_OFF
+            self.stop_video()
         #
-        # request off
+        # set on
+        # Format: {
+        #   "cmd" : "setOn"
+        # }
         #
-        elif order.startswith("request off"):
-            self.enabled = False
+        elif order['cmd'].lower() == "seton":
+            self.mode = config.MODE_ON
+            self.play_new()
         #
-        # request on
+        # set auto
+        # Format: {
+        #   "cmd" : "setAuto"
+        # }
         #
-        elif order.startswith("request on"):
-            self.enabled = True
+        elif order['cmd'].lower() == "setauto":
+            self.mode = config.MODE_AUTO
         #
-        # set glitch
+        # set glitch mode
+        # Format: {
+        #   "cmd" : "setGlitch"
+        # }
         #
-        elif order.startswith("set glitch"):
+        elif order['cmd'].lower() == "setglitch":
+            if self.mode != config.MODE_AUTO:
+                logging.warning("setGlitch ignored when not in AUTO mode. Use setAuto command.")
+                return
             self.set_glitch()
         #
         # set year
+        # Format: {
+        #   "cmd" : "setYear",
+        #   "year" : *year*
+        # }
         #
-        elif order.startswith("set year"):
-            order_list = order.split()
-            year = order_list[2]
-            self.set_year(year)
+        elif order['cmd'].lower() == "setyear":
+            if self.mode != config.MODE_AUTO:
+                logging.warning("setYear ignored when not in AUTO mode. Use setAuto command.")
+                return
+            if not "year" in order:
+                logging.warning(f"invalid order received: {order}")
+                return
+            self.set_year(order['year'])
         #
         # invalid order
         #
         else:
-            logging.info(f"invalid order received: {order}")
+            logging.warning(f"invalid order received: {order}")
 
     """
         PLAY STUFF
     """
 
     def set_glitch(self):
+        """Set glitch mode."""
         logging.info("Setting glitch")
         print("Setting glitch")
         self.current_year = "glitch"
         self.play_new()
 
     def set_year(self, year):
+        """Set year attribute."""
         logging.info(f"Setting year: {year}")
         print(f"Setting year: {year}")
+        if str(year) not in config.VALID_YEARS:
+            logging.warning("Invalid year: {year}")
+            return
         self.current_year = str(year)
+        if self.mode != config.MODE_AUTO:
+            logging.warning("setYear no action taken when not in AUTO mode. Use setAuto command.")
+            return
         self.play_new()
 
     def play_new(self):
+        """Play new video file."""
         filename = random.choice(self.filetable[str(self.current_year)])
+        self.current_video = filename
         logging.info(f"Playing video: {filename}")
         # used by audio mixer
         # pygame.mixer.music.load(filepath + filename)
@@ -153,31 +205,35 @@ class Television(Controller):
         movie.set_display(movie_screen)
         movie.play()
 
+    def stop_video(self):
+        """Stop currently playing video."""
+        pass
+        #TODO: Flesh this out
+
     """
         MAIN LOOP
     """
 
     def main_loop(self):
-        """Gets orders and acts on them"""
+        """Get orders and acts on them."""
         while True:
             self.__act_on_order(self.receive_order())
             time.sleep(config.TV_LOOP_DELAY)
 
 
     def start(self):
+        """Get this party started."""
         logging.info('Starting.')
-        print(self.full_report)
         self.main_loop()
 
 
 def main():
-    """For testing the class"""
+    """Test the class."""
     import sys
     logging.basicConfig(filename=sys.stderr,
                         encoding='utf-8',
                         format='%(asctime)s %(levelname)s:%(message)s',
                         level=logging.DEBUG)
-    logger = logging.getLogger()
     television = Television()
     television.order_act_loop()
 

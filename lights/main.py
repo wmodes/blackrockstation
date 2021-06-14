@@ -6,10 +6,7 @@ from shared.controller import Controller
 from lights.lights import Lights
 from shared.streamtologger import StreamToLogger
 
-import sys
 import logging
-import pprint
-from datetime import datetime, timedelta
 
 
 def main():

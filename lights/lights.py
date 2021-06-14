@@ -11,11 +11,6 @@ import RPi.GPIO as GPIO
 # CONSTANTS
 GPIO_OFF = 1
 GPIO_ON = 0
-POWER_MODE = {
-    "off" : 0,
-    "on" : 1,
-    "auto" : -1
-}
 
 logger = logging.getLogger()
 
@@ -28,7 +23,7 @@ class Lights(Controller):
         """Initialize."""
         super().__init__()
         self.whoami = "Lights"
-        self.mode = POWER_MODE["auto"]
+        self.mode = config.MODE_AUTO
         self.light_model = []
         self.glitch_state = config.OFF
         self.current_year = str(config.SCHED_YEARS[0])
@@ -115,7 +110,8 @@ class Lights(Controller):
         # }
         #
         elif order['cmd'].lower() == "setoff":
-            self.mode = POWER_MODE["off"]
+            self.mode = config.MODE_OFF
+            self.switch_all_lights_to(config.OFF)
         #
         # set on
         # Format: {
@@ -123,7 +119,8 @@ class Lights(Controller):
         # }
         #
         elif order['cmd'].lower() == "seton":
-            self.mode = POWER_MODE["on"]
+            self.mode = config.MODE_ON
+            self.switch_all_lights_to(config.ON)
         #
         # set auto
         # Format: {
@@ -131,7 +128,7 @@ class Lights(Controller):
         # }
         #
         elif order['cmd'].lower() == "setauto":
-            self.mode = POWER_MODE["auto"]
+            self.mode = config.MODE_AUTO
         #
         # set glitch mode
         # Format: {
@@ -139,6 +136,9 @@ class Lights(Controller):
         # }
         #
         elif order['cmd'].lower() == "setglitch":
+            if self.mode != config.MODE_AUTO:
+                logging.warning("setGlitch ignored when not in AUTO mode. Use setAuto command.")
+                return
             self.set_glitch()
         #
         # set year
@@ -148,7 +148,7 @@ class Lights(Controller):
         # }
         #
         elif order['cmd'].lower() == "setyear":
-            if not "year" in order:
+            if "year" not in order:
                 logging.warning(f"invalid order received: {order}")
                 return
             self.set_year(order['year'])
@@ -194,6 +194,9 @@ class Lights(Controller):
             logging.warning("Invalid year: {year}")
             return
         self.current_year = str(year)
+        if self.mode != config.MODE_AUTO:
+            logging.warning("setYear no action taken when not in AUTO mode. Use setAuto command.")
+            return
         self.set_lights_for_year()
 
     """

@@ -4,14 +4,7 @@ from shared import config
 from shared.controller import Controller
 
 import logging
-from pprint import pprint
-from datetime import datetime, timedelta
-import csv
 import time
-import os
-import glob
-import random
-import re
 import RPi.GPIO as GPIO
 
 # CONSTANTS
@@ -22,12 +15,11 @@ GPIO_ON = 0
 
 logger = logging.getLogger()
 
-TODO: full_report should report state (as should status)
-
 class Signal(Controller):
     """Signal controller class."""
 
     def __init__(self):
+        """Initialize."""
         super().__init__()
         self.whoami = "Signal"
         self.eastbound = STOP
@@ -41,9 +33,24 @@ class Signal(Controller):
     """
 
     def init_signals(self):
+        """Initialize signal GPIO."""
         GPIO.setmode(config.SIGNAL_PINOUT_SCHEME)
         for signal_pin in range(len(config.SIGNAL_PIN_TABLE)):
             GPIO.setup(signal_pin, GPIO.OUT)
+
+    """
+        REPORTS
+    """
+
+    def get_status(self):
+        """Full status for controller."""
+        return {
+            "running" : True,
+            "state" : {
+                "eastbound" : self.stopgo(self.eastbound),
+                "westbound" : self.stopgo(self.westbound)
+            }
+        }
 
     """
         ORDERS
@@ -51,60 +58,73 @@ class Signal(Controller):
 
     def __act_on_order(self, order):
         """
-        Takes action based on order.
+        Take action based on order.
 
         Possible comnmands:
-            - set go *direction*
-            - set stop
-            - request status
-            - request log [num_events]
-            - request report
+            - setGo *direction*
+            - setStop
+            - reqStatus
+            - reqLog [num_events]
         """
         if not order:
             return
-        logging.debug(f"Acting on order: {order}")
+        if "cmd" not in order:
+            logging.info(f"No 'cmd' in order received: {order}")
+        logging.info(f"Acting on order: {order}")
         #
         # request status
+        # Format: {
+        #   "cmd" : "reqStatus"
+        # }
         #
-        if order.startswith("request status"):
-            print(self.report_status())
+        if order['cmd'].lower() == "reqstatus":
+            print(self.get_status())
         #
         # request log
+        # Format: {
+        #   "cmd" : "reqLog",
+        #   "qty" : **integer**
+        # }
         #
-        elif order.startswith("request log"):
-            order_list = order.split()
-            if len(order_list) > 2:
-                print(self.report_logs(int(order_list[2])))
+        elif order['cmd'].lower() == "reqlog":
+            if "qty" in order:
+                print(self.get_logs(order.qty))
             else:
-                print(self.report_logs())
+                print(self.get_logs())
         #
-        # request status
+        # set stop
+        # Format: {
+        #   "cmd" : "setStop"
+        # }
         #
-        elif order.startswith("request report"):
-            print(self.full_report())
-        #
-        # set glitch
-        #
-        elif order.startswith("set stop"):
+        elif order['cmd'].lower() == "setstop":
+            self.mode = config.MODE_OFF
             self.set_stop()
         #
-        # set year
+        # set go
+        # Format: {
+        #   "cmd" : "setGo"
+        #   "direction" : **string**
+        # }
         #
-        elif order.startswith("set go"):
-            order_list = order.split()
-            direction = order_list[2]
-            self.set_go(direction)
+        elif order['cmd'].lower() == "setgo":
+            if "direction" not in order:
+                logging.warning(f"invalid order received: {order}")
+                return
+            self.set_go(order['direction'])
         #
         # invalid order
         #
         else:
-            logging.info(f"invalid order received: {order}")
+            logging.warning(f"invalid order received: {order}")
+
 
     """
         PLAY STUFF
     """
 
     def set_stop(self):
+        """Set signals to stio for all directions."""
         logging.info("Setting stop")
         print("Setting stop")
         self.eastbound = STOP
@@ -112,9 +132,10 @@ class Signal(Controller):
         self.set_signals()
 
     def set_go(self, direction):
+        """Set signals to go for given direction."""
         logging.info(f"Setting go {direction}")
         print(f"Setting go {direction}")
-        if direction.startswith("e"):
+        if direction.lower().startswith("e"):
              self.eastbound = GO
              self.westbound = STOP
         elif direction.startswith("w"):
@@ -127,9 +148,11 @@ class Signal(Controller):
     """
 
     def stopgo(self, value):
+        """Convert constants to go/stop text."""
         return ("go" if value == GO else "stop")
 
     def set_signals(self):
+        """Set signals based on current status."""
         logging.info(f"Setting signal: Westbound is {self.stopgo(self.westbound)}, Eastbound is {self.stopgo(self.eastbound)}")
         print(f"Setting signal: Westbound is {self.stopgo(self.westbound)}, Eastbound is {self.stopgo(self.eastbound)}")
         if self.westbound == GO:
@@ -150,28 +173,25 @@ class Signal(Controller):
     """
 
     def main_loop(self):
-        """
-        Gets orders and acts on them
-        """
+        """Get orders and acts on them."""
         while True:
             self.__act_on_order(self.receive_order())
             time.sleep(config.SIGNAL_LOOP_DELAY)
 
 
     def start(self):
+        """Get this party started."""
         logging.info('Starting.')
-        print(self.full_report)
         self.main_loop()
 
 
 def main():
-    """For testing the class"""
+    """Test the class."""
     import sys
     logging.basicConfig(filename=sys.stderr,
                         encoding='utf-8',
                         format='%(asctime)s %(levelname)s:%(message)s',
                         level=logging.DEBUG)
-    logger = logging.getLogger()
     signal = Signal()
     signal.order_act_loop()
 

@@ -26,6 +26,9 @@ CONTROLLERS = [
 
 # Controller parent class
 VALID_YEARS = ['glitch', '1858', '1888', '1938', '1959', '1982', '2014', '2066', '2110']
+MODE_OFF = 0
+MODE_ON = 1
+MODE_AUTO = -1
 
 # Scheduler class
 SCHED_DATA = "scheduler/data/schedule.csv"
