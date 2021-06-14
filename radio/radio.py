@@ -143,9 +143,6 @@ class Radio(Controller):
         # }
         #
         elif order['cmd'].lower() == "setglitch":
-            if self.mode != config.MODE_AUTO:
-                logging.warning("setGlitch ignored when not in AUTO mode. Use setAuto command.")
-                return
             self.set_glitch()
         #
         # set year
@@ -155,9 +152,6 @@ class Radio(Controller):
         # }
         #
         elif order['cmd'].lower() == "setyear":
-            if self.mode != config.MODE_AUTO:
-                logging.warning("setYear ignored when not in AUTO mode. Use setAuto command.")
-                return
             if "year" not in order:
                 logging.warning(f"invalid order received: {order}")
                 return
@@ -186,6 +180,8 @@ class Radio(Controller):
         logging.info("Setting glitch")
         print("Setting glitch")
         self.current_year = "glitch"
+        if self.mode != config.MODE_AUTO:
+            logging.warning("setGlitch no action taken when not in AUTO mode. Use setAuto command.")
         self.play_new()
 
     def set_year(self, year):

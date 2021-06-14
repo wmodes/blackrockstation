@@ -4,11 +4,11 @@ from shared import config
 from shared.controller import Controller
 
 import logging
-from pprint import pprint
-from datetime import datetime, timedelta
 from pygame import mixer
 import csv
 import time
+import glob
+import random
 
 logger = logging.getLogger()
 
@@ -17,10 +17,13 @@ class Announce(Controller):
     """Announcements controller class."""
 
     def __init__(self):
+        """Initialize."""
         super().__init__()
         self.whoami = "announce"
-        self.enabled = True
+        self.mode = config.MODE_AUTO
+        self.glitchtable = self.__read_files()
         self.filetable = self.__read_filetable()
+        self.last_audio = ""
         mixer.init()
         mixer.music.set_volume(float(config.ANNOUNCE_VOLUME))
 
@@ -29,6 +32,7 @@ class Announce(Controller):
     """
 
     def __read_filetable(self):
+        """Read file with list of possible announcements."""
         logging.info('Reading file table')
         filetable = {}
         with open(config.ANNOUNCE_FILE_TABLE, newline='') as csvfile:
@@ -43,84 +47,151 @@ class Announce(Controller):
                 filetable[index] = row['filename']
         return filetable
 
+    def __read_files(self):
+        """
+        Find data files.
+
+        Look for audio files in data directory and construct array of possibilities.
+            ["glitch-file1.mp4", "glitch-file2.mp4"]
+        Note that if you add files, you will have to restart the controller.
+        """
+        # create a list of file
+        full_subdir = config.ANNOUNCE_GLITCH_DIR
+        file_list = glob.glob(full_subdir + '*' + config.ANNOUNCE_AUDIO_EXT)
+        return file_list
+
+    """
+        REPORTS
+    """
+
+    def get_status(self):
+        """Full status for controller."""
+        return {
+            "running" : True,
+            "audio" : self.last_audio
+        }
+
     """
         ORDERS
     """
 
     def __act_on_order(self, order):
         """
-        Takes action based on order.
+        Take action based on order.
 
         Possible comnmands:
-            - set off
-            - set on
-            - set glitch
-            - set announce *id* *year*
-            - request status
-            - request log [num_events]
-            - request report
+            - setOff
+            - setOn
+            - setAuto
+            - setGlitch
+            - setAnnounce *id* *year*
+            - reqStatus
+            - reqLog [num_events]
         """
         if not order:
             return
-        logging.debug(f"Acting on order: {order}")
+        if "cmd" not in order:
+            logging.info(f"No 'cmd' in order received: {order}")
+        logging.info(f"Acting on order: {order}")
         #
         # request status
+        # Format: {
+        #   "cmd" : "reqStatus"
+        # }
         #
-        if order.startswith("request status"):
-            print(self.report_status())
+        if order['cmd'].lower() == "reqstatus":
+            print(self.get_status())
         #
         # request log
+        # Format: {
+        #   "cmd" : "reqLog",
+        #   "qty" : **integer**
+        # }
         #
-        elif order.startswith("request log"):
-            order_list = order.split()
-            if len(order_list) > 2:
-                print(self.report_logs(int(order_list[2])))
+        elif order['cmd'].lower() == "reqlog":
+            if "qty" in order:
+                print(self.get_logs(order.qty))
             else:
-                print(self.report_logs())
-        #
-        # request status
-        #
-        elif order.startswith("request report"):
-            print(self.full_report())
+                print(self.get_logs())
         #
         # set off
+        # Format: {
+        #   "cmd" : "setOff"
+        # }
         #
-        elif order.startswith("set off"):
-            self.enabled = False
+        elif order['cmd'].lower() == "setoff":
+            self.mode = config.MODE_OFF
+            self.stop_audio()
         #
         # set on
+        # Format: {
+        #   "cmd" : "setOn"
+        # }
         #
-        elif order.startswith("set on"):
-            self.enabled = True
+        elif order['cmd'].lower() == "seton":
+            self.mode = config.MODE_ON
+            self.play_new()
         #
-        # set glitch
+        # set auto
+        # Format: {
+        #   "cmd" : "setAuto"
+        # }
         #
-        elif order.startswith("set glitch"):
+        elif order['cmd'].lower() == "setauto":
+            self.mode = config.MODE_AUTO
+        #
+        # set glitch mode
+        # Format: {
+        #   "cmd" : "setGlitch"
+        # }
+        #
+        elif order['cmd'].lower() == "setglitch":
             self.set_glitch()
         #
         # set announce
+        # Format: {
+        #   "cmd" : "setAnnounce",
+        #   "announceid" : *string*,
+        #   "year" : *year*
+        # }
+        elif order['cmd'].lower() == "setannounce":
+            if "announceid" not in order or "year" not in order:
+                logging.warning(f"invalid order received: {order}")
+                return
+            self.set_announce(order['announceid'], order['year'])
         #
-        elif order.startswith("set announce"):
-            order_list = order.split()
-            announceid = order_list[2]
-            year = int(order_list[3])
-            self.set_announce(announceid, year)
         #
         # invalid order
         #
         else:
-            logging.info(f"invalid order received: {order}")
+            logging.warning(f"invalid order received: {order}")
 
     """
         PLAY STUFF
     """
 
     def set_glitch(self):
-        pass
+        """Play glitch audio."""
+        logging.info("Setting glitch")
+        print("Setting glitch")
+        if self.mode != config.MODE_AUTO:
+            logging.warning("setGlitch no action taken when not in AUTO mode. Use setAuto command.")
+        filename = random.choice(self.glitchtable)
+        self.last_audio = filename
+        logging.info(f"Playing audio: {filename}")
+        print(f"Playing audio: {filename}")
+        # used by audio mixer
+        mixer.music.load(filename)
+        mixer.music.play()
 
     def set_announce(self, announceid, year):
+        """Play announcement."""
+        if str(year) not in config.VALID_YEARS:
+            logging.warning("Invalid year: {year}")
+            return
         filepath = config.ANNOUNCE_AUDIO_DIR
         filename = f"{str(year)}-{announceid}{config.ANNOUNCE_AUDIO_EXT}"
+        self.last_audio = filepath + filename
         logging.info(f"Playing audio: {filename}")
         mixer.music.load(filepath + filename)
         mixer.music.play()
@@ -130,26 +201,25 @@ class Announce(Controller):
     """
 
     def main_loop(self):
-        """Gets orders and acts on them"""
+        """Get orders and act on them."""
         while True:
             self.__act_on_order(self.receive_order())
             time.sleep(config.ANNOUNCE_LOOP_DELAY)
 
 
     def start(self):
+        """Get this party started."""
         logging.info('Starting.')
-        print(self.full_report)
         self.main_loop()
 
 
 def main():
-    """For testing the class"""
+    """Test the class."""
     import sys
     logging.basicConfig(filename=sys.stderr,
                         encoding='utf-8',
                         format='%(asctime)s %(levelname)s:%(message)s',
                         level=logging.DEBUG)
-    logger = logging.getLogger()
     announce = Announce()
     announce.order_act_loop()
 

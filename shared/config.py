@@ -50,8 +50,9 @@ SCHED_CROSSING_DELAY = 1     # time in minutes
 
 # Announce class
 ANNOUNCE_FILE_TABLE = "announce/data/file-table.csv"
-ANNOUNCE_FILE_FIELDS = ['announcement', 'announceid', 'year', 'filename', 'notes']
 ANNOUNCE_AUDIO_DIR = "announce/data/"
+ANNOUNCE_GLITCH_DIR = "announce/data/glitch/"
+ANNOUNCE_FILE_FIELDS = ['announcement', 'announceid', 'year', 'filename', 'notes']
 ANNOUNCE_LOOP_DELAY = 0.25
 ANNOUNCE_AUDIO_EXT = ".mp3"
 ANNOUNCE_VOLUME = "0.8"
