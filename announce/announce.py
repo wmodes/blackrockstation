@@ -67,6 +67,7 @@ class Announce(Controller):
     def get_status(self):
         """Full status for controller."""
         return {
+            "controller" : self.whoami,
             "running" : True,
             "mode" : self.mode2str(self.mode),
             "most-recent" : self.most_recent

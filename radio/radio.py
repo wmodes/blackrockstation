@@ -18,7 +18,7 @@ class Radio(Controller):
     def __init__(self):
         """Initialize."""
         super().__init__()
-        self.whoami = "Radio"
+        self.whoami = "radio"
         self.mode = config.MODE_AUTO
         self.filetable = self.__read_files()
         self.current_year = config.SCHED_YEARS[0]
@@ -64,6 +64,7 @@ class Radio(Controller):
     def get_status(self):
         """Full status for controller."""
         return {
+            "controller" : self.whoami,
             "running" : True,
             "mode" : self.mode2str(self.mode),
             "currentYear" : self.current_year,

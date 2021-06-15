@@ -16,7 +16,7 @@ class Signal(Controller):
     def __init__(self):
         """Initialize."""
         super().__init__()
-        self.whoami = "Signal"
+        self.whoami = "signal"
         self.eastbound = config.STATE_STOP
         self.westbound = config.STATE_STOP
         print(f"Current state: Westbound is {self.stopgo(self.westbound)}, Eastbound is {self.stopgo(self.eastbound)}")
@@ -40,6 +40,7 @@ class Signal(Controller):
     def get_status(self):
         """Full status for controller."""
         return {
+            "controller" : self.whoami,
             "running" : True,
             "state" : {
                 "eastbound" : self.stopgo(self.eastbound),

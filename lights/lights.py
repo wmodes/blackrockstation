@@ -16,7 +16,7 @@ class Lights(Controller):
     def __init__(self):
         """Initialize."""
         super().__init__()
-        self.whoami = "Lights"
+        self.whoami = "lights"
         self.mode = config.MODE_AUTO
         self.light_model = []
         self.glitch_state = config.STATE_OFF
@@ -50,6 +50,7 @@ class Lights(Controller):
                 "state" : self.onoff(self.light_model[light_num])
             })
         return {
+            "controller" : self.whoami,
             "running" : True,
             "mode" : self.mode2str(self.mode),
             "currentYear" : self.current_year,

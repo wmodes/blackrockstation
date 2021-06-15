@@ -22,7 +22,7 @@ class Scheduler(Controller):
     def __init__(self):
         """Initialize Scheduler class."""
         super().__init__()
-        self.whoami = "Scheduler"
+        self.whoami = "scheduler"
         self.__read_schedule()
         self.__sort_schedule()
         self.delayed_events = []
@@ -57,6 +57,7 @@ class Scheduler(Controller):
     def get_status(self):
         """Full status for controller."""
         return {
+            "controller" : self.whoami,
             "running" : True,
             "currentYear" : self.current_year,
             "nextTrain" : self.get_next_train()

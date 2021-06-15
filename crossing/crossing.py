@@ -16,7 +16,7 @@ class Crossing(Controller):
     def __init__(self):
         """Initialize."""
         super().__init__()
-        self.whoami = "Crossing"
+        self.whoami = "crossing"
         self.status = config.STATE_OFF
         self.init_crossing()
         self.set_crossing()
@@ -37,6 +37,7 @@ class Crossing(Controller):
     def get_status(self):
         """Full status for controller."""
         return {
+            "controller" : self.whoami,
             "running" : True,
             "state" : self.onoff(self.status)
         }
