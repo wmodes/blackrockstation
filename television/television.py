@@ -19,11 +19,11 @@ class Television(Controller):
     def __init__(self):
         """Initialize."""
         super().__init__()
-        self.whoami = "television"
-        self.enabled = True
+        self.whoami = "Television"
+        self.mode = config.MODE_AUTO
         self.filetable = self.__read_files()
-        self.current_year = "config.SCHED_YEARS[0]"
-        self.current_video = ""
+        self.current_year = config.SCHED_YEARS[0]
+        self.most_recent = ""
         # used by audio mixer
         # pygame.mixer.init()
         # pygamemixer.music.set_volume(float(config.TV_VOLUME))
@@ -36,8 +36,8 @@ class Television(Controller):
     """
 
     def __read_files(self):
-        """
-        Look for audio files in data directory and construct dict of arrays of possibilities.
+        """Look for audio files in data directory and construct dict of arrays of possibilities.
+
         {
             "glitch": ["glitch-file1.mp4", "glitch-file2.mp4"],
             "1888": ["1888-file1.mp4", "1888-file2.mp4"],
@@ -64,8 +64,9 @@ class Television(Controller):
         """Full status for controller."""
         return {
             "running" : True,
+            "mode" : self.mode2str(self.mode),
             "currentYear" : self.current_year,
-            "video" : self.current_video
+            "most-recent" : self.most_recent
         }
 
     """
@@ -79,6 +80,7 @@ class Television(Controller):
         Possible comnmands:
             - setOff
             - setOn
+            - setAuto
             - setGlitch
             - setYear *year*
             - reqStatus
@@ -106,7 +108,7 @@ class Television(Controller):
         #
         elif order['cmd'].lower() == "reqlog":
             if "qty" in order:
-                print(self.get_logs(order.qty))
+                print(self.get_logs(order["qty"]))
             else:
                 print(self.get_logs())
         #
@@ -190,7 +192,7 @@ class Television(Controller):
     def play_new(self):
         """Play new video file."""
         filename = random.choice(self.filetable[str(self.current_year)])
-        self.current_video = filename
+        self.most_recent = filename
         logging.info(f"Playing video: {filename}")
         # used by audio mixer
         # pygame.mixer.music.load(filepath + filename)

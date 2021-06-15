@@ -23,7 +23,7 @@ class Announce(Controller):
         self.mode = config.MODE_AUTO
         self.glitchtable = self.__read_files()
         self.filetable = self.__read_filetable()
-        self.last_audio = ""
+        self.most_recent = ""
         mixer.init()
         mixer.music.set_volume(float(config.ANNOUNCE_VOLUME))
 
@@ -68,7 +68,8 @@ class Announce(Controller):
         """Full status for controller."""
         return {
             "running" : True,
-            "audio" : self.last_audio
+            "mode" : self.mode2str(self.mode),
+            "most-recent" : self.most_recent
         }
 
     """
@@ -110,7 +111,7 @@ class Announce(Controller):
         #
         elif order['cmd'].lower() == "reqlog":
             if "qty" in order:
-                print(self.get_logs(order.qty))
+                print(self.get_logs(order["qty"]))
             else:
                 print(self.get_logs())
         #
@@ -130,7 +131,6 @@ class Announce(Controller):
         #
         elif order['cmd'].lower() == "seton":
             self.mode = config.MODE_ON
-            self.play_new()
         #
         # set auto
         # Format: {
@@ -176,8 +176,9 @@ class Announce(Controller):
         print("Setting glitch")
         if self.mode != config.MODE_AUTO:
             logging.warning("setGlitch no action taken when not in AUTO mode. Use setAuto command.")
+            return
         filename = random.choice(self.glitchtable)
-        self.last_audio = filename
+        self.most_recent = filename
         logging.info(f"Playing audio: {filename}")
         print(f"Playing audio: {filename}")
         # used by audio mixer
@@ -189,12 +190,22 @@ class Announce(Controller):
         if str(year) not in config.VALID_YEARS:
             logging.warning("Invalid year: {year}")
             return
+        if self.mode == config.MODE_OFF:
+            logging.warning("No action taken when not in ON or AUTO modes. Use setAuto command.")
+            return
         filepath = config.ANNOUNCE_AUDIO_DIR
         filename = f"{str(year)}-{announceid}{config.ANNOUNCE_AUDIO_EXT}"
-        self.last_audio = filepath + filename
+        self.most_recent = filepath + filename
         logging.info(f"Playing audio: {filename}")
         mixer.music.load(filepath + filename)
         mixer.music.play()
+
+    def stop_audio(self):
+        """Stop all audio output."""
+        logging.info("Stopping audio")
+        print("Stopping audio")
+        # used by audio mixer
+        mixer.music.pause()
 
     """
         MAIN LOOP

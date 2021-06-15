@@ -22,7 +22,7 @@ class Radio(Controller):
         self.mode = config.MODE_AUTO
         self.filetable = self.__read_files()
         self.current_year = config.SCHED_YEARS[0]
-        self.current_audio = ""
+        self.most_recent = ""
         # used by audio mixer
         pygame.mixer.init()
         pygame.mixer.music.set_volume(float(config.RADIO_VOLUME))
@@ -65,8 +65,9 @@ class Radio(Controller):
         """Full status for controller."""
         return {
             "running" : True,
+            "mode" : self.mode2str(self.mode),
             "currentYear" : self.current_year,
-            "audio" : self.current_audio
+            "most-recent" : self.most_recent
         }
 
     """
@@ -80,6 +81,7 @@ class Radio(Controller):
         Possible comnmands:
             - setOff
             - setOn
+            - setAuto
             - setGlitch
             - setYear *year*
             - reqStatus
@@ -107,7 +109,7 @@ class Radio(Controller):
         #
         elif order['cmd'].lower() == "reqlog":
             if "qty" in order:
-                print(self.get_logs(order.qty))
+                print(self.get_logs(order["qty"]))
             else:
                 print(self.get_logs())
         #
@@ -201,7 +203,7 @@ class Radio(Controller):
         """Play new audio file."""
         # print(f"choices: {self.filetable[str(self.current_year)]}")
         filename = random.choice(self.filetable[str(self.current_year)])
-        self.current_audio = filename
+        self.most_recent = filename
         logging.info(f"Playing audio: {filename}")
         print(f"Playing audio: {filename}")
         # used by audio mixer
@@ -243,7 +245,6 @@ def main():
                         encoding='utf-8',
                         format='%(asctime)s %(levelname)s:%(message)s',
                         level=logging.DEBUG)
-    logger = logging.getLogger()
     radio = Radio()
     radio.order_act_loop()
 

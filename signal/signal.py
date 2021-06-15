@@ -7,11 +7,6 @@ import logging
 import time
 import RPi.GPIO as GPIO
 
-# CONSTANTS
-STOP = 0
-GO = 1
-GPIO_OFF = 1
-GPIO_ON = 0
 
 logger = logging.getLogger()
 
@@ -22,8 +17,8 @@ class Signal(Controller):
         """Initialize."""
         super().__init__()
         self.whoami = "Signal"
-        self.eastbound = STOP
-        self.westbound = STOP
+        self.eastbound = config.STATE_STOP
+        self.westbound = config.STATE_STOP
         print(f"Current state: Westbound is {self.stopgo(self.westbound)}, Eastbound is {self.stopgo(self.eastbound)}")
         self.init_signals()
         self.set_signals()
@@ -88,7 +83,7 @@ class Signal(Controller):
         #
         elif order['cmd'].lower() == "reqlog":
             if "qty" in order:
-                print(self.get_logs(order.qty))
+                print(self.get_logs(order["qty"]))
             else:
                 print(self.get_logs())
         #
@@ -98,7 +93,6 @@ class Signal(Controller):
         # }
         #
         elif order['cmd'].lower() == "setstop":
-            self.mode = config.MODE_OFF
             self.set_stop()
         #
         # set go
@@ -127,8 +121,8 @@ class Signal(Controller):
         """Set signals to stio for all directions."""
         logging.info("Setting stop")
         print("Setting stop")
-        self.eastbound = STOP
-        self.westbound = STOP
+        self.eastbound = config.STATE_STOP
+        self.westbound = config.STATE_STOP
         self.set_signals()
 
     def set_go(self, direction):
@@ -136,37 +130,33 @@ class Signal(Controller):
         logging.info(f"Setting go {direction}")
         print(f"Setting go {direction}")
         if direction.lower().startswith("e"):
-             self.eastbound = GO
-             self.westbound = STOP
+             self.eastbound = config.STATE_GO
+             self.westbound = config.STATE_STOP
         elif direction.startswith("w"):
-             self.westbound = GO
-             self.eastbound = STOP
+             self.westbound = config.STATE_GO
+             self.eastbound = config.STATE_STOP
         self.set_signals()
 
     """
         SIGNAL
     """
 
-    def stopgo(self, value):
-        """Convert constants to go/stop text."""
-        return ("go" if value == GO else "stop")
-
     def set_signals(self):
         """Set signals based on current status."""
         logging.info(f"Setting signal: Westbound is {self.stopgo(self.westbound)}, Eastbound is {self.stopgo(self.eastbound)}")
         print(f"Setting signal: Westbound is {self.stopgo(self.westbound)}, Eastbound is {self.stopgo(self.eastbound)}")
-        if self.westbound == GO:
-            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_WB_STOP], GPIO_OFF)
-            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_WB_GO], GPIO_ON)
+        if self.westbound == config.STATE_GO:
+            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_WB_STOP], config.GPIO_OFF)
+            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_WB_GO], config.GPIO_ON)
         else:
-            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_WB_STOP], GPIO_ON)
-            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_WB_GO], GPIO_OFF)
-        if self.eastbound == GO:
-            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_EB_STOP], GPIO_OFF)
-            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_EB_GO], GPIO_ON)
+            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_WB_STOP], config.GPIO_ON)
+            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_WB_GO], config.GPIO_OFF)
+        if self.eastbound == config.STATE_GO:
+            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_EB_STOP], config.GPIO_OFF)
+            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_EB_GO], config.GPIO_ON)
         else:
-            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_EB_STOP], GPIO_ON)
-            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_EB_GO], GPIO_OFF)
+            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_EB_STOP], config.GPIO_ON)
+            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_EB_GO], config.GPIO_OFF)
 
     """
         MAIN LOOP

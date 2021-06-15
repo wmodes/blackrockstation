@@ -15,8 +15,15 @@ PKG_ROOT = "blackrockstation"
 LOG_FILENAME = "logs/controller.log"
 LOG_LEVEL = logging.INFO
 ORDER_FILE = ".order"   # temp solution for comms orders
-OFF = 0
-ON = 1
+STATE_OFF = 0
+STATE_ON = 1
+STATE_STOP = 0
+STATE_GO = 1
+GPIO_OFF = 1
+GPIO_ON = 0
+MODE_OFF = 0
+MODE_ON = 1
+MODE_AUTO = -1
 
 # Start
 CONTROLLERS = [
@@ -26,9 +33,6 @@ CONTROLLERS = [
 
 # Controller parent class
 VALID_YEARS = ['glitch', '1858', '1888', '1938', '1959', '1982', '2014', '2066', '2110']
-MODE_OFF = 0
-MODE_ON = 1
-MODE_AUTO = -1
 
 # Scheduler class
 SCHED_DATA = "scheduler/data/schedule.csv"
@@ -69,14 +73,14 @@ LIGHTS_LOOP_DELAY = 0.25
 LIGHTS_GLITCH_LENGTH = 2        # longest glitch in seconds
 LIGHTS_TOTAL = 4
 LIGHTS_TABLE = {
-    "1858": [ON, OFF, OFF, OFF],
-    "1888": [ON, OFF, OFF, OFF],
-    "1938": [ON, OFF, OFF, OFF],
-    "1959": [ON, ON, OFF, OFF],
-    "1982": [OFF, ON, OFF, OFF],
-    "2014": [OFF, ON, OFF, OFF],
-    "2066": [OFF, OFF, OFF, OFF],
-    "2110": [ON, OFF, OFF, OFF]
+    "1858": [STATE_ON, STATE_OFF, STATE_OFF, STATE_OFF],
+    "1888": [STATE_ON, STATE_OFF, STATE_OFF, STATE_OFF],
+    "1938": [STATE_ON, STATE_OFF, STATE_OFF, STATE_OFF],
+    "1959": [STATE_ON, STATE_ON, STATE_OFF, STATE_OFF],
+    "1982": [STATE_OFF, STATE_ON, STATE_OFF, STATE_OFF],
+    "2014": [STATE_OFF, STATE_ON, STATE_OFF, STATE_OFF],
+    "2066": [STATE_OFF, STATE_OFF, STATE_OFF, STATE_OFF],
+    "2110": [STATE_ON, STATE_OFF, STATE_OFF, STATE_OFF]
 }
 LIGHT_NAME_TABLE = ["Pendant", "Fluorescent", "Undefined3", "Undefined4"]
 LIGHTS_PINOUT_SCHEME = GPIO.BCM   # Broadcom pin numbering (NOT Wiring Pin numbering)

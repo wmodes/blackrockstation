@@ -51,6 +51,37 @@ class Controller(object):
             logs = self.tail(file, num).decode('utf-8')
         return(f"RECENT LOGS\n===========\n{logs}")
 
+    def mode2str(self, mode):
+        """Convert mode to string."""
+        if mode == config.MODE_OFF:
+            return "off"
+        elif mode == config.MODE_ON:
+            return "on"
+        elif mode == config.MODE_AUTO:
+            return "auto"
+        else:
+            return "unknown"
+
+    def stopgo(self, state):
+        """Convert constants to go/stop text."""
+        if state == config.STATE_GO:
+            return "go"
+        elif state == config.STATE_STOP:
+            return "stop"
+        else:
+            return "unknown"
+
+    def onoff(self, state):
+        """Convert boolean to off/on."""
+        if state == config.STATE_ON:
+            return "on"
+        elif state == config.STATE_OFF:
+            return "off"
+        else:
+            return "unknown"
+
+
+
     """
         ORDERS
     """

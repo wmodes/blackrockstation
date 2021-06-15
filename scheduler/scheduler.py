@@ -67,8 +67,7 @@ class Scheduler(Controller):
         return (self.get_future_trains(1)[0])
 
     def get_future_trains(self, n=10):
-        """
-        Return array of objects representing future trains.
+        """Return array of objects representing future trains.
 
         We do this in a few steps:
         1) Interate through train schedule until we find the item just after the current now() time
@@ -154,7 +153,7 @@ class Scheduler(Controller):
         #
         if order['cmd'].lower() == "reqtrains":
             if "qty" in order:
-                print(self.get_future_trains(order.qty))
+                print(self.get_future_trains(order["qty"]))
             else:
                 print(self.get_future_trains())
         #
@@ -174,7 +173,7 @@ class Scheduler(Controller):
         #
         elif order['cmd'].lower() == "reqlog":
             if "qty" in order:
-                print(self.get_logs(order.qty))
+                print(self.get_logs(order["qty"]))
             else:
                 print(self.get_logs())
         #
@@ -185,7 +184,7 @@ class Scheduler(Controller):
         #   "relay" : **order**
         # }
         elif order['cmd'].lower() == "order":
-            self.send_order_to_controller(order.controller, order.relay)
+            self.send_order_to_controller(order["controller"], order["relay"])
         #
         # invalid order
         #

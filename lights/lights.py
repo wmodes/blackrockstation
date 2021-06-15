@@ -8,13 +8,7 @@ import time
 import random
 import RPi.GPIO as GPIO
 
-# CONSTANTS
-GPIO_OFF = 1
-GPIO_ON = 0
-
 logger = logging.getLogger()
-
-#TODO: full_report should report state (as should status)
 
 class Lights(Controller):
     """Lights controller class."""
@@ -25,7 +19,7 @@ class Lights(Controller):
         self.whoami = "Lights"
         self.mode = config.MODE_AUTO
         self.light_model = []
-        self.glitch_state = config.OFF
+        self.glitch_state = config.STATE_OFF
         self.current_year = str(config.SCHED_YEARS[0])
         print(f"Current year: {self.current_year}")
         self.init_lights()
@@ -37,7 +31,7 @@ class Lights(Controller):
 
     def init_lights(self):
         """Initialize lighting system."""
-        self.light_model = [config.OFF] * config.LIGHTS_TOTAL
+        self.light_model = [config.STATE_OFF] * config.LIGHTS_TOTAL
         GPIO.setmode(config.LIGHTS_PINOUT_SCHEME)
         for light in range(config.LIGHTS_TOTAL):
             GPIO.setup(config.LIGHTS_PIN_TABLE[light], GPIO.OUT)
@@ -57,6 +51,7 @@ class Lights(Controller):
             })
         return {
             "running" : True,
+            "mode" : self.mode2str(self.mode),
             "currentYear" : self.current_year,
             "lights" : lights_status
         }
@@ -100,7 +95,7 @@ class Lights(Controller):
         #
         elif order['cmd'].lower() == "reqlog":
             if "qty" in order:
-                print(self.get_logs(order.qty))
+                print(self.get_logs(order["qty"]))
             else:
                 print(self.get_logs())
         #
@@ -111,7 +106,7 @@ class Lights(Controller):
         #
         elif order['cmd'].lower() == "setoff":
             self.mode = config.MODE_OFF
-            self.switch_all_lights_to(config.OFF)
+            self.switch_all_lights_to(config.STATE_OFF)
         #
         # set on
         # Format: {
@@ -120,7 +115,7 @@ class Lights(Controller):
         #
         elif order['cmd'].lower() == "seton":
             self.mode = config.MODE_ON
-            self.switch_all_lights_to(config.ON)
+            self.switch_all_lights_to(config.STATE_ON)
         #
         # set auto
         # Format: {
@@ -203,10 +198,6 @@ class Lights(Controller):
         LIGHTS
     """
 
-    def onoff(self, value):
-        """Convert boolean to off/on."""
-        return ("on" if value else "off")
-
     def set_lights_for_year(self):
         """Set appropriate lights for current year."""
         light_config_for_year = config.LIGHTS_TABLE[self.current_year]
@@ -222,10 +213,10 @@ class Lights(Controller):
     def glitch_state_change(self):
         """Toggle glitch state."""
         # if current state is on, make it off, otherwise make it on
-        if self.glitch_state == config.ON:
-            self.glitch_state = config.OFF
+        if self.glitch_state == config.STATE_ON:
+            self.glitch_state = config.STATE_OFF
         else:
-            self.glitch_state = config.ON
+            self.glitch_state = config.STATE_ON
         print(f"Glitch: {self.onoff(self.glitch_state)}")
         self.switch_all_lights_to(self.glitch_state)
 
@@ -233,10 +224,10 @@ class Lights(Controller):
         """Set all lights to on/off."""
         logging.info(f"Switching all lights to {self.onoff(status)}")
         print(f"Switching all lights to {self.onoff(status)}")
-        if status == config.ON:
-            pin_status = GPIO_ON
-        elif status == config.OFF:
-            pin_status = GPIO_OFF
+        if status == config.STATE_ON:
+            pin_status = config.GPIO_ON
+        elif status == config.STATE_OFF:
+            pin_status = config.GPIO_OFF
         try:
             for light in range(config.LIGHTS_TOTAL):
                 GPIO.output(config.LIGHTS_PIN_TABLE[light], pin_status)
@@ -252,10 +243,10 @@ class Lights(Controller):
         """
         logging.info(f"Switching light {light} to {self.onoff(status)}")
         print(f"Switching light {light} to {self.onoff(status)}")
-        if status == config.ON:
-            pin_status = GPIO_ON
-        elif status == config.OFF:
-            pin_status = GPIO_OFF
+        if status == config.STATE_ON:
+            pin_status = config.GPIO_ON
+        elif status == config.STATE_OFF:
+            pin_status = config.GPIO_OFF
         try:
             GPIO.output(config.LIGHTS_PIN_TABLE[light], pin_status)
             self.light_model[light] = status
@@ -277,7 +268,6 @@ class Lights(Controller):
     def start(self):
         """Get the party started."""
         logging.info('Starting.')
-        print(self.get_status())
         self.main_loop()
 
 
