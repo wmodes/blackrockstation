@@ -8,7 +8,6 @@ from shared.streamtologger import StreamToLogger
 
 import logging
 
-
 def main():
     logging.basicConfig(
         filename=config.LOG_FILENAME,

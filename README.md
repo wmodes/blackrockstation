@@ -26,7 +26,7 @@ Because python 3.7 is the latest pre-built version for the Raspberry Pi, we use 
 
 `% python --version`
 
-It should report python 3.10.x
+It should report python 3.7.x
 
 Create a virtual environment in your envs folder with:
 
@@ -36,7 +36,7 @@ Activate the venv with:
 
 `% source ~/dev/envs/blackrockstation/bin/activate`
 
-Clone the repo and `cd blackrockstation` into this folder.
+Clone the repo from Github, then `cd blackrockstation` into the new repoI’m  folder.
 
 Install the python module requirements with:
 
