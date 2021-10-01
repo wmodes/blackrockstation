@@ -25,8 +25,6 @@ def main():
     # let's get this party started
     lights = Lights()
 
-    #flask
-
     try:
         lights.start()
     except KeyboardInterrupt:
