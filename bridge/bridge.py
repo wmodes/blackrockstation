@@ -7,7 +7,6 @@ import logging
 import time
 import RPi.GPIO as GPIO
 
-
 logger = logging.getLogger()
 
 class Signal(Controller):
@@ -52,7 +51,7 @@ class Signal(Controller):
         ORDERS
     """
 
-    def __act_on_order(self, order):
+    def act_on_order(self, order):
         """
         Take action based on order.
 
@@ -166,7 +165,7 @@ class Signal(Controller):
     def main_loop(self):
         """Get orders and acts on them."""
         while True:
-            self.__act_on_order(self.receive_order())
+            self.act_on_order(self.receive_order())
             time.sleep(config.SIGNAL_LOOP_DELAY)
 
 

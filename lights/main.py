@@ -2,38 +2,57 @@
 
 from shared import config
 from shared.controller import Controller
-
 from lights.lights import Lights
+from flask import Flask, request
+import threading
 from shared.streamtologger import StreamToLogger
-
 import logging
 
-def main():
-    logging.basicConfig(
-        filename=config.LOG_FILENAME,
-        # encoding='utf-8',
-        filemode='a',
-      Lightsmat='%(asctime)s %(levelname)s:%(message)s',
-        level=config.LOG_LEVEL)
-    logger = logging.getLogger("lights")
-    whoami = "Lights"
+logging.basicConfig(
+    filename=config.LOG_FILENAME,
+    # encoding='utf-8',
+    filemode='a',
+  Lightsmat='%(asctime)s %(levelname)s:%(message)s',
+    level=config.LOG_LEVEL)
+logger = logging.getLogger("lights")
 
-    # redirect stdout and stderr to log file - do this before production
-    # sys.stdout = StreamToLogger(logger,logging.INFO)
-    # sys.stderr = StreamToLogger(logger,logging.ERROR)
+# redirect stdout and stderr to log file - do this before production
+# sys.stdout = StreamToLogger(logger,logging.INFO)
+# sys.stderr = StreamToLogger(logger,logging.ERROR)
 
+def init_controller_obj():
     # let's get this party started
-    lights = Lights()
+    controller_obj = Lights()
+    return controller_obj
 
+def program_loop(controller_obj):
+    print("loop: ", str(controller_obj))
+    print("Year: ", controller_obj.current_year)
     try:
-        lights.start()
+        controller_obj.start()
     except KeyboardInterrupt:
         logging.info(f"{whoami} interrupted.")
-        lights.stop()
+        controller_obj.stop()
     except:
         logging.exception('Got exception on main handler')
         raise
 
+whoami = "Lights"
+controller_obj = init_controller_obj()
+print("init: ", str(controller_obj))
 
-if __name__ == '__main__':
-    main()
+# threaded program_loop(controller_obj)
+#
+thread_obj = threading.Thread(target=program_loop, args=(controller_obj,), daemon=True)
+thread_obj.start()
+
+# flask controller
+#
+app = Flask(__name__) # Create the server object
+
+@app.route("/cmd")
+def cmd():
+    query_obj = request.args.to_dict(flat=True)
+    return str(controller_obj.act_on_order(query_obj))
+
+app.run(debug=True)

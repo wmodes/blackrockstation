@@ -10,7 +10,7 @@ import importlib
 import logging
 
 controllers = [
-    "announce", "crossing", "lights", "radio", "scheduler", "signal",
+    "announce", "crossing", "lights", "radio", "scheduler", "bridge",
     "train", "television"
 ]
 

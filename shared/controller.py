@@ -48,7 +48,7 @@ class Controller(object):
     def get_logs(self, num=config.SCHED_DEFAULT_LOG):
         """Recent log of activity."""
         with open(config.LOG_FILENAME, 'rb') as file:
-            logs = self.tail(file, num).decode('utf-8')
+            logs = self.tail(file, int(num)).decode('utf-8')
         return(f"RECENT LOGS\n===========\n{logs}")
 
     def mode2str(self, mode):
