@@ -11,8 +11,7 @@ import logging
 logging.basicConfig(
     filename=config.LOG_FILENAME,
     # encoding='utf-8',
-    filemode='a',
-  Lightsmat='%(asctime)s %(levelname)s:%(message)s',
+    filemode='a', format='%(asctime)s %(levelname)s:%(message)s',
     level=config.LOG_LEVEL)
 logger = logging.getLogger("lights")
 
