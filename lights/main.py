@@ -26,8 +26,6 @@ def init_controller_obj():
     return controller_obj
 
 def program_loop(controller_obj):
-    print("loop: ", str(controller_obj))
-    print("Year: ", controller_obj.current_year)
     try:
         controller_obj.start()
     except KeyboardInterrupt:
@@ -39,7 +37,6 @@ def program_loop(controller_obj):
 
 whoami = "Lights"
 controller_obj = init_controller_obj()
-print("init: ", str(controller_obj))
 
 # threaded program_loop(controller_obj)
 #
