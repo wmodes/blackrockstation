@@ -75,7 +75,7 @@ class Radio(Controller):
         ORDERS
     """
 
-    def __act_on_order(self, order):
+    def act_on_order(self, order):
         """
         Take action based on order.
 
@@ -89,10 +89,16 @@ class Radio(Controller):
             - reqLog [num_events]
         """
         if not order:
-            return
+            error = "No command received"
+            return_val = {'status': 'FAIL',
+                          'error': error}
+            return(str(return_val))
         if "cmd" not in order:
-            logging.info(f"No 'cmd' in order received: {order}")
-        logging.info(f"Acting on order: {order}")
+            error = f"No 'cmd' in order received: '{order}'"
+            logging.info(error)
+            return_val = {'status': 'FAIL',
+                          'error': error}
+            return(str(return_val))
         #
         # request status
         # Format: {
@@ -100,7 +106,10 @@ class Radio(Controller):
         # }
         #
         if order['cmd'].lower() == "reqstatus":
-            print(self.get_status())
+            return_val = {'status': 'OK',
+                       'cmd': 'reqStatus',
+                       'results': self.get_status()}
+            return(str(return_val))
         #
         # request log
         # Format: {
@@ -110,9 +119,13 @@ class Radio(Controller):
         #
         elif order['cmd'].lower() == "reqlog":
             if "qty" in order:
-                print(self.get_logs(order["qty"]))
+                results = self.get_logs(order["qty"])
             else:
-                print(self.get_logs())
+                results = self.get_logs()
+            return_val = {'status': 'OK',
+                          'cmd': 'reqLogs',
+                          'results': results}
+            return(str(return_val))
         #
         # set off
         # Format: {
@@ -122,6 +135,9 @@ class Radio(Controller):
         elif order['cmd'].lower() == "setoff":
             self.mode = config.MODE_OFF
             self.stop_audio()
+            return_val = {'status': 'OK',
+                          'cmd': 'setOff'}
+            return(str(return_val))
         #
         # set on
         # Format: {
@@ -131,6 +147,9 @@ class Radio(Controller):
         elif order['cmd'].lower() == "seton":
             self.mode = config.MODE_ON
             self.play_new()
+            return_val = {'status': 'OK',
+                          'cmd': 'setOn'}
+            return(str(return_val))
         #
         # set auto
         # Format: {
@@ -139,6 +158,10 @@ class Radio(Controller):
         #
         elif order['cmd'].lower() == "setauto":
             self.mode = config.MODE_AUTO
+            self.play_new()
+            return_val = {'status': 'OK',
+                          'cmd': 'setAuto'}
+            return(str(return_val))
         #
         # set glitch mode
         # Format: {
@@ -146,7 +169,17 @@ class Radio(Controller):
         # }
         #
         elif order['cmd'].lower() == "setglitch":
+            if self.mode != config.MODE_AUTO:
+                error = "setGlitch ignored when not in AUTO mode. Use setAuto command."
+                logging.warning(error)
+                return_val = {'status': 'FAIL',
+                              'cmd': 'setGlitch',
+                              'error': error}
+                return(str(return_val))
             self.set_glitch()
+            return_val = {'status': 'OK',
+                          'cmd': 'setGlitch'}
+            return(str(return_val))
         #
         # set year
         # Format: {
@@ -156,14 +189,24 @@ class Radio(Controller):
         #
         elif order['cmd'].lower() == "setyear":
             if "year" not in order:
-                logging.warning(f"invalid order received: {order}")
-                return
-            self.set_year(order['year'])
+                error = "No year in order received"
+                logging.warning(error)
+                return_val = {'status': 'FAIL',
+                              'cmd': 'setYear',
+                              'error': error}
+                return(str(return_val))
+            results = self.set_year(order['year'])
+            return(str(results))
         #
         # invalid order
         #
         else:
-            logging.warning(f"invalid order received: {order}")
+            error = f"invalid order received"
+            logging.warning(error + ': ' + order['cmd'])
+            return_val = {'status': 'FAIL',
+                          'cmd': order['cmd'],
+                          'error': error}
+            return(str(return_val))
 
     """
         CHECKS
@@ -193,12 +236,20 @@ class Radio(Controller):
         print(f"Setting year: {year}")
         if str(year) not in config.VALID_YEARS:
             logging.warning("Invalid year: {year}")
-            return
+            return_val = {'status':'FAIL',
+                          'error':'invalid year'}
+            return(return_val)
         self.current_year = str(year)
         if self.mode != config.MODE_AUTO:
-            logging.warning("setYear no action taken when not in AUTO mode. Use setAuto command.")
-            return
+            error = "setYear no action taken when not in AUTO mode. Use setAuto command."
+            logging.warning(error)
+            return_val = {'status': 'FAIL',
+                          'cmd': 'setYear',
+                          'error': error}
         self.play_new()
+        return_val = {'status': 'OK',
+                      'cmd': 'setYear'}
+        return(return_val)
 
     def play_new(self):
         """Play new audio file."""
@@ -227,7 +278,7 @@ class Radio(Controller):
     def main_loop(self):
         """Get orders and acts on them."""
         while True:
-            self.__act_on_order(self.receive_order())
+            self.act_on_order(self.receive_order())
             if self.mode != config.MODE_OFF:
                 self.check_for_new_audio()
             time.sleep(config.RADIO_LOOP_DELAY)

@@ -178,7 +178,7 @@ class Lights(Controller):
         elif order['cmd'].lower() == "setyear":
             if "year" not in order:
                 error = "No year in order received"
-                logging.warning(error")
+                logging.warning(error)
                 return_val = {'status': 'FAIL',
                               'cmd': 'setYear',
                               'error': error}
@@ -235,7 +235,7 @@ class Lights(Controller):
             return(return_val)
         self.current_year = str(year)
         if self.mode != config.MODE_AUTO:
-            error: "setYear no action taken when not in AUTO mode. Use setAuto command."
+            error = "setYear no action taken when not in AUTO mode. Use setAuto command."
             logging.warning(error)
             return_val = {'status': 'FAIL',
                           'cmd': 'setYear',
