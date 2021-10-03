@@ -131,6 +131,7 @@ experiments/grpc/
 
 # Audio/Video Files
 *.mp3
+*.mp4
 *.wav
 media-files.tar.gz
 *.DS_Store
