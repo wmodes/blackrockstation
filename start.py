@@ -68,19 +68,8 @@ def main():
     # load appropriate controller module
     # class_module = f"{controller}.{controller.title()}"
     main_module = f"{controller}.main"
+    # import module and start main loop and web server
     import_main = importlib.import_module(main_module)
-
-    # start main loop of controller
-    try:
-        import_main.main()
-    except KeyboardInterrupt:
-        logging.info("Interrupt received")
-        logging.info("Finishing")
-    except:
-        logging.exception('Got exception on main handler')
-        raise
-
-
 
 if __name__ == '__main__':
     main()
