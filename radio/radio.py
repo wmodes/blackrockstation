@@ -235,9 +235,10 @@ class Radio(Controller):
         logging.info(f"Setting year: {year}")
         print(f"Setting year: {year}")
         if str(year) not in config.VALID_YEARS:
-            logging.warning("Invalid year: {year}")
-            return_val = {'status':'FAIL',
-                          'error':'invalid year'}
+            error = f"Invalid year: {year}"
+            logging.warning(error)
+            return_val = {'status': 'FAIL',
+                          'error': error}
             return(return_val)
         self.current_year = str(year)
         if self.mode != config.MODE_AUTO:
