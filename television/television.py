@@ -216,8 +216,6 @@ class Television(Controller):
         logging.info("Setting glitch")
         print("Setting glitch")
         self.current_year = "glitch"
-        if self.mode != config.MODE_AUTO:
-            logging.warning("setGlitch no action taken when not in AUTO mode. Use setAuto command.")
         self.play_new()
 
     def set_year(self, year):
@@ -232,12 +230,12 @@ class Television(Controller):
             return(return_val)
         self.current_year = str(year)
         if self.mode != config.MODE_AUTO:
-            error = "setYear no action taken when not in AUTO mode. Use setAuto command."
+            error = "No action taken when not in AUTO mode. Use setAuto command."
             logging.warning(error)
             return_val = {'status': 'FAIL',
                           'cmd': 'setYear',
                           'error': error}
-            return
+            return(return_val)
         self.play_new()
         return_val = {'status': 'OK',
                       'cmd': 'setYear'}

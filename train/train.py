@@ -66,7 +66,7 @@ class Train(Controller):
         ORDERS
     """
 
-    def __act_on_order(self, order):
+    def act_on_order(self, order):
         """Take action based on order.
 
         Possible commands:
@@ -77,10 +77,16 @@ class Train(Controller):
             - reqLog [num_events]
         """
         if not order:
-            return
+            error = "No command received"
+            return_val = {'status': 'FAIL',
+                          'error': error}
+            return(str(return_val))
         if "cmd" not in order:
-            logging.info(f"No 'cmd' in order received: {order}")
-        logging.info(f"Acting on order: {order}")
+            error = f"No 'cmd' in order received: '{order}'"
+            logging.info(error)
+            return_val = {'status': 'FAIL',
+                          'error': error}
+            return(str(return_val))
         #
         # request status
         # Format: {
@@ -88,7 +94,10 @@ class Train(Controller):
         # }
         #
         if order['cmd'].lower() == "reqstatus":
-            print(self.get_status())
+            return_val = {'status': 'OK',
+                       'cmd': 'reqStatus',
+                       'results': self.get_status()}
+            return(str(return_val))
         #
         # request log
         # Format: {
@@ -98,15 +107,24 @@ class Train(Controller):
         #
         elif order['cmd'].lower() == "reqlog":
             if "qty" in order:
-                print(self.get_logs(order["qty"]))
+                results = self.get_logs(order["qty"])
             else:
-                print(self.get_logs())
+                results = self.get_logs()
+            return_val = {'status': 'OK',
+                          'cmd': 'reqLogs',
+                          'results': results}
+            return(str(return_val))
         #
         # set off
         # Format: {
         #   "cmd" : "setOff"
         # }
         #
+        elif order['cmd'].lower() == "setoff":
+            self.mode = config.MODE_OFF
+            return_val = {'status': 'OK',
+                          'cmd': 'setOff'}
+            return(str(return_val))
         elif order['cmd'].lower() == "setoff":
             self.mode = config.MODE_OFF
         #
@@ -117,6 +135,9 @@ class Train(Controller):
         #
         elif order['cmd'].lower() == "seton":
             self.mode = config.MODE_ON
+            return_val = {'status': 'OK',
+                          'cmd': 'setOn'}
+            return(str(return_val))
         #
         # set auto
         # Format: {
@@ -125,6 +146,9 @@ class Train(Controller):
         #
         elif order['cmd'].lower() == "setauto":
             self.mode = config.MODE_AUTO
+            return_val = {'status': 'OK',
+                          'cmd': 'setAuto'}
+            return(str(return_val))
         #
         # set train
         # Format: {
@@ -135,15 +159,27 @@ class Train(Controller):
         # }
         elif order['cmd'].lower() == "settrain":
             if "direction" not in order or "type" not in order or "year" not in order:
-                logging.warning(f"invalid order received: {order}")
-                return
+                error = f"invalid order received: {order}"
+                logging.warning(error)
+                return_val = {'status': 'FAIL',
+                              'cmd': 'setTrain',
+                              'error': error}
+                return(str(return_val))
             self.set_train(order["direction"], order["type"], order["year"])
+            return_val = {'status': 'OK',
+                          'cmd': 'setTrain'}
+            return(str(return_val))
         #
         #
         # invalid order
         #
         else:
-            logging.warning(f"invalid order received: {order}")
+            error = f"invalid order received"
+            logging.warning(error + ': ' + order['cmd'])
+            return_val = {'status': 'FAIL',
+                          'cmd': order['cmd'],
+                          'error': error}
+            return(str(return_val))
 
     """
         PLAY STUFF
@@ -157,16 +193,23 @@ class Train(Controller):
         """
         logging.debug(f"Setting train: {direction} {type} {year}")
         if self.mode == config.MODE_OFF:
-            logging.warning("No action taken when not in ON or AUTO modes. Use setAuto command.")
-            return
+            error = "No action taken when not in ON or AUTO modes. Use setAuto command."
+            logging.warning(error)
+            return_val = {'status': 'FAIL',
+                          'cmd': 'setTrain',
+                          'error': error}
         filepath = config.TRAIN_AUDIO_DIR
         filename = filepath + self.filetable[f"{year}-{type}"]
         logging.debug(f"Train audio filename: {filename}")
         # confirm file is there
         file = Path(filename)
         if not file.is_file():
-            logging.warning(f"Train audio file not found: {filename}")
-            return
+            error = f"Train audio file not found: {filename}"
+            logging.warning(error)
+            return_val = {'status': 'FAIL',
+                          'cmd': 'setTrain',
+                          'error': error}
+            return(return_val)
         # by default, train recordings are recorded left-to-right or eastbound
         # if direction is westbound, swap the channels
         if direction == "westbound":
@@ -187,6 +230,9 @@ class Train(Controller):
         logging.info(f"Playing audio: {filename}")
         mixer.music.load(playfile)
         mixer.music.play()
+        return_val = {'status': 'OK',
+                      'cmd': 'setTrain'}
+        return(return_val)
 
     """
         MAIN LOOP
@@ -195,7 +241,7 @@ class Train(Controller):
     def main_loop(self):
         """Get orders and act on them."""
         while True:
-            self.__act_on_order(self.receive_order())
+            self.act_on_order(self.receive_order())
             time.sleep(config.TRAIN_LOOP_DELAY)
 
 
