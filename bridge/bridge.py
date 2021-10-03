@@ -1,4 +1,4 @@
-"""Controller class for signal subsystem."""
+"""Controller class for bridge subsystem."""
 
 from shared import config
 from shared.controller import Controller
@@ -9,13 +9,13 @@ import RPi.GPIO as GPIO
 
 logger = logging.getLogger()
 
-class Signal(Controller):
-    """Signal controller class."""
+class Bridge(Controller):
+    """Bridge controller class."""
 
     def __init__(self):
         """Initialize."""
         super().__init__()
-        self.whoami = "signal"
+        self.whoami = "bridge"
         self.eastbound = config.STATE_STOP
         self.westbound = config.STATE_STOP
         print(f"Current state: Westbound is {self.stopgo(self.westbound)}, Eastbound is {self.stopgo(self.eastbound)}")
@@ -62,9 +62,16 @@ class Signal(Controller):
             - reqLog [num_events]
         """
         if not order:
-            return
+            error = "No command received"
+            return_val = {'status': 'FAIL',
+                          'error': error}
+            return(str(return_val))
         if "cmd" not in order:
-            logging.info(f"No 'cmd' in order received: {order}")
+            error = f"No 'cmd' in order received: '{order}'"
+            logging.info(error)
+            return_val = {'status': 'FAIL',
+                          'error': error}
+            return(str(return_val))
         logging.info(f"Acting on order: {order}")
         #
         # request status
@@ -73,7 +80,10 @@ class Signal(Controller):
         # }
         #
         if order['cmd'].lower() == "reqstatus":
-            print(self.get_status())
+            return_val = {'status': 'OK',
+                       'cmd': 'reqStatus',
+                       'results': self.get_status()}
+            return(str(return_val))
         #
         # request log
         # Format: {
@@ -83,9 +93,13 @@ class Signal(Controller):
         #
         elif order['cmd'].lower() == "reqlog":
             if "qty" in order:
-                print(self.get_logs(order["qty"]))
+                results = self.get_logs(order["qty"])
             else:
-                print(self.get_logs())
+                results = self.get_logs()
+            return_val = {'status': 'OK',
+                          'cmd': 'reqLogs',
+                          'results': results}
+            return(str(return_val))
         #
         # set stop
         # Format: {
@@ -94,6 +108,9 @@ class Signal(Controller):
         #
         elif order['cmd'].lower() == "setstop":
             self.set_stop()
+            return_val = {'status': 'OK',
+                          'cmd': 'setStop'}
+            return(str(return_val))
         #
         # set go
         # Format: {
@@ -103,14 +120,26 @@ class Signal(Controller):
         #
         elif order['cmd'].lower() == "setgo":
             if "direction" not in order:
-                logging.warning(f"invalid order received: {order}")
-                return
+                error = f"invalid order received: {order}"
+                logging.warning(error)
+                return_val = {'status': 'FAIL',
+                              'cmd': 'setGo',
+                              'error': error}
+                return(str(return_val))
             self.set_go(order['direction'])
+            return_val = {'status': 'OK',
+                          'cmd': 'setGo'}
+            return(str(return_val))
         #
         # invalid order
         #
         else:
-            logging.warning(f"invalid order received: {order}")
+            error = f"invalid order received"
+            logging.warning(error + ': ' + order['cmd'])
+            return_val = {'status': 'FAIL',
+                          'cmd': order['cmd'],
+                          'error': error}
+            return(str(return_val))
 
 
     """
@@ -182,8 +211,8 @@ def main():
                         encoding='utf-8',
                         format='%(asctime)s %(levelname)s:%(message)s',
                         level=logging.DEBUG)
-    signal = Signal()
-    signal.order_act_loop()
+    bridge = Bridge()
+    bridge.order_act_loop()
 
 
 if __name__ == '__main__':

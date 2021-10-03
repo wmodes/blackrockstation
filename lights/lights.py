@@ -178,9 +178,9 @@ class Lights(Controller):
         elif order['cmd'].lower() == "setyear":
             if "year" not in order:
                 error = "No year in order received"
-                logging.warning(f"invalid order received: {order}")
+                logging.warning(error")
                 return_val = {'status': 'FAIL',
-                              'cmd': 'setGlitch',
+                              'cmd': 'setYear',
                               'error': error}
                 return(str(return_val))
             results = self.set_year(order['year'])

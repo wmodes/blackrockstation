@@ -77,7 +77,7 @@ class Announce(Controller):
         ORDERS
     """
 
-    def __act_on_order(self, order):
+    def act_on_order(self, order):
         """
         Take action based on order.
 
@@ -91,9 +91,16 @@ class Announce(Controller):
             - reqLog [num_events]
         """
         if not order:
-            return
+            error = "No command received"
+            return_val = {'status': 'FAIL',
+                          'error': error}
+            return(str(return_val))
         if "cmd" not in order:
-            logging.info(f"No 'cmd' in order received: {order}")
+            error = f"No 'cmd' in order received: '{order}'"
+            logging.info(error)
+            return_val = {'status': 'FAIL',
+                          'error': error}
+            return(str(return_val))
         logging.info(f"Acting on order: {order}")
         #
         # request status
@@ -102,7 +109,10 @@ class Announce(Controller):
         # }
         #
         if order['cmd'].lower() == "reqstatus":
-            print(self.get_status())
+            return_val = {'status': 'OK',
+                       'cmd': 'reqStatus',
+                       'results': self.get_status()}
+            return(str(return_val))
         #
         # request log
         # Format: {
@@ -112,9 +122,13 @@ class Announce(Controller):
         #
         elif order['cmd'].lower() == "reqlog":
             if "qty" in order:
-                print(self.get_logs(order["qty"]))
+                results = self.get_logs(order["qty"])
             else:
-                print(self.get_logs())
+                results = self.get_logs()
+            return_val = {'status': 'OK',
+                          'cmd': 'reqLogs',
+                          'results': results}
+            return(str(return_val))
         #
         # set off
         # Format: {
@@ -124,6 +138,9 @@ class Announce(Controller):
         elif order['cmd'].lower() == "setoff":
             self.mode = config.MODE_OFF
             self.stop_audio()
+            return_val = {'status': 'OK',
+                          'cmd': 'setOff'}
+            return(str(return_val))
         #
         # set on
         # Format: {
@@ -132,6 +149,9 @@ class Announce(Controller):
         #
         elif order['cmd'].lower() == "seton":
             self.mode = config.MODE_ON
+            return_val = {'status': 'OK',
+                          'cmd': 'setOn'}
+            return(str(return_val))
         #
         # set auto
         # Format: {
@@ -140,6 +160,9 @@ class Announce(Controller):
         #
         elif order['cmd'].lower() == "setauto":
             self.mode = config.MODE_AUTO
+            return_val = {'status': 'OK',
+                          'cmd': 'setAuto'}
+            return(str(return_val))
         #
         # set glitch mode
         # Format: {
@@ -147,7 +170,17 @@ class Announce(Controller):
         # }
         #
         elif order['cmd'].lower() == "setglitch":
+            if self.mode != config.MODE_AUTO:
+                error = "setGlitch ignored when not in AUTO mode. Use setAuto command."
+                logging.warning(error)
+                return_val = {'status': 'FAIL',
+                              'cmd': 'setGlitch',
+                              'error': error}
+                return(str(return_val))
             self.set_glitch()
+            return_val = {'status': 'OK',
+                          'cmd': 'setGlitch'}
+            return(str(return_val))
         #
         # set announce
         # Format: {
@@ -157,15 +190,25 @@ class Announce(Controller):
         # }
         elif order['cmd'].lower() == "setannounce":
             if "announceid" not in order or "year" not in order:
-                logging.warning(f"invalid order received: {order}")
-                return
-            self.set_announce(order['announceid'], order['year'])
+                error = f"invalid order received: {order}"
+                logging.warning(error)
+                return_val = {'status': 'FAIL',
+                              'cmd': 'setGlitch',
+                              'error': error}
+                return(str(return_val))
+            results = self.set_announce(order['announceid'], order['year'])
+            return(str(results))
         #
         #
         # invalid order
         #
         else:
-            logging.warning(f"invalid order received: {order}")
+            error = f"invalid order received"
+            logging.warning(error + ': ' + order['cmd'])
+            return_val = {'status': 'FAIL',
+                          'cmd': order['cmd'],
+                          'error': error}
+            return(str(return_val))
 
     """
         PLAY STUFF
@@ -189,17 +232,29 @@ class Announce(Controller):
     def set_announce(self, announceid, year):
         """Play announcement."""
         if str(year) not in config.VALID_YEARS:
-            logging.warning("Invalid year: {year}")
-            return
+            error = f"Invalid year: {year}"
+            logging.warning(error + ': ' + order['cmd'])
+            return_val = {'status': 'FAIL',
+                          'cmd': 'setAnnounce',
+                          'error': error}
+            return(str(return_val))
         if self.mode == config.MODE_OFF:
-            logging.warning("No action taken when not in ON or AUTO modes. Use setAuto command.")
-            return
+            error = "No action taken when not in ON or AUTO modes. Use setAuto command."
+            logging.warning(error + ': ' + order['cmd'])
+            return_val = {'status': 'FAIL',
+                          'cmd': 'setAnnounce',
+                          'error': error}
+            return(str(return_val))
         filepath = config.ANNOUNCE_AUDIO_DIR
         filename = f"{str(year)}-{announceid}{config.ANNOUNCE_AUDIO_EXT}"
         self.most_recent = filepath + filename
-        logging.info(f"Playing audio: {filename}")
+        logging.info(f"Playing audio: {filepath}{filename}")
         mixer.music.load(filepath + filename)
         mixer.music.play()
+        return_val = {'status': 'OK',
+                      'cmd': 'setAnnounce',
+                      'file': filepath + filename}
+        return(return_val)
 
     def stop_audio(self):
         """Stop all audio output."""
@@ -215,7 +270,7 @@ class Announce(Controller):
     def main_loop(self):
         """Get orders and act on them."""
         while True:
-            self.__act_on_order(self.receive_order())
+            self.act_on_order(self.receive_order())
             time.sleep(config.ANNOUNCE_LOOP_DELAY)
 
 
