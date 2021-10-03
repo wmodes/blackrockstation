@@ -28,7 +28,7 @@ MODE_AUTO = -1
 
 # Start
 CONTROLLERS = [
-    "announce", "crossing", "lights", "radio", "scheduler", "signal",
+    "announce", "crossing", "lights", "radio", "scheduler", "bridge",
     "train", "television"
 ]
 

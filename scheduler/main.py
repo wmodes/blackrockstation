@@ -48,8 +48,9 @@ app = Flask(__name__) # Create the server object
 
 @app.route("/cmd")
 def cmd():
-    query_obj = request.args.to_dict(flat=True)
-    results = controller_obj.act_on_order(query_obj)
-    return jsonify(results)
+    order_obj = request.args.to_dict(flat=True)
+    response = jsonify(controller_obj.act_on_order(order_obj))
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 app.run(debug=True)

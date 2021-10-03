@@ -131,6 +131,22 @@ class Bridge(Controller):
                           'cmd': 'setGo'}
             return return_val
         #
+        # help
+        #
+        elif order['cmd'].lower() == "help":
+            cmds = [
+                {'cmd': 'setGo',
+                 'direction': ['westbound', 'eastbound']},
+                {'cmd': 'setStop'},
+                {'cmd': 'reqStatus'},
+                {'cmd': 'reqLog',
+                 'qty': '10'}
+            ]
+            return_val = {'status': 'OK',
+                          'cmd': 'help',
+                          'commands': cmds}
+            return return_val
+        #
         # invalid order
         #
         else:

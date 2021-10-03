@@ -168,6 +168,25 @@ class Train(Controller):
                           'cmd': 'setTrain'}
             return return_val
         #
+        # help
+        #
+        elif order['cmd'].lower() == "help":
+            cmds = [
+                {'cmd': 'setOff'},
+                {'cmd': 'setOn'},
+                {'cmd': 'setTrain',
+                 'direction': ['westbound', 'eastbound'],
+                 'type': "freight-through",
+                 'year': ['1858', '1888', '1938', '1959', '1982', '2014', '2066', '2110']},
+                {'cmd': 'reqStatus'},
+                {'cmd': 'reqLog',
+                 'qty': '10'}
+            ]
+            return_val = {'status': 'OK',
+                          'cmd': 'help',
+                          'commands': cmds}
+            return return_val
+        #
         #
         # invalid order
         #
@@ -211,7 +230,7 @@ class Train(Controller):
             return return_val
         # by default, train recordings are recorded left-to-right or eastbound
         # if direction is westbound, swap the channels
-        if direction == "westbound":
+        if direction[0].lower() == 'w':
             # Note that the transform and rewrite takes at least 1/2 a second,
             #  but will probably be fine in this context
             # create transformer
@@ -224,6 +243,7 @@ class Train(Controller):
             playfile = config.TRAIN_TMP_FILE
         # if direction is eastbound, we don't have to do anything
         else:
+            logging.info("Not swapping audio channels for eastbound (default) train")
             playfile = filename
         self.most_recent = filename
         logging.info(f"Playing audio: {filename}")

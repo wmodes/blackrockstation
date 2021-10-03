@@ -216,7 +216,25 @@ class Scheduler(Controller):
                       'cmd': 'order',
                       'results': results}
             return return_val
-
+        #
+        # help
+        #
+        elif order['cmd'].lower() == "help":
+            cmds = [
+                {'cmd': 'order',
+                 'controller': ["announce", "crossing", "lights", "radio", "scheduler", "bridge",
+                 "train", "television"],
+                 'order': {'cmd': 'reqStatus'}},
+                {'cmd': 'reqTrains',
+                 'qty': '5'},
+                {'cmd': 'reqStatus'},
+                {'cmd': 'reqLog',
+                 'qty': '10'}
+            ]
+            return_val = {'status': 'OK',
+                          'cmd': 'help',
+                          'commands': cmds}
+            return return_val
         #
         # invalid order
         #

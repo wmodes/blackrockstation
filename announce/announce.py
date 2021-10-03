@@ -199,6 +199,26 @@ class Announce(Controller):
             return_val = self.set_announce(order['announceid'], order['year'])
             return return_val
         #
+        # help
+        #
+        elif order['cmd'].lower() == "help":
+            cmds = [
+                {'cmd': 'setOff'},
+                {'cmd': 'setOn'},
+                {'cmd': 'setAuto'},
+                {'cmd': 'setGlitch'},
+                {'cmd': 'setAnnounce',
+                 'announceid': 'city-of-san-francisco-california-zephyr-chicago-to-sf-announce-arrival',
+                 'year': ['1858', '1888', '1938', '1959', '1982', '2014', '2066', '2110']},
+                {'cmd': 'reqStatus'},
+                {'cmd': 'reqLog',
+                 'qty': '10'}
+            ]
+            return_val = {'status': 'OK',
+                          'cmd': 'help',
+                          'commands': cmds}
+            return return_val
+        #
         #
         # invalid order
         #
@@ -254,7 +274,7 @@ class Announce(Controller):
         return_val = {'status': 'OK',
                       'cmd': 'setAnnounce',
                       'file': filepath + filename}
-        return return_val 
+        return return_val
 
     def stop_audio(self):
         """Stop all audio output."""
