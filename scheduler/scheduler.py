@@ -38,12 +38,12 @@ class Scheduler(Controller):
         logging.info('Reading schedule')
         self.schedule = []
         with open(config.SCHED_DATA, newline='') as csvfile:
-            reader = csv.DictReader(csvfile, config.SCHED_FIELDS)
+            reader = csv.DictReader(csvfile,                    config.SCHED_FIELDS,restkey='Extras')
             # skips the header line
             next(reader)
             for row in reader:
                 if row['event'] != '':
-                    self.schedule.append(row)
+                    self.schedule.append(dict(row))
 
 
     def __sort_schedule(self):
@@ -65,7 +65,7 @@ class Scheduler(Controller):
 
     def get_next_train(self):
         """Return an obj representing next train."""
-        return (self.get_future_trains(1)[0])
+        return self.get_future_trains(1)[0]
 
     def get_future_trains(self, n=10):
         """Return array of objects representing future trains.
@@ -130,7 +130,7 @@ class Scheduler(Controller):
         ORDERS
     """
 
-    def __act_on_order(self, order):
+    def act_on_order(self, order):
         """
         Take action based on orders.
 
@@ -141,10 +141,16 @@ class Scheduler(Controller):
             - reqLog [num_events]
         """
         if not order:
-            return
+            error = "No command received"
+            return_val = {'status': 'FAIL',
+                          'error': error}
+            return return_val
         if "cmd" not in order:
-            logging.warning(f"No 'cmd' in order received: {order}")
-        logging.info(f"Acting on order: {order}")
+            error = f"No 'cmd' in order received: '{order}'"
+            logging.info(error)
+            return_val = {'status': 'FAIL',
+                          'error': error}
+            return return_val
         #
         # request future schedule
         # Format: {
@@ -154,9 +160,13 @@ class Scheduler(Controller):
         #
         if order['cmd'].lower() == "reqtrains":
             if "qty" in order:
-                print(self.get_future_trains(order["qty"]))
+                results = self.get_future_trains(order["qty"])
             else:
-                print(self.get_future_trains())
+                results = self.get_future_trains()
+            return_val = {'status': 'OK',
+                       'cmd': 'reqTrains',
+                       'results': results}
+            return return_val
         #
         # request status
         # Format: {
@@ -164,7 +174,10 @@ class Scheduler(Controller):
         # }
         #
         elif order['cmd'].lower() == "reqstatus":
-            print(self.get_status())
+            return_val = {'status': 'OK',
+                       'cmd': 'reqStatus',
+                       'results': self.get_status()}
+            return return_val
         #
         # request log
         # Format: {
@@ -174,9 +187,13 @@ class Scheduler(Controller):
         #
         elif order['cmd'].lower() == "reqlog":
             if "qty" in order:
-                print(self.get_logs(order["qty"]))
+                results = self.get_logs(order["qty"])
             else:
-                print(self.get_logs())
+                results = self.get_logs()
+            return_val = {'status': 'OK',
+                          'cmd': 'reqLogs',
+                          'results': results}
+            return return_val
         #
         # send order to other controller
         # Format: {
@@ -185,17 +202,36 @@ class Scheduler(Controller):
         #   "relay" : **order**
         # }
         elif order['cmd'].lower() == "order":
-            self.send_order_to_controller(order["controller"], order["relay"])
+            if "controller" not in order or "relay" not in order:
+                error = "controller or relay values missing"
+                logging.warning(error)
+                return_val = {'status': 'FAIL',
+                              'cmd': 'setYear',
+                              'error': error}
+                return return_val
+            results = self.send_order_to_controller(
+                order["controller"], order["relay"])
+            # TODO: Convert relay to object to pass to comms
+            return_val = {'status': 'OK',
+                      'cmd': 'order',
+                      'results': results}
+            return return_val
+
         #
         # invalid order
         #
         else:
-            logging.warning(f"invalid order received: {order}")
+            error = "invalid order received"
+            logging.warning(error + ': ' + order['cmd'])
+            return_val = {'status': 'FAIL',
+                          'cmd': order['cmd'],
+                          'error': error}
+            return return_val
 
 
     def send_order_to_controller(self, controller, command):
         """Send an arbitrary order to another controller."""
-        self.comms.send_order(controller, command)
+        return self.comms.send_order(controller, command)
 
     """
         TIME CHECKS
@@ -448,7 +484,7 @@ class Scheduler(Controller):
     def main_loop(self):
         """Get orders and acts on them."""
         while True:
-            self.__act_on_order(self.receive_order())
+            self.act_on_order(self.receive_order())
             self.check_for_delayed_events()
             self.check_for_timeslip()
             self.check_for_random_events()

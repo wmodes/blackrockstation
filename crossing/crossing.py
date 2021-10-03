@@ -59,13 +59,13 @@ class Crossing(Controller):
             error = "No command received"
             return_val = {'status': 'FAIL',
                           'error': error}
-            return(str(return_val))
+            return return_val
         if "cmd" not in order:
             error = f"No 'cmd' in order received: '{order}'"
             logging.info(error)
             return_val = {'status': 'FAIL',
                           'error': error}
-            return(str(return_val))
+            return return_val
         #
         # request status
         # Format: {
@@ -76,7 +76,7 @@ class Crossing(Controller):
             return_val = {'status': 'OK',
                        'cmd': 'reqStatus',
                        'results': self.get_status()}
-            return(str(return_val))
+            return return_val
         #
         # request log
         # Format: {
@@ -92,7 +92,7 @@ class Crossing(Controller):
             return_val = {'status': 'OK',
                           'cmd': 'reqLogs',
                           'results': results}
-            return(str(return_val))
+            return return_val
         #
         # set off
         # Format: {
@@ -104,7 +104,7 @@ class Crossing(Controller):
             self.set_off()
             return_val = {'status': 'OK',
                           'cmd': 'setOff'}
-            return(str(return_val))
+            return return_val
         #
         # set on
         # Format: {
@@ -116,7 +116,7 @@ class Crossing(Controller):
             self.set_on()
             return_val = {'status': 'OK',
                           'cmd': 'setOn'}
-            return(str(return_val))
+            return return_val
         #
         # invalid order
         #
@@ -126,7 +126,7 @@ class Crossing(Controller):
             return_val = {'status': 'FAIL',
                           'cmd': order['cmd'],
                           'error': error}
-            return(str(return_val))
+            return return_val
 
     """
         ACTIONS

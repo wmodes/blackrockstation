@@ -91,13 +91,13 @@ class Television(Controller):
             error = "No command received"
             return_val = {'status': 'FAIL',
                           'error': error}
-            return(str(return_val))
+            return return_val
         if "cmd" not in order:
             error = f"No 'cmd' in order received: '{order}'"
             logging.info(error)
             return_val = {'status': 'FAIL',
                           'error': error}
-            return(str(return_val))
+            return return_val
         #
         # request status
         # Format: {
@@ -108,7 +108,7 @@ class Television(Controller):
             return_val = {'status': 'OK',
                        'cmd': 'reqStatus',
                        'results': self.get_status()}
-            return(str(return_val))
+            return return_val
         #
         # request log
         # Format: {
@@ -124,7 +124,7 @@ class Television(Controller):
             return_val = {'status': 'OK',
                           'cmd': 'reqLogs',
                           'results': results}
-            return(str(return_val))
+            return return_val
         #
         # set off
         # Format: {
@@ -136,7 +136,7 @@ class Television(Controller):
             self.stop_video()
             return_val = {'status': 'OK',
                           'cmd': 'setOff'}
-            return(str(return_val))
+            return return_val
         #
         # set on
         # Format: {
@@ -148,7 +148,7 @@ class Television(Controller):
             self.play_new()
             return_val = {'status': 'OK',
                           'cmd': 'setOn'}
-            return(str(return_val))
+            return return_val
         #
         # set auto
         # Format: {
@@ -160,7 +160,7 @@ class Television(Controller):
             self.play_new()
             return_val = {'status': 'OK',
                           'cmd': 'setAuto'}
-            return(str(return_val))
+            return return_val
         #
         # set glitch mode
         # Format: {
@@ -174,11 +174,11 @@ class Television(Controller):
                 return_val = {'status': 'FAIL',
                               'cmd': 'setGlitch',
                               'error': error}
-                return(str(return_val))
+                return return_val
             self.set_glitch()
             return_val = {'status': 'OK',
                           'cmd': 'setGlitch'}
-            return(str(return_val))
+            return return_val
         #
         # set year
         # Format: {
@@ -193,9 +193,9 @@ class Television(Controller):
                 return_val = {'status': 'FAIL',
                               'cmd': 'setYear',
                               'error': error}
-                return(str(return_val))
-            results = self.set_year(order['year'])
-            return(str(results))
+                return return_val
+            return_val = self.set_year(order['year'])
+            return return_val
         #
         # invalid order
         #
@@ -205,7 +205,7 @@ class Television(Controller):
             return_val = {'status': 'FAIL',
                           'cmd': order['cmd'],
                           'error': error}
-            return(str(return_val))
+            return return_val
 
     """
         PLAY STUFF
@@ -227,7 +227,7 @@ class Television(Controller):
             logging.warning(error)
             return_val = {'status': 'FAIL',
                           'error': error}
-            return(return_val)
+            return return_val
         self.current_year = str(year)
         if self.mode != config.MODE_AUTO:
             error = "No action taken when not in AUTO mode. Use setAuto command."
@@ -235,11 +235,11 @@ class Television(Controller):
             return_val = {'status': 'FAIL',
                           'cmd': 'setYear',
                           'error': error}
-            return(return_val)
+            return return_val
         self.play_new()
         return_val = {'status': 'OK',
                       'cmd': 'setYear'}
-        return(return_val)
+        return return_val
 
     def play_new(self):
         """Play new video file."""

@@ -79,13 +79,13 @@ class Lights(Controller):
             error = "No command received"
             return_val = {'status': 'FAIL',
                           'error': error}
-            return(str(return_val))
+            return return_val
         if "cmd" not in order:
             error = f"No 'cmd' in order received: '{order}'"
             logging.info(error)
             return_val = {'status': 'FAIL',
                           'error': error}
-            return(str(return_val))
+            return return_val
         logging.info(f"Acting on order: {order}")
         #
         # request status
@@ -97,7 +97,7 @@ class Lights(Controller):
             return_val = {'status': 'OK',
                        'cmd': 'reqStatus',
                        'results': self.get_status()}
-            return(str(return_val))
+            return return_val
         #
         # request log
         # Format: {
@@ -113,7 +113,7 @@ class Lights(Controller):
             return_val = {'status': 'OK',
                           'cmd': 'reqLogs',
                           'results': results}
-            return(str(return_val))
+            return return_val
         #
         # set off
         # Format: {
@@ -125,7 +125,7 @@ class Lights(Controller):
             self.switch_all_lights_to(config.STATE_OFF)
             return_val = {'status': 'OK',
                           'cmd': 'setOff'}
-            return(str(return_val))
+            return return_val
         #
         # set on
         # Format: {
@@ -137,7 +137,7 @@ class Lights(Controller):
             self.switch_all_lights_to(config.STATE_ON)
             return_val = {'status': 'OK',
                           'cmd': 'setOn'}
-            return(str(return_val))
+            return return_val
         #
         # set auto
         # Format: {
@@ -149,7 +149,7 @@ class Lights(Controller):
             self.set_year(self.current_year)
             return_val = {'status': 'OK',
                           'cmd': 'setAuto'}
-            return(str(return_val))
+            return return_val
         #
         # set glitch mode
         # Format: {
@@ -163,11 +163,11 @@ class Lights(Controller):
                 return_val = {'status': 'FAIL',
                               'cmd': 'setGlitch',
                               'error': error}
-                return(str(return_val))
+                return return_val
             self.set_glitch()
             return_val = {'status': 'OK',
                           'cmd': 'setGlitch'}
-            return(str(return_val))
+            return return_val
         #
         # set year
         # Format: {
@@ -182,9 +182,9 @@ class Lights(Controller):
                 return_val = {'status': 'FAIL',
                               'cmd': 'setYear',
                               'error': error}
-                return(str(return_val))
-            results = self.set_year(order['year'])
-            return(str(results))
+                return return_val
+            return_val = self.set_year(order['year'])
+            return return_val
         #
         # invalid order
         #
@@ -194,7 +194,7 @@ class Lights(Controller):
             return_val = {'status': 'FAIL',
                           'cmd': order['cmd'],
                           'error': error}
-            return(str(return_val))
+            return return_val
 
     """
         CHECKS
@@ -232,7 +232,7 @@ class Lights(Controller):
             logging.warning("Invalid year: {year}")
             return_val = {'status':'FAIL',
                           'error':'invalid year'}
-            return(return_val)
+            return return_val
         self.current_year = str(year)
         if self.mode != config.MODE_AUTO:
             error = "setYear no action taken when not in AUTO mode. Use setAuto command."
@@ -244,7 +244,7 @@ class Lights(Controller):
         self.set_lights_for_year()
         return_val = {'status': 'OK',
                       'cmd': 'setYear'}
-        return(return_val)
+        return return_val
 
     """
         LIGHTS

@@ -94,13 +94,13 @@ class Announce(Controller):
             error = "No command received"
             return_val = {'status': 'FAIL',
                           'error': error}
-            return(str(return_val))
+            return return_val
         if "cmd" not in order:
             error = f"No 'cmd' in order received: '{order}'"
             logging.info(error)
             return_val = {'status': 'FAIL',
                           'error': error}
-            return(str(return_val))
+            return return_val
         logging.info(f"Acting on order: {order}")
         #
         # request status
@@ -112,7 +112,7 @@ class Announce(Controller):
             return_val = {'status': 'OK',
                        'cmd': 'reqStatus',
                        'results': self.get_status()}
-            return(str(return_val))
+            return return_val
         #
         # request log
         # Format: {
@@ -128,7 +128,7 @@ class Announce(Controller):
             return_val = {'status': 'OK',
                           'cmd': 'reqLogs',
                           'results': results}
-            return(str(return_val))
+            return return_val
         #
         # set off
         # Format: {
@@ -140,7 +140,7 @@ class Announce(Controller):
             self.stop_audio()
             return_val = {'status': 'OK',
                           'cmd': 'setOff'}
-            return(str(return_val))
+            return return_val
         #
         # set on
         # Format: {
@@ -151,7 +151,7 @@ class Announce(Controller):
             self.mode = config.MODE_ON
             return_val = {'status': 'OK',
                           'cmd': 'setOn'}
-            return(str(return_val))
+            return return_val
         #
         # set auto
         # Format: {
@@ -162,7 +162,7 @@ class Announce(Controller):
             self.mode = config.MODE_AUTO
             return_val = {'status': 'OK',
                           'cmd': 'setAuto'}
-            return(str(return_val))
+            return return_val
         #
         # set glitch mode
         # Format: {
@@ -176,11 +176,11 @@ class Announce(Controller):
                 return_val = {'status': 'FAIL',
                               'cmd': 'setGlitch',
                               'error': error}
-                return(str(return_val))
+                return return_val
             self.set_glitch()
             return_val = {'status': 'OK',
                           'cmd': 'setGlitch'}
-            return(str(return_val))
+            return return_val
         #
         # set announce
         # Format: {
@@ -195,9 +195,9 @@ class Announce(Controller):
                 return_val = {'status': 'FAIL',
                               'cmd': 'setGlitch',
                               'error': error}
-                return(str(return_val))
-            results = self.set_announce(order['announceid'], order['year'])
-            return(str(results))
+                return return_val
+            return_val = self.set_announce(order['announceid'], order['year'])
+            return return_val
         #
         #
         # invalid order
@@ -208,7 +208,7 @@ class Announce(Controller):
             return_val = {'status': 'FAIL',
                           'cmd': order['cmd'],
                           'error': error}
-            return(str(return_val))
+            return return_val
 
     """
         PLAY STUFF
@@ -237,14 +237,14 @@ class Announce(Controller):
             return_val = {'status': 'FAIL',
                           'cmd': 'setAnnounce',
                           'error': error}
-            return(str(return_val))
+            return return_val
         if self.mode == config.MODE_OFF:
             error = "No action taken when not in ON or AUTO modes. Use setAuto command."
             logging.warning(error + ': ' + order['cmd'])
             return_val = {'status': 'FAIL',
                           'cmd': 'setAnnounce',
                           'error': error}
-            return(str(return_val))
+            return return_val
         filepath = config.ANNOUNCE_AUDIO_DIR
         filename = f"{str(year)}-{announceid}{config.ANNOUNCE_AUDIO_EXT}"
         self.most_recent = filepath + filename
@@ -254,7 +254,7 @@ class Announce(Controller):
         return_val = {'status': 'OK',
                       'cmd': 'setAnnounce',
                       'file': filepath + filename}
-        return(return_val)
+        return return_val 
 
     def stop_audio(self):
         """Stop all audio output."""

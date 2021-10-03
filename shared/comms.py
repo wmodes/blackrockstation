@@ -52,6 +52,7 @@ class Comms(object):
         """Send an arbitrary order to another controller."""
         logging.info(f"Sending command to {controller}: {command}")
         print(f"{datetime.now().strftime('%H:%M:%S')} Sending command to {controller}: {command}")
+        return {'status': 'OK'} 
 
 
 def main():

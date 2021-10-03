@@ -3,7 +3,7 @@
 from shared import config
 from shared.controller import Controller
 from crossing.crossing import Crossing
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import threading
 from shared.streamtologger import StreamToLogger
 import logging
@@ -39,7 +39,7 @@ controller_obj = init_controller_obj()
 
 # threaded program_loop(controller_obj)
 #
-thread_obj = threading.Thread(target=program_loop, args=(controller_obj,), daemon=True)
+thread_obj = threading.Thread(target=program_loop,  args=(controller_obj,), daemon=True)
 thread_obj.start()
 
 # flask controller
@@ -49,6 +49,7 @@ app = Flask(__name__) # Create the server object
 @app.route("/cmd")
 def cmd():
     query_obj = request.args.to_dict(flat=True)
-    return str(controller_obj.act_on_order(query_obj))
+    results = controller_obj.act_on_order(query_obj)
+    return jsonify(results)
 
 app.run(debug=True)

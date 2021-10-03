@@ -80,13 +80,13 @@ class Train(Controller):
             error = "No command received"
             return_val = {'status': 'FAIL',
                           'error': error}
-            return(str(return_val))
+            return return_val
         if "cmd" not in order:
             error = f"No 'cmd' in order received: '{order}'"
             logging.info(error)
             return_val = {'status': 'FAIL',
                           'error': error}
-            return(str(return_val))
+            return return_val
         #
         # request status
         # Format: {
@@ -97,7 +97,7 @@ class Train(Controller):
             return_val = {'status': 'OK',
                        'cmd': 'reqStatus',
                        'results': self.get_status()}
-            return(str(return_val))
+            return return_val
         #
         # request log
         # Format: {
@@ -113,7 +113,7 @@ class Train(Controller):
             return_val = {'status': 'OK',
                           'cmd': 'reqLogs',
                           'results': results}
-            return(str(return_val))
+            return return_val
         #
         # set off
         # Format: {
@@ -124,9 +124,7 @@ class Train(Controller):
             self.mode = config.MODE_OFF
             return_val = {'status': 'OK',
                           'cmd': 'setOff'}
-            return(str(return_val))
-        elif order['cmd'].lower() == "setoff":
-            self.mode = config.MODE_OFF
+            return return_val
         #
         # set on
         # Format: {
@@ -137,7 +135,7 @@ class Train(Controller):
             self.mode = config.MODE_ON
             return_val = {'status': 'OK',
                           'cmd': 'setOn'}
-            return(str(return_val))
+            return return_val
         #
         # set auto
         # Format: {
@@ -148,7 +146,7 @@ class Train(Controller):
             self.mode = config.MODE_AUTO
             return_val = {'status': 'OK',
                           'cmd': 'setAuto'}
-            return(str(return_val))
+            return return_val
         #
         # set train
         # Format: {
@@ -164,11 +162,11 @@ class Train(Controller):
                 return_val = {'status': 'FAIL',
                               'cmd': 'setTrain',
                               'error': error}
-                return(str(return_val))
+                return return_val
             self.set_train(order["direction"], order["type"], order["year"])
             return_val = {'status': 'OK',
                           'cmd': 'setTrain'}
-            return(str(return_val))
+            return return_val
         #
         #
         # invalid order
@@ -179,7 +177,7 @@ class Train(Controller):
             return_val = {'status': 'FAIL',
                           'cmd': order['cmd'],
                           'error': error}
-            return(str(return_val))
+            return return_val
 
     """
         PLAY STUFF
@@ -198,6 +196,7 @@ class Train(Controller):
             return_val = {'status': 'FAIL',
                           'cmd': 'setTrain',
                           'error': error}
+            return return_val
         filepath = config.TRAIN_AUDIO_DIR
         filename = filepath + self.filetable[f"{year}-{type}"]
         logging.debug(f"Train audio filename: {filename}")
@@ -209,7 +208,7 @@ class Train(Controller):
             return_val = {'status': 'FAIL',
                           'cmd': 'setTrain',
                           'error': error}
-            return(return_val)
+            return return_val
         # by default, train recordings are recorded left-to-right or eastbound
         # if direction is westbound, swap the channels
         if direction == "westbound":
@@ -232,7 +231,7 @@ class Train(Controller):
         mixer.music.play()
         return_val = {'status': 'OK',
                       'cmd': 'setTrain'}
-        return(return_val)
+        return return_val
 
     """
         MAIN LOOP

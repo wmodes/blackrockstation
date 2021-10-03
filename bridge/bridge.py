@@ -65,13 +65,13 @@ class Bridge(Controller):
             error = "No command received"
             return_val = {'status': 'FAIL',
                           'error': error}
-            return(str(return_val))
+            return return_val
         if "cmd" not in order:
             error = f"No 'cmd' in order received: '{order}'"
             logging.info(error)
             return_val = {'status': 'FAIL',
                           'error': error}
-            return(str(return_val))
+            return return_val
         logging.info(f"Acting on order: {order}")
         #
         # request status
@@ -83,7 +83,7 @@ class Bridge(Controller):
             return_val = {'status': 'OK',
                        'cmd': 'reqStatus',
                        'results': self.get_status()}
-            return(str(return_val))
+            return return_val
         #
         # request log
         # Format: {
@@ -99,7 +99,7 @@ class Bridge(Controller):
             return_val = {'status': 'OK',
                           'cmd': 'reqLogs',
                           'results': results}
-            return(str(return_val))
+            return return_val
         #
         # set stop
         # Format: {
@@ -110,7 +110,7 @@ class Bridge(Controller):
             self.set_stop()
             return_val = {'status': 'OK',
                           'cmd': 'setStop'}
-            return(str(return_val))
+            return return_val
         #
         # set go
         # Format: {
@@ -125,11 +125,11 @@ class Bridge(Controller):
                 return_val = {'status': 'FAIL',
                               'cmd': 'setGo',
                               'error': error}
-                return(str(return_val))
+                return return_val
             self.set_go(order['direction'])
             return_val = {'status': 'OK',
                           'cmd': 'setGo'}
-            return(str(return_val))
+            return return_val
         #
         # invalid order
         #
@@ -139,7 +139,7 @@ class Bridge(Controller):
             return_val = {'status': 'FAIL',
                           'cmd': order['cmd'],
                           'error': error}
-            return(str(return_val))
+            return return_val
 
 
     """
