@@ -46,7 +46,7 @@ class Crossing(Controller):
         ORDERS
     """
 
-    def __act_on_order(self, order):
+    def act_on_order(self, order):
         """Take action based on order.
 
         Possible comnmands:
@@ -56,10 +56,16 @@ class Crossing(Controller):
             - reqLog [num_events]
         """
         if not order:
-            return
+            error = "No command received"
+            return_val = {'status': 'FAIL',
+                          'error': error}
+            return(str(return_val))
         if "cmd" not in order:
-            logging.info(f"No 'cmd' in order received: {order}")
-        logging.info(f"Acting on order: {order}")
+            error = f"No 'cmd' in order received: '{order}'"
+            logging.info(error)
+            return_val = {'status': 'FAIL',
+                          'error': error}
+            return(str(return_val))
         #
         # request status
         # Format: {
@@ -67,7 +73,10 @@ class Crossing(Controller):
         # }
         #
         if order['cmd'].lower() == "reqstatus":
-            print(self.get_status())
+            return_val = {'status': 'OK',
+                       'cmd': 'reqStatus',
+                       'results': self.get_status()}
+            return(str(return_val))
         #
         # request log
         # Format: {
@@ -77,9 +86,13 @@ class Crossing(Controller):
         #
         elif order['cmd'].lower() == "reqlog":
             if "qty" in order:
-                print(self.get_logs(order["qty"]))
+                results = self.get_logs(order["qty"])
             else:
-                print(self.get_logs())
+                results = self.get_logs()
+            return_val = {'status': 'OK',
+                          'cmd': 'reqLogs',
+                          'results': results}
+            return(str(return_val))
         #
         # set off
         # Format: {
@@ -89,6 +102,9 @@ class Crossing(Controller):
         elif order['cmd'].lower() == "setoff":
             self.mode = config.MODE_OFF
             self.set_off()
+            return_val = {'status': 'OK',
+                          'cmd': 'setOff'}
+            return(str(return_val))
         #
         # set on
         # Format: {
@@ -98,11 +114,19 @@ class Crossing(Controller):
         elif order['cmd'].lower() == "seton":
             self.mode = config.MODE_ON
             self.set_on()
+            return_val = {'status': 'OK',
+                          'cmd': 'setOn'}
+            return(str(return_val))
         #
         # invalid order
         #
         else:
-            logging.warning(f"invalid order received: {order}")
+            error = f"invalid order received"
+            logging.warning(error + ': ' + order['cmd'])
+            return_val = {'status': 'FAIL',
+                          'cmd': order['cmd'],
+                          'error': error}
+            return(str(return_val))
 
     """
         ACTIONS
@@ -142,7 +166,7 @@ class Crossing(Controller):
     def main_loop(self):
         """Get orders and act on them."""
         while True:
-            self.__act_on_order(self.receive_order())
+            self.act_on_order(self.receive_order())
             time.sleep(config.CROSS_LOOP_DELAY)
 
 
