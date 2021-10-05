@@ -11,6 +11,7 @@ import RPi.GPIO as GPIO
 import logging
 
 # Shared config
+DEBUG = True
 ID_FILE = ".identity"
 PKG_ROOT = "blackrockstation"
 LOG_FILENAME = "logs/controller.log"
@@ -111,6 +112,8 @@ RADIO_AUDIO_DIR = "radio/data/"
 RADIO_LOOP_DELAY = 0.25
 RADIO_AUDIO_EXT = ".mp3"
 RADIO_VOLUME = "0.8"
+RADIO_TRANSITION = "radio/data/transition/radio-static-burst.mp3"
+RADIO_TRANSITION_LEN = 0.6
 
 # TV class
 TV_VIDEO_DIR = "television/data/"

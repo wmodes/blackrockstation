@@ -1,5 +1,5 @@
 
-url = "http://localhost:5000/cmd";
+url = "http://localhost:8080/cmd";
 
 /**
  * If you don't care about primitives and only objects then this function

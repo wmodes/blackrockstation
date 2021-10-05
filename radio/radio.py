@@ -245,8 +245,7 @@ class Radio(Controller):
         logging.info("Setting glitch")
         print("Setting glitch")
         self.current_year = "glitch"
-        if self.mode != config.MODE_AUTO:
-            logging.warning("setGlitch no action taken when not in AUTO mode. Use setAuto command.")
+        self.play_transition()
         self.play_new()
 
     def set_year(self, year):
@@ -267,10 +266,17 @@ class Radio(Controller):
                           'cmd': 'setYear',
                           'error': error}
             return return_val
+        self.play_transition()
         self.play_new()
         return_val = {'status': 'OK',
                       'cmd': 'setYear'}
         return return_val
+
+    def play_transition(self):
+        """Play transition between station changes"""
+        pygame.mixer.music.load(config.RADIO_TRANSITION)
+        pygame.mixer.music.play()
+        time.sleep(config.RADIO_TRANSITION_LEN)
 
     def play_new(self):
         """Play new audio file."""
