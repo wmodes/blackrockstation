@@ -53,4 +53,4 @@ def cmd():
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
-app.run(debug=True)
+app.run(port=8080, debug=config.DEBUG, use_reloader=False)
