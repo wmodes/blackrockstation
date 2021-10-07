@@ -7,6 +7,7 @@ import logging
 from datetime import datetime
 import os
 import json
+import requests
 
 class Comms(object):
     """Comm class for all controllers."""
@@ -14,6 +15,16 @@ class Comms(object):
     def __init__(self):
         """Initialize class."""
         self.__order_queue = []
+        self.__controller_table = {
+            "announce": config.ANNOUNCE_SRV,
+            "crossing": config.CROSS_SRV,
+            "lights": config.LIGHTS_SRV,
+            "radio": config.RADIO_SRV,
+            "scheduler": config.SCHED_SRV,
+            "bridge": config.BRIDGE_SRV,
+            "train": config.ANNOUNCE_SRV,
+            "television": config.TV_SRV
+        }
         logging.info("Comms initiated")
 
     def get_order(self):
@@ -48,11 +59,13 @@ class Comms(object):
         self.__order_queue.append(order)
 
 
-    def send_order(self, controller, command):
+    def send_order(self, controller, cmd_obj):
         """Send an arbitrary order to another controller."""
-        logging.info(f"Sending command to {controller}: {command}")
-        print(f"{datetime.now().strftime('%H:%M:%S')} Sending command to {controller}: {command}")
-        return {'status': 'OK'} 
+        logging.info(f"Sending command to {controller}: {str(cmd_obj)}")
+        print(f"{datetime.now().strftime('%H:%M:%S')} Sending command to {controller}: {str(cmd_obj)}")
+        server = __controller_table[controller]
+        results = requests.get('http://example.com').content
+        return {'status': 'OK'}
 
 
 def main():

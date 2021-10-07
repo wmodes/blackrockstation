@@ -28,8 +28,8 @@ class Bridge(Controller):
 
     def init_signals(self):
         """Initialize signal GPIO."""
-        GPIO.setmode(config.SIGNAL_PINOUT_SCHEME)
-        for signal_pin in range(len(config.SIGNAL_PIN_TABLE)):
+        GPIO.setmode(config.BRIDGE_PINOUT_SCHEME)
+        for signal_pin in range(len(config.BRIDGE_PIN_TABLE)):
             GPIO.setup(signal_pin, GPIO.OUT)
 
     """
@@ -191,17 +191,17 @@ class Bridge(Controller):
         logging.info(f"Setting signal: Westbound is {self.stopgo(self.westbound)}, Eastbound is {self.stopgo(self.eastbound)}")
         print(f"Setting signal: Westbound is {self.stopgo(self.westbound)}, Eastbound is {self.stopgo(self.eastbound)}")
         if self.westbound == config.STATE_GO:
-            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_WB_STOP], config.GPIO_OFF)
-            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_WB_GO], config.GPIO_ON)
+            GPIO.output(config.BRIDGE_PIN_TABLE[config.BRIDGE_WB_STOP], config.GPIO_OFF)
+            GPIO.output(config.BRIDGE_PIN_TABLE[config.BRIDGE_WB_GO], config.GPIO_ON)
         else:
-            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_WB_STOP], config.GPIO_ON)
-            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_WB_GO], config.GPIO_OFF)
+            GPIO.output(config.BRIDGE_PIN_TABLE[config.BRIDGE_WB_STOP], config.GPIO_ON)
+            GPIO.output(config.BRIDGE_PIN_TABLE[config.BRIDGE_WB_GO], config.GPIO_OFF)
         if self.eastbound == config.STATE_GO:
-            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_EB_STOP], config.GPIO_OFF)
-            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_EB_GO], config.GPIO_ON)
+            GPIO.output(config.BRIDGE_PIN_TABLE[config.BRIDGE_EB_STOP], config.GPIO_OFF)
+            GPIO.output(config.BRIDGE_PIN_TABLE[config.BRIDGE_EB_GO], config.GPIO_ON)
         else:
-            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_EB_STOP], config.GPIO_ON)
-            GPIO.output(config.SIGNAL_PIN_TABLE[config.SIGNAL_EB_GO], config.GPIO_OFF)
+            GPIO.output(config.BRIDGE_PIN_TABLE[config.BRIDGE_EB_STOP], config.GPIO_ON)
+            GPIO.output(config.BRIDGE_PIN_TABLE[config.BRIDGE_EB_GO], config.GPIO_OFF)
 
     """
         MAIN LOOP
@@ -211,7 +211,7 @@ class Bridge(Controller):
         """Get orders and acts on them."""
         while True:
             self.act_on_order(self.receive_order())
-            time.sleep(config.SIGNAL_LOOP_DELAY)
+            time.sleep(config.BRIDGE_LOOP_DELAY)
 
 
     def start(self):

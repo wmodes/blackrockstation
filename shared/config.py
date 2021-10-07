@@ -37,6 +37,7 @@ CONTROLLERS = [
 VALID_YEARS = ['glitch', '1858', '1888', '1938', '1959', '1982', '2014', '2066', '2110']
 
 # Scheduler class
+SCHED_SRV = "https://announce.local:8080"
 SCHED_DATA = "scheduler/data/schedule.csv"
 SCHED_FIELDS = ['event', 'controller', 'time', 'duration', 'direction', 'traintype', 'variance', 'notes', 'announceid']
 SCHED_LOOP_DELAY = 0.25
@@ -51,10 +52,11 @@ SCHED_PERIODIC = [
     {"controller": "announce", "announceid": "periodic-safety-announcement", "times_per_day": 8},
 ]
 SCHED_DEPART_TIME = 1.5      # time in minutes
-SCHED_SIGNAL_BEFORE = 3       # time in minutes
+SCHED_BRIDGE_BEFORE = 3       # time in minutes
 SCHED_CROSSING_DELAY = 1     # time in minutes
 
 # Announce class
+ANNOUNCE_SRV = "https://announce.local:8080"
 ANNOUNCE_FILE_TABLE = "announce/data/file-table.csv"
 ANNOUNCE_AUDIO_DIR = "announce/data/"
 ANNOUNCE_GLITCH_DIR = "announce/data/glitch/"
@@ -64,6 +66,7 @@ ANNOUNCE_AUDIO_EXT = ".mp3"
 ANNOUNCE_VOLUME = "0.8"
 
 # Crossing class
+CROSS_SRV = "https://crossing.local:8080"
 CROSS_LOOP_DELAY = 0.25
 CROSS_OFF = 0
 CROSS_ON = 1
@@ -71,6 +74,7 @@ CROSS_PINOUT_SCHEME = GPIO.BCM   # Broadcom pin numbering (NOT Wiring Pin number
 CROSS_PIN = 19
 
 # Lights class
+LIGHTS_SRV = "https://lights.local:8080"
 LIGHTS_LOOP_DELAY = 0.25
 LIGHTS_GLITCH_LENGTH = 2        # longest glitch in seconds
 LIGHTS_TOTAL = 4
@@ -89,15 +93,17 @@ LIGHTS_PINOUT_SCHEME = GPIO.BCM   # Broadcom pin numbering (NOT Wiring Pin numbe
 LIGHTS_PIN_TABLE = [19, 20, 21, 26]
 
 # Signal class
-SIGNAL_LOOP_DELAY = 0.25
-SIGNAL_WB_STOP = 0          # Westbound stop signal
-SIGNAL_WB_GO = 1            # Westbound go signal
-SIGNAL_EB_STOP = 2          # Eastbound stop signal
-SIGNAL_EB_GO = 3            # Eastbound go signal
-SIGNAL_PINOUT_SCHEME = GPIO.BCM   # Broadcom pin numbering (NOT Wiring Pin numbering)
-SIGNAL_PIN_TABLE = [19, 20, 21, 26]
+BRIDGE_SRV = "https://bridge.local:8080"
+BRIDGE_LOOP_DELAY = 0.25
+BRIDGE_WB_STOP = 0          # Westbound stop signal
+BRIDGE_WB_GO = 1            # Westbound go signal
+BRIDGE_EB_STOP = 2          # Eastbound stop signal
+BRIDGE_EB_GO = 3            # Eastbound go signal
+BRIDGE_PINOUT_SCHEME = GPIO.BCM   # Broadcom pin numbering (NOT Wiring Pin numbering)
+BRIDGE_PIN_TABLE = [19, 20, 21, 26]
 
 # Train class
+TRAIN_SRV = "https://train.local:8080"
 TRAIN_FILE_TABLE = "train/data/file-table.csv"
 TRAIN_FILE_FIELDS = ['year', 'type', 'filename']
 TRAIN_TYPES = ["freight-through", "freight-stop", "passenger-through", "passenger-stop"]
@@ -108,6 +114,7 @@ TRAIN_AUDIO_EXT = ".mp3"
 TRAIN_VOLUME = "0.9"
 
 # Radio class
+RADIO_SRV = "https://radio.local:8080"
 RADIO_AUDIO_DIR = "radio/data/"
 RADIO_LOOP_DELAY = 0.25
 RADIO_AUDIO_EXT = ".mp3"
@@ -116,6 +123,7 @@ RADIO_TRANSITION = "radio/data/transition/radio-static-burst.mp3"
 RADIO_TRANSITION_LEN = 0.6
 
 # TV class
+TV_SRV = "https://television.local:8080"
 TV_VIDEO_DIR = "television/data/"
 TV_LOOP_DELAY = 0.25
 TV_VIDEO_EXT = ".mp4"

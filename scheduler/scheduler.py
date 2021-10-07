@@ -206,15 +206,22 @@ class Scheduler(Controller):
                 error = "controller or relay values missing"
                 logging.warning(error)
                 return_val = {'status': 'FAIL',
-                              'cmd': 'setYear',
+                              'cmd': 'order',
                               'error': error}
+                return return_val
+            if order['controller'] not in config.CONTROLLERS:
+                error = "invalid controller"
+                logging.warning(error)
+                return_val = {'status': 'FAIL',
+                              'cmd': 'order',
+                              'error': error,
+                              'hint': config.CONTROLLERS}
                 return return_val
             results = self.send_order_to_controller(
                 order["controller"], order["relay"])
-            # TODO: Convert relay to object to pass to comms
-            return_val = {'status': 'OK',
+            return_val = {'status': results['status'],
                       'cmd': 'order',
-                      'results': results}
+                      'results': results}   
             return return_val
         #
         # help
@@ -247,9 +254,9 @@ class Scheduler(Controller):
             return return_val
 
 
-    def send_order_to_controller(self, controller, command):
+    def send_order_to_controller(self, controller, cmd_obj):
         """Send an arbitrary order to another controller."""
-        return self.comms.send_order(controller, command)
+        return self.comms.send_order(controller, cmd_obj)
 
     """
         TIME CHECKS
