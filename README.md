@@ -44,7 +44,7 @@ Install the python module requirements with:
 
 You'll probably need the media files for testing. Download the mediafiles to the root:
 
-[media-files.tar.gz](https://drive.google.com/file/d/1_eMsQjETB9L_u6GMdJ2qZpQZf2TpKboU/view?usp=sharing)
+[media.tar.gz](https://drive.google.com/file/d/1_eMsQjETB9L_u6GMdJ2qZpQZf2TpKboU/view?usp=sharing)
 
 And unpack with:
 
