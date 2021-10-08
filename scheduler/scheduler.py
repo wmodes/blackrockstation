@@ -221,7 +221,7 @@ class Scheduler(Controller):
                 order["controller"], order["relay"])
             return_val = {'status': results['status'],
                       'cmd': 'order',
-                      'results': results}   
+                      'results': results}
             return return_val
         #
         # help
@@ -424,7 +424,7 @@ class Scheduler(Controller):
         now = datetime.now()
         # time_announce_arrival = now
         # time_signal_is_go = now
-        time_we_hear_train = now +  timedelta(minutes=config.SCHED_SIGNAL_BEFORE)
+        time_we_hear_train = now +  timedelta(minutes=config.SCHED_BRIDGE_BEFORE)
         time_crossing_is_on = time_we_hear_train  + timedelta(minutes=config.SCHED_CROSSING_DELAY)
         time_departure_announce = time_we_hear_train + timedelta(minutes=float(train_event['duration'])/2)
         time_signal_is_stop = time_we_hear_train + timedelta(minutes=float(train_event['duration'])) - timedelta(minutes=config.SCHED_DEPART_TIME)

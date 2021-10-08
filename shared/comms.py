@@ -63,9 +63,13 @@ class Comms(object):
         """Send an arbitrary order to another controller."""
         logging.info(f"Sending command to {controller}: {str(cmd_obj)}")
         print(f"{datetime.now().strftime('%H:%M:%S')} Sending command to {controller}: {str(cmd_obj)}")
-        server = __controller_table[controller]
-        results = requests.get('http://example.com').content
-        return {'status': 'OK'}
+        server = self.__controller_table[controller]
+        try:
+            return_val = requests.post(server, json=cmd_obj)
+        except requests.exceptions.RequestException as error:
+            return_val = {'status': 'FAIL',
+                          'error': str(error)}
+        return return_val
 
 
 def main():

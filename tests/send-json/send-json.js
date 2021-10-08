@@ -28,6 +28,7 @@ function tryParseJSONObject (jsonString){
 
 $("#submit").click(function(){
   var jsonText = $("#json").val();
+  var method = $('input[name="method"]:checked').val();
   // validate json
   var json = tryParseJSONObject(jsonText);
   if (! json) {
@@ -37,22 +38,36 @@ $("#submit").click(function(){
   else {
     var msg = "<span class=success>Valid JSON. Sending.</span>";
     $("#msgs").html(msg);
-    // construct URL
-    var urlPlusQuery = url + '?' + $.param(json);
-    console.log("urlPlusQuery:", urlPlusQuery);
-    // make request
-    $.ajax({
-        url: urlPlusQuery,
-        type: "GET",
+    if (method == "GET") {
+      // construct URL
+      var requestURL = url + '?' + $.param(json);
+      // make request
+      var ajax_obj = {
+        url: requestURL,
+        type: method,
+        dataType: "json"
+      };
+    }
+    else if(method == "POST") {
+      var requestURL = url;
+      // make request
+      var ajax_obj = {
+        url: requestURL,
+        // url: "/get",
+        type: method,
         dataType: "json",
-        success: function(data) {
-          //var json = JSON.parse(data);
-          $('#results').html(JSON.stringify(data, undefined, 2))
-        },
-        error: function(request,error) {
-          // var json = JSON.parse(request);
-          $('#results').html(JSON.stringify(request, undefined, 2))
-        }
-      });
+        contentType: "application/json",
+        data: JSON.stringify(json)
+      };
+    }
+    $.ajax(ajax_obj)
+    .done(function(data) {
+      //var json = JSON.parse(data);
+      $('#results').html(JSON.stringify(data, undefined, 2))
+    })
+    .fail(function(request,error) {
+      // var json = JSON.parse(request);
+      $('#results').html(JSON.stringify(request, undefined, 2))
+    })
    }
 })
