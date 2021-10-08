@@ -381,8 +381,8 @@ class Scheduler(Controller):
                 }
             #TODO: Convert above to True/False?
             self.comms.send_order("crossing", order)
-        elif event['controller'] == "signal":
-            # send command to signal controller
+        elif event['controller'] == "bridge":
+            # send command to bridge controller
             #   form:
             #       set go *direction*
             #       set stop
@@ -395,7 +395,7 @@ class Scheduler(Controller):
                     "cmd" : "setGo",
                     "direction" : event['direction']
                 }
-            self.comms.send_order("signal", order)
+            self.comms.send_order("bridge", order)
         elif re.search('radio|television|lights', event['controller']):
             # send command to radio, tv, or lights controller
             #   form:
@@ -430,10 +430,10 @@ class Scheduler(Controller):
         time_signal_is_stop = time_we_hear_train + timedelta(minutes=float(train_event['duration'])) - timedelta(minutes=config.SCHED_DEPART_TIME)
         time_crossing_is_off = time_we_hear_train + timedelta(minutes=float(train_event['duration'])) - timedelta(minutes=config.SCHED_CROSSING_DELAY)
         #
-        # 1) SIGNAL turns green as soon as train enters the block
-        #   i.e., several minutes before we can hear it
+        # 1) BRIDGE signal turns green as soon as train enters the
+        #   block, i.e., several minutes before we can hear it
         self.trigger_event({
-            "controller": "signal",
+            "controller": "bridge",
             "event": "go",
             "direction": train_event['direction']
         })
@@ -468,10 +468,10 @@ class Scheduler(Controller):
                 "time": time_departure_announce
             })
         #
-        # 6) SIGNAL turns red as soon as the train passes the station
-        #   i.e., some minutes before end of duration
+        # 6) BRIDGE signal turns red as soon as the train passes the
+        #   station, i.e., some minutes before end of duration
         self.delay_event({
-            "controller": "signal",
+            "controller": "bridge",
             "event": "stop",
             "direction": train_event['direction'],
             "time": time_signal_is_stop

@@ -4,6 +4,7 @@ from shared import config
 from shared.controller import Controller
 from train.train import Train
 from flask import Flask, request, jsonify
+from flask_cors import CORS, cross_origin
 import threading
 from shared.streamtologger import StreamToLogger
 import logging
@@ -45,10 +46,15 @@ thread_obj.start()
 # flask controller
 #
 app = Flask(__name__) # Create the server object
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
-@app.route("/cmd")
+@app.route("/cmd",methods = ['POST', 'GET'])
 def cmd():
-    order_obj = request.args.to_dict(flat=True)
+    if request.method == 'GET':
+        order_obj = request.args.to_dict(flat=True)
+    else:
+        order_obj = request.get_json(force=True)
     response = jsonify(controller_obj.act_on_order(order_obj))
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response

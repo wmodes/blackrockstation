@@ -39,7 +39,7 @@ VALID_YEARS = ['glitch', '1858', '1888', '1938', '1959', '1982', '2014', '2066',
 # Scheduler class
 SCHED_SRV = "https://announce.local:8080"
 SCHED_DATA = "scheduler/data/schedule.csv"
-SCHED_FIELDS = ['event', 'controller', 'time', 'duration', 'direction', 'traintype', 'variance', 'notes', 'announceid']
+SCHED_FIELDS = ['event', 'controller', 'time', 'duration', 'direction', 'traintype', 'variance', 'notes', 'announceid', 'time_since_last']
 SCHED_LOOP_DELAY = 0.25
 SCHED_DEFAULT_LOG = 100
 SCHED_YEARS = [1858, 1888, 1938, 1959, 1982, 2014, 2066, 2110]
