@@ -359,9 +359,8 @@ class Scheduler(Controller):
         # prevent bounce: if the time in H:M is the same as the last timeslip, return
         if now.strftime("%H:%M") == self.last_timeslip.strftime("%H:%M"):
             return
-        next_timeslip_min = self.last_timeslip + timedelta(minutes=config.SCHED_TIMESLIP_INTERVAL)
-        next_timeslip_max = next_timeslip_min + timedelta(minutes=config.SCHED_TIME_DELTA)
-        if next_timeslip_min < now < next_timeslip_max:
+        next_timeslip = self.last_timeslip + timedelta(minutes=config.SCHED_TIMESLIP_INTERVAL)
+        if now > next_timeslip:
             # find out what the index of the current year is
             index = config.SCHED_YEARS.index(self.current_year)
             # increment one
@@ -377,9 +376,9 @@ class Scheduler(Controller):
     def check_for_delayed_events(self):
         """Check if it is time for delayed events."""
         now = datetime.now()
-        now_delta = now + timedelta(minutes=config.SCHED_TIME_DELTA)
         for event in self.delayed_events:
-            if now < event['time'] < now_delta:
+            # logging.debug(f"Delayed event: Now: {now.strftime('%H:%M:%S')}, Time: {event['time_dt'].strftime('%H:%M:%S')}, Delta: {now_delta.strftime('%H:%M:%S')}")
+            if now > event['time_dt']:
                 self.trigger_event(event)
                 self.delayed_events.remove(event)
 
@@ -510,11 +509,11 @@ class Scheduler(Controller):
             self.delay_event({
                 "controller": "announce",
                 "announceid": train_event['announceid'] + "-arrival",
-                "time": time_we_hear_train
+                "time_dt": time_we_hear_train
             })
         #
         # 3) TRAINAUDIO starts
-        train_event['time'] = time_we_hear_train
+        train_event['time_dt'] = time_we_hear_train
         self.delay_event(train_event)
         #
         # 4) CROSSING comes on as soon as train nears crossing
@@ -522,7 +521,7 @@ class Scheduler(Controller):
         self.delay_event({
             "controller": "crossing",
             "event": "on",
-            "time": time_crossing_is_on
+            "time_dt": time_crossing_is_on
         })
         #
         # 5) ANNOUNCE departure before train leaves station
@@ -531,7 +530,7 @@ class Scheduler(Controller):
             self.delay_event({
                 "controller": "announce",
                 "announceid": train_event['announceid'] + "-departure",
-                "time": time_departure_announce
+                "time_dt": time_departure_announce
             })
         #
         # 6) BRIDGE signal turns red as soon as the train passes the
@@ -540,7 +539,7 @@ class Scheduler(Controller):
             "controller": "bridge",
             "event": "stop",
             "direction": train_event['direction'],
-            "time": time_signal_is_stop
+            "time_dt": time_signal_is_stop
         })
         #
         # 7) CROSSING turns off as soon as the train passes
@@ -548,7 +547,7 @@ class Scheduler(Controller):
         self.delay_event({
             "controller": "crossing",
             "event": "off",
-            "time": time_crossing_is_off
+            "time_dt": time_crossing_is_off
         })
 
 
@@ -560,12 +559,12 @@ class Scheduler(Controller):
             self.delay_event({
                 "controller": controller,
                 "event": "glitch",
-                "time": datetime.now() + timedelta(seconds=1)
+                "time_dt": datetime.now() + timedelta(seconds=1)
             })
             self.delay_event({
                 "controller": controller,
                 "event": "year",
-                "time": datetime.now() + timedelta(minutes=config.SCHED_TIMESLIP_GLITCH)
+                "time_dt": datetime.now() + timedelta(minutes=config.SCHED_TIMESLIP_GLITCH)
             })
         #pprint(self.delayed_events)
 

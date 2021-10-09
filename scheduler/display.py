@@ -79,7 +79,11 @@ class Display(object):
         str_array = text.splitlines()
         for i in range(min(len(str_array), self.sched_win_height-3)):
             # print(str_array[i])
-            self.sched_win.addstr(i, 0, str_array[i])
+            if i == 3:
+                attr = curses.A_REVERSE
+            else:
+                attr = curses.A_NORMAL
+            self.sched_win.addstr(i, 0, str_array[i], attr)
             self.sched_win.refresh()
             time.sleep(config.SCHED_LOOP_DELAY/4)
         self.sched_win.refresh()
