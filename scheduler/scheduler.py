@@ -2,6 +2,7 @@
 
 from shared import config
 from shared.controller import Controller
+from scheduler.display import Display
 
 import logging
 from pprint import pprint
@@ -29,6 +30,7 @@ class Scheduler(Controller):
         self.current_year = config.SCHED_YEARS[0]
         self.last_event = ""
         self.last_timeslip = datetime.now()
+        self.display = Display()
 
     """
         SETUP
@@ -108,23 +110,39 @@ class Scheduler(Controller):
         return future_list
         #return self.display_train_schedule(future_list)
 
-    def display_train_schedule(self, event_list=None):
+    def display_future_trains(self, n=10):
         """Return human-readable schedule of future trains."""
-        if not event_list:
-            event_list = self.schedule
-        headers = ['Train', 'Arrival', 'Var', 'Direction', 'Type', 'Notes']
+        event_list = self.get_future_trains(n)
+        headers = ['Train', 'Arrival', 'Direction', 'Type', 'Notes']
         # convert dict to array of arrays
         events = []
         for event in event_list:
             if event['controller'] == "train":
                 events.append([event['event'], event['time'],
-                              event['variance'], event['direction'], event['traintype'], event['notes']])
+                              event['direction'], event['traintype'], event['notes']])
         if not len(events):
             return
         #table = columnar(events, headers, terminal_width=100, column_sep='│', row_sep='─')
         table = columnar(events, headers, no_borders=True, terminal_width=110, wrap_max=8)
         #table = columnar(events, headers, terminal_width=110, column_sep='|', row_sep='─')
-        return table
+        return str(table)
+
+    def display_train_schedule(self, event_list=None):
+        """Return human-readable schedule of all trains."""
+        if not event_list:
+            event_list = self.schedule
+        headers = ['Train', 'Arrival', 'Direction', 'Type', 'Notes']
+        # convert dict to array of arrays
+        events = []
+        for event in event_list:
+            if event['controller'] == "train":
+                events.append([event['event'], event['time'], event['direction'], event['traintype'], event['notes']])
+        if not len(events):
+            return
+        #table = columnar(events, headers, terminal_width=100, column_sep='│', row_sep='─')
+        table = columnar(events, headers, no_borders=True, terminal_width=110, wrap_max=8)
+        #table = columnar(events, headers, terminal_width=110, column_sep='|', row_sep='─')
+        return str(table)
 
     """
         ORDERS
@@ -256,6 +274,8 @@ class Scheduler(Controller):
 
     def send_order_to_controller(self, controller, cmd_obj):
         """Send an arbitrary order to another controller."""
+        now = datetime.now()
+        self.display.display_status(f"{now.strftime('%H:%M')}: Sending command to {controller}: {str(cmd_obj)}")
         return self.comms.send_order(controller, cmd_obj)
 
     """
@@ -286,6 +306,28 @@ class Scheduler(Controller):
                     self.trigger_event(event)
                 break
 
+    def next_train(self):
+        time_str = self.get_next_train()["time"]
+        next_time = datetime.strptime(time_str, '%H:%M').time()
+        now_dt = datetime.now()
+        next_dt = datetime.combine(now_dt, next_time)
+        time_delta = next_dt - now_dt
+        if time_delta.total_seconds() < 0:
+            next_dt = datetime.combine(now_dt + 1, next_time)
+            time_delta = next_dt - now_dt
+        secs = time_delta.total_seconds()
+        hrs = int(secs // 3600)
+        mins = int((secs % 3600) // 60)
+        secs = int(secs % 60)
+        return f"{hrs}:{mins:02d}:{secs:02d}"
+
+    def next_timeslip(self):
+        next = self.last_timeslip + timedelta(minutes=config.SCHED_TIMESLIP_INTERVAL)
+        now = datetime.now()
+        time_delta = next - now
+        min = int(time_delta.total_seconds() // 60)
+        sec = int(time_delta.total_seconds() % 60)
+        return f"{min}:{sec:02d}"
 
     def check_for_timeslip(self):
         """Check to see if it is time for a timeslip."""
@@ -356,7 +398,7 @@ class Scheduler(Controller):
                 "traintype" : event['traintype'],
                 "year" : self.current_year
             }
-            self.comms.send_order("train", order)
+            self.send_order_to_controller("train", order)
         elif event['controller'] == "announce":
             # send command to announce controller
             #   form: set announce *id* *year*
@@ -365,7 +407,7 @@ class Scheduler(Controller):
                 "announceid" : event['announceid'],
                 "year" : self.current_year
             }
-            self.comms.send_order("announce", order)
+            self.send_order_to_controller("announce", order)
         elif event['controller'] == "crossing":
             # send command to crossing controller
             #   form:
@@ -380,7 +422,7 @@ class Scheduler(Controller):
                     "cmd" : "setOff"
                 }
             #TODO: Convert above to True/False?
-            self.comms.send_order("crossing", order)
+            self.send_order_to_controller("crossing", order)
         elif event['controller'] == "bridge":
             # send command to bridge controller
             #   form:
@@ -395,7 +437,7 @@ class Scheduler(Controller):
                     "cmd" : "setGo",
                     "direction" : event['direction']
                 }
-            self.comms.send_order("bridge", order)
+            self.send_order_to_controller("bridge", order)
         elif re.search('radio|television|lights', event['controller']):
             # send command to radio, tv, or lights controller
             #   form:
@@ -412,7 +454,7 @@ class Scheduler(Controller):
                 }
             else:
                 return
-            self.comms.send_order(event['controller'], order)
+            self.send_order_to_controller(event['controller'], order)
 
     def trigger_train(self, train_event):
         """
@@ -491,9 +533,10 @@ class Scheduler(Controller):
         logging.info(f"Timeslip to {self.current_year}")
         # trigger glitch events and schedule year event
         for controller in ["radio", "television", "lights"]:
-            self.trigger_event({
+            self.delay_event({
                 "controller": controller,
-                "event": "glitch"
+                "event": "glitch",
+                "time": datetime.now() + timedelta(seconds=1)
             })
             self.delay_event({
                 "controller": controller,
@@ -502,6 +545,21 @@ class Scheduler(Controller):
             })
         #pprint(self.delayed_events)
 
+
+    """
+        DISPLAY
+    """
+
+    def update_display(self):
+        # print ("Updating display")
+        sched_str = self.display_future_trains(8)
+        # print("Type:",type(sched_str))
+        # print(sched_str)
+        self.display.display_sched(sched_str)
+        self.display.display_time(self.next_train(), self.next_timeslip(), self.current_year)
+        self.display.display_status()
+        self.display.update()
+
     """
         MAIN LOOP
     """
@@ -509,6 +567,7 @@ class Scheduler(Controller):
     def main_loop(self):
         """Get orders and acts on them."""
         while True:
+            self.update_display()
             self.act_on_order(self.receive_order())
             self.check_for_delayed_events()
             self.check_for_timeslip()

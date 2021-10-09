@@ -39,10 +39,8 @@ class Comms(object):
                 order = json.loads(order_json)
                 self.__order_queue.append(order)
                 logging.info(f"Order proper syntax: {order}")
-                print(f"Order proper syntax: {order}")
             except:
                 logging.warning(f"Order syntax error: {order_json}")
-                print(f"Order syntax error: {order_json}")
         #
         # we return you to your regularly scheduled code
         if len(self.__order_queue) == 0:
@@ -62,10 +60,10 @@ class Comms(object):
     def send_order(self, controller, cmd_obj):
         """Send an arbitrary order to another controller."""
         logging.info(f"Sending command to {controller}: {str(cmd_obj)}")
-        print(f"{datetime.now().strftime('%H:%M:%S')} Sending command to {controller}: {str(cmd_obj)}")
+        # print(f"{datetime.now().strftime('%H:%M:%S')} Sending command to {controller}: {str(cmd_obj)}")
         server = self.__controller_table[controller]
         try:
-            return_val = requests.post(server, json=cmd_obj)
+            return_val = requests.post(server, json=cmd_obj, timeout=0.001)
         except requests.exceptions.RequestException as error:
             return_val = {'status': 'FAIL',
                           'error': str(error)}
