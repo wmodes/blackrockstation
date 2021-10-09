@@ -12,6 +12,7 @@ from columnar import columnar
 import time
 import re
 import random
+import shutil
 
 # TODO: All reports and status should return objects to easily passs to source.
 
@@ -30,6 +31,8 @@ class Scheduler(Controller):
         self.current_year = config.SCHED_YEARS[0]
         self.last_event = ""
         self.last_timeslip = datetime.now()
+        self.count_time = 0
+        self.count_sched = 0
         self.display = Display()
 
     """
@@ -81,13 +84,13 @@ class Scheduler(Controller):
         """
         future_list = []
         # search through train schedule for time that matches H:M
-        now = datetime.now().time()
+        now_dt = datetime.now()
         for event in self.schedule:
             # if this event is not a train event, skip
             if event["controller"] != "train":
                 continue
             # if this event is already in the past, skip
-            if datetime.strptime(event["time"], "%H:%M").time() < now:
+            if self.str2dt(event["time"], False) < now_dt:
                 continue
             # all the following events are in the future
             # if we have n events, stop
@@ -101,7 +104,7 @@ class Scheduler(Controller):
                 if event["controller"] != "train":
                     continue
                 # if this event is not in the past, stop (i.e., we've wrapped around)
-                if datetime.strptime(event["time"], "%H:%M").time() > now:
+                if self.str2dt(event["time"], False) > now_dt:
                     break
                 # if we have n events, stop
                 if len(future_list) >= n:
@@ -122,9 +125,8 @@ class Scheduler(Controller):
                               event['direction'], event['traintype'], event['notes']])
         if not len(events):
             return
-        #table = columnar(events, headers, terminal_width=100, column_sep='│', row_sep='─')
-        table = columnar(events, headers, no_borders=True, terminal_width=110, wrap_max=8)
-        #table = columnar(events, headers, terminal_width=110, column_sep='|', row_sep='─')
+        width = shutil.get_terminal_size().columns - 2
+        table = columnar(events, headers, no_borders=True, wrap_max=8, terminal_width=width)
         return str(table)
 
     def display_train_schedule(self, event_list=None):
@@ -279,6 +281,51 @@ class Scheduler(Controller):
         return self.comms.send_order(controller, cmd_obj)
 
     """
+        TIME HELPERS
+    """
+
+    def str2dt(self, time_str, is_next=True):
+        """
+        Given a time string, returns the next matching datetime.
+
+        Params:
+            time_str (str) representing a time in %H:%M format
+            is_next (bool) whether today's datetime (False) or the next datetime (True) should be found
+        """
+        now_dt = datetime.now()
+        tomorrow_dt = now_dt + timedelta(days=1)
+        try:
+            nexttime_t = datetime.strptime(time_str, '%H:%M').time()
+            nexttime_dt = datetime.combine(now_dt, nexttime_t)
+            if is_next:
+                time_delta = nexttime_dt - now_dt
+                if time_delta.total_seconds() < 0:
+                    nexttime_dt = datetime.combine(tomorrow_dt, nexttime_t)
+        except:
+            logging.warning(f"Bad date: {time_str}")
+            nexttime_dt = tomorrow_dt
+        return nexttime_dt
+
+    def next_train(self):
+        time_str = self.get_next_train()["time"]
+        next_dt = self.str2dt(time_str)
+        now_dt = datetime.now()
+        time_delta = next_dt - now_dt
+        secs = time_delta.total_seconds()
+        hrs = int(secs // 3600)
+        mins = int((secs % 3600) // 60)
+        secs = int(secs % 60)
+        return f"{hrs}:{mins:02d}:{secs:02d}"
+
+    def next_timeslip(self):
+        next = self.last_timeslip + timedelta(minutes=config.SCHED_TIMESLIP_INTERVAL)
+        now = datetime.now()
+        time_delta = next - now
+        min = int(time_delta.total_seconds() // 60)
+        sec = int(time_delta.total_seconds() % 60)
+        return f"{min}:{sec:02d}"
+
+    """
         TIME CHECKS
     """
 
@@ -305,29 +352,6 @@ class Scheduler(Controller):
                 else:
                     self.trigger_event(event)
                 break
-
-    def next_train(self):
-        time_str = self.get_next_train()["time"]
-        next_time = datetime.strptime(time_str, '%H:%M').time()
-        now_dt = datetime.now()
-        next_dt = datetime.combine(now_dt, next_time)
-        time_delta = next_dt - now_dt
-        if time_delta.total_seconds() < 0:
-            next_dt = datetime.combine(now_dt + 1, next_time)
-            time_delta = next_dt - now_dt
-        secs = time_delta.total_seconds()
-        hrs = int(secs // 3600)
-        mins = int((secs % 3600) // 60)
-        secs = int(secs % 60)
-        return f"{hrs}:{mins:02d}:{secs:02d}"
-
-    def next_timeslip(self):
-        next = self.last_timeslip + timedelta(minutes=config.SCHED_TIMESLIP_INTERVAL)
-        now = datetime.now()
-        time_delta = next - now
-        min = int(time_delta.total_seconds() // 60)
-        sec = int(time_delta.total_seconds() % 60)
-        return f"{min}:{sec:02d}"
 
     def check_for_timeslip(self):
         """Check to see if it is time for a timeslip."""
@@ -550,15 +574,25 @@ class Scheduler(Controller):
         DISPLAY
     """
 
-    def update_display(self):
-        # print ("Updating display")
-        sched_str = self.display_future_trains(8)
-        # print("Type:",type(sched_str))
-        # print(sched_str)
-        self.display.display_sched(sched_str)
-        self.display.display_time(self.next_train(), self.next_timeslip(), self.current_year)
+    def draw_status_display(self):
         self.display.display_status()
-        self.display.update()
+
+    def update_time_display(self):
+        self.display.display_time(self.next_train(), self.next_timeslip(), self.current_year)
+
+    def update_sched_display(self):
+        sched_str = self.display_future_trains(config.SCHED_DISPLAY_TRAINS)
+        self.display.display_sched(sched_str)
+
+    def update_display(self):
+        if self.count_time <= 0:
+            self.update_time_display()
+            self.count_time = round(config.SCHED_DISPLAY_TIME_FREQ / config.SCHED_LOOP_DELAY)
+        self.count_time -= 1
+        if self.count_sched <= 0:
+            self.update_sched_display()
+            self.count_sched = round(config.SCHED_DISPLAY_SCHED_FREQ / config.SCHED_LOOP_DELAY)
+        self.count_sched -= 1
 
     """
         MAIN LOOP
@@ -579,6 +613,9 @@ class Scheduler(Controller):
     def start(self):
         """Get the party started."""
         logging.info('Starting.')
+        time.sleep(1)
+        self.update_display()
+        self.draw_status_display()
         self.trigger_timeslip()
         self.main_loop()
 

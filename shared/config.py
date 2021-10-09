@@ -54,8 +54,11 @@ SCHED_PERIODIC = [
 SCHED_DEPART_TIME = 1.5      # time in minutes
 SCHED_BRIDGE_BEFORE = 3       # time in minutes
 SCHED_CROSSING_DELAY = 1     # time in minutes
+SCHED_DISPLAY_TRAINS = 14
+SCHED_DISPLAY_TIME_FREQ = 1      # approx seconds
+SCHED_DISPLAY_SCHED_FREQ = 30      # approx seconds
 SCHED_WIN_TIME_HEIGHT = 6
-SCHED_WIN_STATUS_HEIGHT = 6
+SCHED_WIN_STATUS_HEIGHT = 8
 SCHED_TIME_FORMAT = "%b %d, %Y %H:%M:%S"
 
 # Announce class
