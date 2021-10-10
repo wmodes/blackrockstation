@@ -44,7 +44,7 @@ class Train(Controller):
                 if row['year'] == '':
                     continue
                 # add filename to filetable
-                index = f"{row['year']}-{row['type']}"
+                index = f"{row['year']}-{row['traintype']}"
                 filetable[index] = row['filename']
         #pprint(filetable)
         return filetable
@@ -72,7 +72,7 @@ class Train(Controller):
         Possible commands:
             - setOff
             - setOn
-            - setTrain *direction* *type* *year*
+            - setTrain *direction* *traintype* *year*
             - reqStatus
             - reqLog [num_events]
         """
@@ -152,18 +152,18 @@ class Train(Controller):
         # Format: {
         #   "cmd" : "setTrain",
         #   "direction" : *string*,
-        #   "type" : *string*
+        #   "traintype" : *string*
         #   "year" : *year*
         # }
         elif order['cmd'].lower() == "settrain":
-            if "direction" not in order or "type" not in order or "year" not in order:
-                error = f"invalid order received: {order}"
+            if "direction" not in order or "traintype" not in order or "year" not in order:
+                error = f"direction, traintype, or year not in order: {order}"
                 logging.warning(error)
                 return_val = {'status': 'FAIL',
                               'cmd': 'setTrain',
                               'error': error}
                 return return_val
-            self.set_train(order["direction"], order["type"], order["year"])
+            self.set_train(order["direction"], order["traintype"], order["year"])
             return_val = {'status': 'OK',
                           'cmd': 'setTrain'}
             return return_val
@@ -176,7 +176,7 @@ class Train(Controller):
                 {'cmd': 'setOn'},
                 {'cmd': 'setTrain',
                  'direction': ['westbound', 'eastbound'],
-                 'type': "freight-through",
+                 'traintype': "freight-through",
                  'year': ['1858', '1888', '1938', '1959', '1982', '2014', '2066', '2110']},
                 {'cmd': 'reqStatus'},
                 {'cmd': 'reqLog',
@@ -202,13 +202,13 @@ class Train(Controller):
         PLAY STUFF
     """
 
-    def set_train(self, direction, type, year):
+    def set_train(self, direction, traintype, year):
         """Play train audio.
 
         Filename is assembled from passed parameters.
         All train sounds are recorded/edited to move into field from left to right. This default serves as "eastbound." "Westbound" trains have their audio channels reversed.
         """
-        logging.debug(f"Setting train: {direction} {type} {year}")
+        logging.debug(f"Setting train: {direction} {traintype} {year}")
         if self.mode == config.MODE_OFF:
             error = "No action taken when not in ON or AUTO modes. Use setAuto command."
             logging.warning(error)
@@ -217,7 +217,7 @@ class Train(Controller):
                           'error': error}
             return return_val
         filepath = config.TRAIN_AUDIO_DIR
-        filename = filepath + self.filetable[f"{year}-{type}"]
+        filename = filepath + self.filetable[f"{year}-{traintype}"]
         logging.debug(f"Train audio filename: {filename}")
         # confirm file is there
         file = Path(filename)

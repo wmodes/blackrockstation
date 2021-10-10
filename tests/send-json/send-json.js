@@ -1,5 +1,25 @@
 
 url = "http://localhost:8080/cmd";
+url_pre = "http://"
+url_post = "/cmd"
+CONTROLLERS = {
+	"scheduler":  {"port": 8080,
+                   "server": "localhost"},
+	"announce":   {"port": 8081,
+                   "server": "localhost"},
+	"bridge":     {"port": 8082,
+                   "server": "localhost"},
+	"crossing":   {"port": 8083,
+                   "server": "localhost"},
+	"lights":     {"port": 8084,
+                   "server": "localhost"},
+	"radio":      {"port": 8085,
+                   "server": "localhost"},
+	"train":      {"port": 8086,
+                   "server": "localhost"},
+	"television": {"port": 8087,
+                   "server": "localhost"}
+}
 
 /**
  * If you don't care about primitives and only objects then this function
@@ -29,6 +49,7 @@ function tryParseJSONObject (jsonString){
 $("#submit").click(function(){
   var jsonText = $("#json").val();
   var method = $('input[name="method"]:checked').val();
+  var controller = $('input[name="controller"]:checked').val();
   // validate json
   var json = tryParseJSONObject(jsonText);
   if (! json) {
@@ -38,6 +59,7 @@ $("#submit").click(function(){
   else {
     var msg = "<span class=success>Valid JSON. Sending.</span>";
     $("#msgs").html(msg);
+		var url = url_pre + CONTROLLERS[controller].server + ':' + CONTROLLERS[controller].port + url_post;
     if (method == "GET") {
       // construct URL
       var requestURL = url + '?' + $.param(json);

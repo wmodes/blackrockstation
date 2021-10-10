@@ -35,7 +35,7 @@ def program_loop(controller_obj):
         logging.exception('Got exception on main handler')
         raise
 
-whoami = "Television"
+whoami = "television"
 controller_obj = init_controller_obj()
 
 # threaded program_loop(controller_obj)
@@ -59,4 +59,4 @@ def cmd():
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
-app.run(port=8080, debug=config.DEBUG, use_reloader=False)
+app.run(port=config.CONTROLLERS[whoami]["port"], debug=config.DEBUG, use_reloader=False)

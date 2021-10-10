@@ -15,17 +15,15 @@ class Comms(object):
     def __init__(self):
         """Initialize class."""
         self.__order_queue = []
-        self.__controller_table = {
-            "announce": config.ANNOUNCE_SRV,
-            "crossing": config.CROSS_SRV,
-            "lights": config.LIGHTS_SRV,
-            "radio": config.RADIO_SRV,
-            "scheduler": config.SCHED_SRV,
-            "bridge": config.BRIDGE_SRV,
-            "train": config.ANNOUNCE_SRV,
-            "television": config.TV_SRV
-        }
+        self.make_controller_table()
         logging.info("Comms initiated")
+
+    def make_controller_table(self):
+        self.__controller_table = {}
+        for key, value in config.CONTROLLERS.items():
+            url = f"http://{value['server']}:{value['port']}/cmd"
+            self.__controller_table[key] = url
+        logging.debug(f"controller table: {str(self.__controller_table)}")
 
     def get_order(self):
         """Get order from queue."""
@@ -63,7 +61,7 @@ class Comms(object):
         # print(f"{datetime.now().strftime('%H:%M:%S')} Sending command to {controller}: {str(cmd_obj)}")
         server = self.__controller_table[controller]
         try:
-            return_val = requests.post(server, json=cmd_obj, timeout=0.001)
+            return_val = requests.post(server, json=cmd_obj, timeout=0.01)
         except requests.exceptions.RequestException as error:
             return_val = {'status': 'FAIL',
                           'error': str(error)}

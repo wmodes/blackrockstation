@@ -229,13 +229,13 @@ class Scheduler(Controller):
                               'cmd': 'order',
                               'error': error}
                 return return_val
-            if order['controller'] not in config.CONTROLLERS:
+            if order['controller'] not in list(config.CONTROLLERS):
                 error = "invalid controller"
                 logging.warning(error)
                 return_val = {'status': 'FAIL',
                               'cmd': 'order',
                               'error': error,
-                              'hint': config.CONTROLLERS}
+                              'hint': list(config.CONTROLLERS)}
                 return return_val
             results = self.send_order_to_controller(
                 order["controller"], order["relay"])

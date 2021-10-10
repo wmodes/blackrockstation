@@ -12,12 +12,36 @@
   </head>
   <body>
     <h1>Test Sending JSON</h1>
-    <p>Add JSON here:</p>
-    <textarea id="json" rows="8" cols="80"></textarea><br>
-    <div id="msgs"></div>
-    <button id="submit">Send</button>
-    <label><input type="radio" name="method" value="GET" checked>GET</label>
-    <label><input type="radio" name="method" value="POST">POST</label><br>
+    <table>
+      <tr>
+        <td>
+          <p>Add JSON here:</p>
+          <textarea id="json" rows="8" cols="80"></textarea><br>
+          <div id="msgs"></div>
+          <button id="submit">Send</button>
+          <label><input type="radio" name="method" value="GET" checked>GET</label>
+          <label><input type="radio" name="method" value="POST">POST</label><br>
+        </td>
+        <td>
+          <h3>Controller</h3>    <label><input type="radio" name="controller"
+            value="scheduler" checked>scheduler</label><br>
+          <label><input type="radio" name="controller"
+            value="announce">announce</label><br>
+          <label><input type="radio" name="controller"
+            value="bridge">bridge</label><br>
+          <label><input type="radio" name="controller"
+            value="crossing">crossing</label><br>
+          <label><input type="radio" name="controller"
+            value="lights">lights</label><br>
+          <label><input type="radio" name="controller"
+            value="radio">radio</label><br>
+          <label><input type="radio" name="controller"
+            value="train">train</label><br>
+          <label><input type="radio" name="controller"
+            value="television">television</label><br>
+        </td>
+      </tr>
+    </table>
     <pre><code id="results"></code></pre>
   </body>
 </html>
