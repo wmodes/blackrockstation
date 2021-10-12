@@ -60,9 +60,10 @@ SCHED_YEARS = [1938, 1959, 1982, 2014, 2066, 2110, 1858, 1888]
 SCHED_TIMESLIP_INTERVAL = 14        # time in minutes default=26
 SCHED_TIMESLIP_GLITCH = 0.5         # time in minutes
 SCHED_PERIODIC = [
-    {"controller": "announce", "announceid": "periodic-paging-announcement-1", "times_per_day": 3},
-    {"controller": "announce", "announceid": "periodic-paging-announcement-2", "times_per_day": 3},
-    {"controller": "announce", "announceid": "periodic-safety-announcement", "times_per_day": 8},
+    {"controller": "announce", "announceid": "periodic-announcement-1", "times_per_day": 3},
+    {"controller": "announce", "announceid": "periodic-announcement-2", "times_per_day": 3},
+    {"controller": "announce", "announceid": "periodic-announcement-3", "times_per_day": 6},
+    {"controller": "announce", "announceid": "periodic-announcement-4", "times_per_day": 6}
 ]
 SCHED_DEPART_TIME = 1.5      # time in minutes
 SCHED_BRIDGE_BEFORE = 2       # time in minutes

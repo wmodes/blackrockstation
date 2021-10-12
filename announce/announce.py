@@ -253,14 +253,14 @@ class Announce(Controller):
         """Play announcement."""
         if str(year) not in config.VALID_YEARS:
             error = f"Invalid year: {year}"
-            logging.warning(error + ': ' + order['cmd'])
+            logging.warning(error)
             return_val = {'status': 'FAIL',
                           'cmd': 'setAnnounce',
                           'error': error}
             return return_val
         if self.mode == config.MODE_OFF:
             error = "No action taken when not in ON or AUTO modes. Use setAuto command."
-            logging.warning(error + ': ' + order['cmd'])
+            logging.warning(error)
             return_val = {'status': 'FAIL',
                           'cmd': 'setAnnounce',
                           'error': error}

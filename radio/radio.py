@@ -274,6 +274,7 @@ class Radio(Controller):
 
     def play_transition(self):
         """Play transition between station changes"""
+        pygame.mixer.music.unload()
         pygame.mixer.music.load(config.RADIO_TRANSITION)
         pygame.mixer.music.play()
         time.sleep(config.RADIO_TRANSITION_LEN)
@@ -286,6 +287,7 @@ class Radio(Controller):
         logging.info(f"Playing audio: {filename}")
         print(f"Playing audio: {filename}")
         # used by audio mixer
+        pygame.mixer.music.unload()
         pygame.mixer.music.load(filename)
         pygame.mixer.music.play()
 

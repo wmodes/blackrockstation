@@ -21,6 +21,37 @@ CONTROLLERS = {
                    "server": "localhost"}
 }
 
+var COMMANDS = {
+	"help": 				{'cmd': 'help'},
+	"reqStatus": 		{'cmd': 'reqStatus'},
+	"reqLog": 			{'cmd': 'reqLog',
+				 				   'qty': '10'},
+	"setOff":				{'cmd': 'setOff'},
+	"setOn":				{'cmd': 'setOn'},
+	"setAuto":			{'cmd': 'setAuto'},
+	"setGlitch":		{'cmd': 'setGlitch'},
+	"setYear":			{'cmd': 'setYear',
+									 'year': 1938},
+	"setGo":				{'cmd': 'setGo',
+						       'direction': 'westbound'},
+	"order":				{'cmd': 'order',
+									 'controller': 'radio',
+								   'relay': {'cmd': 'reqstatus'}},
+	"reqTrains":		{'cmd': 'reqTrains',
+									 'qty': '5'},
+	"setAnnounce":	{'cmd': 'setAnnounce',
+						 			 'announceid': 'city-of-san-francisco-california-zephyr-chicago-to-sf-announce-arrival',
+						 		 	 'year': 1938},
+	"setGo":				{"cmd": "setGo",
+      						 "direction": "westbound"},
+	"setStop":			{"cmd": "setStop"},
+	"setTrain":			{"cmd": "setTrain",
+      						 "direction": "westbound",
+      			 			 "traintype": "freight-through",
+									 "year": "1938"}
+}
+
+
 /**
  * If you don't care about primitives and only objects then this function
  * is for you, otherwise look elsewhere.
@@ -93,3 +124,21 @@ $("#submit").click(function(){
     })
    }
 })
+
+$(".cmd-button").click(function(){
+	var cmd = $(this).data("cmd");
+	var cmdObj = COMMANDS[cmd];
+	$("#json").val(JSON.stringify(cmdObj));
+	if (cmd == "order" || cmd == "reqTrains") {
+			$('input[name=controller][value=scheduler]').prop("checked", true);
+	}
+	else if (cmd == "setAnnounce") {
+			$('input[name=controller][value=announce]').prop("checked", true);
+	}
+	else if (cmd == "setGo" || cmd == "setStop") {
+			$('input[name=controller][value=bridge]').prop("checked", true);
+	}
+	else if (cmd == "setTrain") {
+			$('input[name=controller][value=train]').prop("checked", true);
+	}
+});

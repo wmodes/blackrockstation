@@ -180,7 +180,7 @@ class Scheduler(Controller):
         #
         if order['cmd'].lower() == "reqtrains":
             if "qty" in order:
-                results = self.get_future_trains(order["qty"])
+                results = self.get_future_trains(int(order["qty"]))
             else:
                 results = self.get_future_trains()
             return_val = {'status': 'OK',
@@ -211,7 +211,7 @@ class Scheduler(Controller):
             else:
                 results = self.get_logs()
             return_val = {'status': 'OK',
-                          'cmd': 'reqLogs',
+                          'cmd': 'reqLog',
                           'results': results}
             return return_val
         #
@@ -410,7 +410,7 @@ class Scheduler(Controller):
         self.delayed_events.append(event)
 
     def trigger_event(self, event):
-        """Constuct order and send to appropriate controller."""
+        """Constuct order from basic event info and send to appropriate controller."""
         #TODO: Convert orders to objects
         if event['controller'] == "train":
             # send command to train controller
