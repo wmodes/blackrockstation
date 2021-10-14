@@ -122,7 +122,7 @@ LIGHTS_PIN_TABLE = [19, 20, 21, 26]
 RADIO_AUDIO_DIR = "radio/data/"
 RADIO_LOOP_DELAY = 0.25
 RADIO_AUDIO_EXT = ".mp3"
-RADIO_VOLUME = "0.8"
+RADIO_VOLUME = 0.8
 RADIO_TRANSITION = "radio/data/transition/radio-static-burst.mp3"
 RADIO_TRANSITION_LEN = 0.6
 
@@ -141,3 +141,7 @@ TV_VIDEO_DIR = "television/data/"
 TV_LOOP_DELAY = 0.25
 TV_VIDEO_EXT = ".mp4"
 TV_VOLUME = "0.8"
+
+if sys.platform == "darwin":
+    # OS X
+    RADIO_VOLUME = 0.03

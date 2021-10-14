@@ -14,8 +14,6 @@ import re
 import random
 import shutil
 
-# TODO: All reports and status should return objects to easily passs to source.
-
 logger = logging.getLogger()
 
 class Scheduler(Controller):
@@ -25,6 +23,7 @@ class Scheduler(Controller):
         """Initialize Scheduler class."""
         super().__init__()
         self.whoami = "scheduler"
+        self.schedule = []
         self.__read_schedule()
         self.__sort_schedule()
         self.delayed_events = []
@@ -41,7 +40,6 @@ class Scheduler(Controller):
 
     def __read_schedule(self):
         logging.info('Reading schedule')
-        self.schedule = []
         with open(config.SCHED_DATA, newline='') as csvfile:
             reader = csv.DictReader(csvfile,                    config.SCHED_FIELDS,restkey='Extras')
             # skips the header line
@@ -54,6 +52,9 @@ class Scheduler(Controller):
     def __sort_schedule(self):
         self.schedule = sorted(
             self.schedule, key=lambda k: time.strptime(k['time'], "%H:%M"))
+        for index in range(len(self.schedule)):
+            self.schedule[index]["index"] = index
+
 
     """
         REPORTS
@@ -188,6 +189,18 @@ class Scheduler(Controller):
                        'results': results}
             return return_val
         #
+        # request full train schedule
+        # Format: {
+        #   "cmd" : "reqAllTrains"
+        # }
+        #
+        if order['cmd'].lower() == "reqalltrains":
+            results = self.schedule
+            return_val = {'status': 'OK',
+                       'cmd': 'reqAllTrains',
+                       'results': results}
+            return return_val
+        #
         # request status
         # Format: {
         #   "cmd" : "reqStatus"
@@ -244,6 +257,49 @@ class Scheduler(Controller):
                       'results': results}
             return return_val
         #
+        # set year
+        # Format: {
+        #   "cmd" : "setYear",
+        #   "year" : *year*
+        # }
+        #
+        elif order['cmd'].lower() == "setyear":
+            if "year" not in order:
+                error = "No year in order received"
+                logging.warning(error)
+                return_val = {'status': 'FAIL',
+                              'cmd': 'setYear',
+                              'error': error}
+                return return_val
+            return_val = self.set_year(order['year'])
+            return return_val
+        #
+        # set train
+        # Format: {
+        #   "cmd" : "setTrain",
+        #   "index" : *int*
+        # }
+        #
+        elif order['cmd'].lower() == "settrain":
+            if "index" not in order:
+                error = "No index in order received"
+                logging.warning(error)
+                return_val = {'status': 'FAIL',
+                              'cmd': 'setTrain',
+                              'error': error}
+                return return_val
+            if order["index"] < 0 or order["index"] > len(self.schedule) - 1:
+                error = f"Index in order invalid: {index}"
+                logging.warning(error)
+                return_val = {'status': 'FAIL',
+                              'cmd': 'setTrain',
+                              'error': error}
+                return return_val
+            self.set_train(order['index'])
+            return_val = {'status': 'OK',
+                          'cmd': 'setTrain'}
+            return return_val
+        #
         # help
         #
         elif order['cmd'].lower() == "help":
@@ -252,8 +308,13 @@ class Scheduler(Controller):
                  'controller': ["announce", "crossing", "lights", "radio", "scheduler", "bridge",
                  "train", "television"],
                  'order': {'cmd': 'reqStatus'}},
+                {'cmd': 'setTrain',
+                 'index': 7},
+                {'cmd': 'setYear',
+                 'year': ['1858', '1888', '1938', '1959', '1982', '2014', '2066', '2110']},
                 {'cmd': 'reqTrains',
                  'qty': '5'},
+                {'cmd': 'reqAllTrains'},
                 {'cmd': 'reqStatus'},
                 {'cmd': 'reqLog',
                  'qty': '10'}
@@ -276,8 +337,8 @@ class Scheduler(Controller):
 
     def send_order_to_controller(self, controller, cmd_obj):
         """Send an arbitrary order to another controller."""
-        now = datetime.now()
-        self.display.display_status(f"{now.strftime('%H:%M')}: Sending command to {controller}: {str(cmd_obj)}")
+        now_dt = datetime.now()
+        self.display.display_status(f"{now_dt.strftime('%H:%M')}: Sending command to {controller}: {str(cmd_obj)}")
         return self.comms.send_order(controller, cmd_obj)
 
     """
@@ -319,8 +380,8 @@ class Scheduler(Controller):
 
     def next_timeslip(self):
         next = self.last_timeslip + timedelta(minutes=config.SCHED_TIMESLIP_INTERVAL)
-        now = datetime.now()
-        time_delta = next - now
+        now_dt = datetime.now()
+        time_delta = next - now_dt
         min = int(time_delta.total_seconds() // 60)
         sec = int(time_delta.total_seconds() % 60)
         return f"{min}:{sec:02d}"
@@ -337,10 +398,10 @@ class Scheduler(Controller):
         """
         # TODO: Implement variance
         # search through train schedule for time that matches H:M
-        now = datetime.now().time()
+        now_t = datetime.now().time()
         for event in self.schedule:
             # if this event matches current time
-            if now.strftime("%H:%M") == event["time"]:
+            if now_t.strftime("%H:%M") == event["time"]:
                 # if scheduled event already happened, return
                 if self.last_event == event:
                     return
@@ -355,30 +416,20 @@ class Scheduler(Controller):
 
     def check_for_timeslip(self):
         """Check to see if it is time for a timeslip."""
-        now = datetime.now()
+        now_dt = datetime.now()
         # prevent bounce: if the time in H:M is the same as the last timeslip, return
-        if now.strftime("%H:%M") == self.last_timeslip.strftime("%H:%M"):
+        if now_dt.strftime("%H:%M") == self.last_timeslip.strftime("%H:%M"):
             return
         next_timeslip = self.last_timeslip + timedelta(minutes=config.SCHED_TIMESLIP_INTERVAL)
-        if now > next_timeslip:
-            # find out what the index of the current year is
-            index = config.SCHED_YEARS.index(self.current_year)
-            # increment one
-            index += 1
-            # make sure we don't have index overrun
-            if index >= len(config.SCHED_YEARS):
-                index = 0
-            self.current_year = config.SCHED_YEARS[index]
-            # record the time of the timeslip to prevent bounce
-            self.last_timeslip = now
+        if now_dt > next_timeslip:
             self.trigger_timeslip()
 
     def check_for_delayed_events(self):
         """Check if it is time for delayed events."""
-        now = datetime.now()
+        now_dt = datetime.now()
         for event in self.delayed_events:
-            # logging.debug(f"Delayed event: Now: {now.strftime('%H:%M:%S')}, Time: {event['time_dt'].strftime('%H:%M:%S')}, Delta: {now_delta.strftime('%H:%M:%S')}")
-            if now > event['time_dt']:
+            # logging.debug(f"Delayed event: Now: {now_dt.strftime('%H:%M:%S')}, Time: {event['time_dt'].strftime('%H:%M:%S')}, Delta: {now_delta.strftime('%H:%M:%S')}")
+            if now_dt > event['time_dt']:
                 self.trigger_event(event)
                 self.delayed_events.remove(event)
 
@@ -398,6 +449,32 @@ class Scheduler(Controller):
                 break
 
     """
+        PLAY STUFF
+    """
+
+    def set_year(self, year):
+        """Set year attribute."""
+        logging.info(f"Setting year: {year}")
+        print(f"Setting year: {year}")
+        if str(year) not in config.VALID_YEARS:
+            error = f"Invalid year: {year}"
+            logging.warning(error)
+            return_val = {'status': 'FAIL',
+                          'error': error}
+            return return_val
+        self.trigger_timeslip(year)
+        return_val = {'status': 'OK',
+                      'cmd': 'setYear'}
+        return return_val
+
+    def set_train(self, index):
+        event = self.schedule[index]
+        if event['controller'] == "train":
+            self.trigger_train(event)
+        else:
+            self.trigger_event(event)
+
+    """
         EVENTS
     """
 
@@ -411,7 +488,6 @@ class Scheduler(Controller):
 
     def trigger_event(self, event):
         """Constuct order from basic event info and send to appropriate controller."""
-        #TODO: Convert orders to objects
         if event['controller'] == "train":
             # send command to train controller
             #   form: set train *direction* *traintype* *year*
@@ -486,10 +562,10 @@ class Scheduler(Controller):
         train_event comes from the schedule
         """
         # let's calculate the timing of some things to schedule the next few events
-        now = datetime.now()
-        # time_announce_arrival = now
-        # time_signal_is_go = now
-        time_we_hear_train = now +  timedelta(minutes=config.SCHED_BRIDGE_BEFORE)
+        now_dt = datetime.now()
+        # time_announce_arrival = now_dt
+        # time_signal_is_go = now_dt
+        time_we_hear_train = now_dt +  timedelta(minutes=config.SCHED_BRIDGE_BEFORE)
         time_crossing_is_on = time_we_hear_train  + timedelta(minutes=config.SCHED_CROSSING_DELAY)
         time_departure_announce = time_we_hear_train + timedelta(minutes=float(train_event['duration'])/2)
         time_signal_is_stop = time_we_hear_train + timedelta(minutes=float(train_event['duration'])) - timedelta(minutes=config.SCHED_DEPART_TIME)
@@ -497,10 +573,11 @@ class Scheduler(Controller):
         #
         # 1) BRIDGE signal turns green as soon as train enters the
         #   block, i.e., several minutes before we can hear it
-        self.trigger_event({
+        self.delay_event({
             "controller": "bridge",
             "event": "go",
-            "direction": train_event['direction']
+            "direction": train_event['direction'],
+            "time_dt": datetime.now() + timedelta(seconds=1)
         })
         #
         # 2) ANNOUNCE arrival when train approached station
@@ -508,8 +585,8 @@ class Scheduler(Controller):
         if train_event['announceid'] != "":
             self.delay_event({
                 "controller": "announce",
-                "announceid": train_event['announceid'] + "-arrival",
-                "time_dt": time_we_hear_train
+                "announceid": f"{train_event['announceid']}-announce-arrival",
+                "time_dt": datetime.now() + timedelta(seconds=15)
             })
         #
         # 3) TRAINAUDIO starts
@@ -529,7 +606,7 @@ class Scheduler(Controller):
         if train_event['announceid'] != "":
             self.delay_event({
                 "controller": "announce",
-                "announceid": train_event['announceid'] + "-departure",
+                "announceid": f"{train_event['announceid']}-announce-departure",
                 "time_dt": time_departure_announce
             })
         #
@@ -551,8 +628,21 @@ class Scheduler(Controller):
         })
 
 
-    def trigger_timeslip(self):
+    def trigger_timeslip(self, year=None):
         """Trigger a timeslip event and the things that go with it."""
+        if year:
+            self.current_year = year;
+        else:
+            # find out what the index of the current year is
+            index = config.SCHED_YEARS.index(self.current_year)
+            # increment one
+            index += 1
+            # make sure we don't have index overrun
+            if index >= len(config.SCHED_YEARS):
+                index = 0
+            self.current_year = config.SCHED_YEARS[index]
+        # record the time of the timeslip to prevent bounce
+        self.last_timeslip = datetime.now()
         logging.info(f"Timeslip to {self.current_year}")
         # trigger glitch events and schedule year event
         for controller in ["radio", "television", "lights"]:

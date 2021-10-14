@@ -39,6 +39,7 @@ var COMMANDS = {
 								   'relay': {'cmd': 'reqstatus'}},
 	"reqTrains":		{'cmd': 'reqTrains',
 									 'qty': '5'},
+	"reqAllTrains": {'cmd': 'reqAllTrains'},
 	"setAnnounce":	{'cmd': 'setAnnounce',
 						 			 'announceid': 'city-of-san-francisco-california-zephyr-chicago-to-sf-announce-arrival',
 						 		 	 'year': 1938},
@@ -48,7 +49,9 @@ var COMMANDS = {
 	"setTrain":			{"cmd": "setTrain",
       						 "direction": "westbound",
       			 			 "traintype": "freight-through",
-									 "year": "1938"}
+									 "year": "1938",
+								   "index": 6,
+								   "note": "Scheduler requires only index, while train subsystem requires all others except index"}
 }
 
 
@@ -129,7 +132,7 @@ $(".cmd-button").click(function(){
 	var cmd = $(this).data("cmd");
 	var cmdObj = COMMANDS[cmd];
 	$("#json").val(JSON.stringify(cmdObj));
-	if (cmd == "order" || cmd == "reqTrains") {
+	if (cmd == "order" || cmd == "reqTrains" || cmd == "reqAllTrains") {
 			$('input[name=controller][value=scheduler]').prop("checked", true);
 	}
 	else if (cmd == "setAnnounce") {
