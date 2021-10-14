@@ -3,26 +3,42 @@
 from shared import config
 
 import logging
-import pprint
+# import pprint
 from datetime import datetime
 import os
+import json
+import requests
 
 class Comms(object):
     """Comm class for all controllers."""
 
     def __init__(self):
+        """Initialize class."""
         self.__order_queue = []
-        logging.info(f"Comms initiated")
+        self.make_controller_table()
+        logging.info("Comms initiated")
+
+    def make_controller_table(self):
+        self.__controller_table = {}
+        for key, value in config.CONTROLLERS.items():
+            url = f"http://{value['server']}:{value['port']}/cmd"
+            self.__controller_table[key] = url
+        logging.debug(f"controller table: {str(self.__controller_table)}")
 
     def get_order(self):
-        """Get order from queue"""
+        """Get order from queue."""
         #
         # temp solution to getting orders: check .order file
         if os.path.exists(config.ORDER_FILE):
             with open(config.ORDER_FILE) as file:
-                orders = file.readlines()
+                order_json = file.read()
             os.remove(config.ORDER_FILE)
-            self.__order_queue += orders
+            try:
+                order = json.loads(order_json)
+                self.__order_queue.append(order)
+                logging.info(f"Order proper syntax: {order}")
+            except:
+                logging.warning(f"Order syntax error: {order_json}")
         #
         # we return you to your regularly scheduled code
         if len(self.__order_queue) == 0:
@@ -34,18 +50,26 @@ class Comms(object):
 
 
     def add_order(self, order):
-        """Add an order to queue for testing purposes"""
+        """Add an order to queue for testing purposes."""
         logging.info(f"Adding order to comms queue: {order}.")
         self.__order_queue.append(order)
 
 
-    def send_order(self, controller, command):
-        """Send an arbitrary order to another controller"""
-        logging.info(f"Sending command to {controller}: {command}")
-        print(f"{datetime.now().strftime('%H:%M:%S')} Sending command to {controller}: {command}")
+    def send_order(self, controller, cmd_obj):
+        """Send an arbitrary order to another controller."""
+        logging.info(f"Sending command to {controller}: {str(cmd_obj)}")
+        # print(f"{datetime.now().strftime('%H:%M:%S')} Sending command to {controller}: {str(cmd_obj)}")
+        server = self.__controller_table[controller]
+        try:
+            return_val = requests.post(server, json=cmd_obj, timeout=0.01)
+        except requests.exceptions.RequestException as error:
+            return_val = {'status': 'FAIL',
+                          'error': str(error)}
+        return return_val
 
 
 def main():
+    """Set up test for class."""
     import sys
     logging.basicConfig(filename=sys.stderr,
                         encoding='utf-8',

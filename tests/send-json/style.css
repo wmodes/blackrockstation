@@ -1,0 +1,56 @@
+
+#msgs {
+  height: 1.5em;
+}
+
+h2 {
+  font-size: 16px;
+}
+
+h3 {
+  font-size: 12px;
+  font-weight: normal;
+  margin-top: 0;
+  margin-bottom: 0;
+  color: #888;
+  text-transform: uppercase;
+}
+
+.flexbox {
+  display: flex;
+}
+
+.flexchild {
+  border: solid 1px #eee;
+  padding: 10px;
+}
+
+#form-field {
+  width: 50%;
+}
+
+#json {
+  width: 100%;
+  height: 200px;
+}
+
+.buttonbox, .radiobox {
+  line-height: 25px;
+}
+
+.error {
+  color: darkred;
+  font-weight: bold;
+}
+
+.success {
+  color: darkgreen;
+}
+
+pre {
+    white-space: pre-wrap;       /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}

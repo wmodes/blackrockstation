@@ -4,29 +4,25 @@ from shared import config
 from shared.controller import Controller
 
 import logging
-from pprint import pprint
-from datetime import datetime, timedelta
 import pygame
-import csv
 import time
 import os
 import glob
 import random
-import re
 
 logger = logging.getLogger()
-
 
 class Radio(Controller):
     """Radio controller class."""
 
     def __init__(self):
+        """Initialize."""
         super().__init__()
-        self.whoami = "Radio"
-        self.enabled = True
+        self.whoami = "radio"
+        self.mode = config.MODE_AUTO
         self.filetable = self.__read_files()
         self.current_year = config.SCHED_YEARS[0]
-        print(f"Current year: {self.current_year}")
+        self.most_recent = ""
         # used by audio mixer
         pygame.mixer.init()
         pygame.mixer.music.set_volume(float(config.RADIO_VOLUME))
@@ -38,6 +34,8 @@ class Radio(Controller):
 
     def __read_files(self):
         """
+        Find data files.
+
         Look for audio files in data directory and construct dict of arrays of possibilities.
         {
             "glitch": ["glitch-file1.mp4", "glitch-file2.mp4"],
@@ -59,79 +57,182 @@ class Radio(Controller):
             file_dict[subdir] = filelist
         return file_dict
 
+    """
+        REPORTS
+    """
+
+    def get_status(self):
+        """Full status for controller."""
+        return {
+            "controller" : self.whoami,
+            "running" : True,
+            "mode" : self.mode2str(self.mode),
+            "currentYear" : self.current_year,
+            "most-recent" : self.most_recent
+        }
 
     """
         ORDERS
     """
 
-    def __act_on_order(self, order):
+    def act_on_order(self, order):
         """
-        Takes action based on order.
+        Take action based on order.
 
         Possible comnmands:
-            - set off
-            - set on
-            - set glitch
-            - set year *year*
-            - request status
-            - request log [num_events]
-            - request report
+            - setOff
+            - setOn
+            - setAuto
+            - setGlitch
+            - setYear *year*
+            - reqStatus
+            - reqLog [num_events]
         """
         if not order:
-            return
-        logging.debug(f"Acting on order: {order}")
+            error = "No command received"
+            return_val = {'status': 'FAIL',
+                          'error': error}
+            return return_val
+        if "cmd" not in order:
+            error = f"No 'cmd' in order received: '{order}'"
+            logging.info(error)
+            return_val = {'status': 'FAIL',
+                          'error': error}
+            return return_val
         #
         # request status
+        # Format: {
+        #   "cmd" : "reqStatus"
+        # }
         #
-        if order.startswith("request status"):
-            print(self.report_status())
+        if order['cmd'].lower() == "reqstatus":
+            return_val = {'status': 'OK',
+                       'cmd': 'reqStatus',
+                       'results': self.get_status()}
+            return return_val
         #
         # request log
+        # Format: {
+        #   "cmd" : "reqLog",
+        #   "qty" : **integer**
+        # }
         #
-        elif order.startswith("request log"):
-            order_list = order.split()
-            if len(order_list) > 2:
-                print(self.report_logs(int(order_list[2])))
+        elif order['cmd'].lower() == "reqlog":
+            if "qty" in order:
+                results = self.get_logs(order["qty"])
             else:
-                print(self.report_logs())
+                results = self.get_logs()
+            return_val = {'status': 'OK',
+                          'cmd': 'reqLogs',
+                          'results': results}
+            return return_val
         #
-        # request status
+        # set off
+        # Format: {
+        #   "cmd" : "setOff"
+        # }
         #
-        elif order.startswith("request report"):
-            print(self.full_report())
+        elif order['cmd'].lower() == "setoff":
+            self.mode = config.MODE_OFF
+            self.stop_audio()
+            return_val = {'status': 'OK',
+                          'cmd': 'setOff'}
+            return return_val
         #
-        # request off
+        # set on
+        # Format: {
+        #   "cmd" : "setOn"
+        # }
         #
-        elif order.startswith("request off"):
-            self.enabled = False
+        elif order['cmd'].lower() == "seton":
+            self.mode = config.MODE_ON
+            self.play_new()
+            return_val = {'status': 'OK',
+                          'cmd': 'setOn'}
+            return return_val
         #
-        # request on
+        # set auto
+        # Format: {
+        #   "cmd" : "setAuto"
+        # }
         #
-        elif order.startswith("request on"):
-            self.enabled = True
+        elif order['cmd'].lower() == "setauto":
+            self.mode = config.MODE_AUTO
+            self.play_new()
+            return_val = {'status': 'OK',
+                          'cmd': 'setAuto'}
+            return return_val
         #
-        # set glitch
+        # set glitch mode
+        # Format: {
+        #   "cmd" : "setGlitch"
+        # }
         #
-        elif order.startswith("set glitch"):
+        elif order['cmd'].lower() == "setglitch":
+            if self.mode != config.MODE_AUTO:
+                error = "setGlitch ignored when not in AUTO mode. Use setAuto command."
+                logging.warning(error)
+                return_val = {'status': 'FAIL',
+                              'cmd': 'setGlitch',
+                              'error': error}
+                return return_val
             self.set_glitch()
+            return_val = {'status': 'OK',
+                          'cmd': 'setGlitch'}
+            return return_val
         #
         # set year
+        # Format: {
+        #   "cmd" : "setYear",
+        #   "year" : *year*
+        # }
         #
-        elif order.startswith("set year"):
-            order_list = order.split()
-            year = order_list[2]
-            self.set_year(year)
+        elif order['cmd'].lower() == "setyear":
+            if "year" not in order:
+                error = "No year in order received"
+                logging.warning(error)
+                return_val = {'status': 'FAIL',
+                              'cmd': 'setYear',
+                              'error': error}
+                return return_val
+            return_val = self.set_year(order['year'])
+            return return_val
+        #
+        # help
+        #
+        elif order['cmd'].lower() == "help":
+            cmds = [
+                {'cmd': 'setOff'},
+                {'cmd': 'setOn'},
+                {'cmd': 'setAuto'},
+                {'cmd': 'setGlitch'},
+                {'cmd': 'setYear',
+                 'year': ['1858', '1888', '1938', '1959', '1982', '2014', '2066', '2110']},
+                {'cmd': 'reqStatus'},
+                {'cmd': 'reqLog',
+                 'qty': '10'}
+            ]
+            return_val = {'status': 'OK',
+                          'cmd': 'help',
+                          'commands': cmds}
+            return return_val
         #
         # invalid order
         #
         else:
-            logging.info(f"invalid order received: {order}")
+            error = f"invalid order received"
+            logging.warning(error + ': ' + order['cmd'])
+            return_val = {'status': 'FAIL',
+                          'cmd': order['cmd'],
+                          'error': error}
+            return return_val
 
     """
         CHECKS
     """
 
     def check_for_new_audio(self):
+        """Check if it is time for new audio."""
         if not pygame.mixer.music.get_busy():
             self.play_new()
 
@@ -140,54 +241,91 @@ class Radio(Controller):
     """
 
     def set_glitch(self):
+        """Set glitch mode."""
         logging.info("Setting glitch")
         print("Setting glitch")
         self.current_year = "glitch"
+        self.play_transition()
         self.play_new()
 
     def set_year(self, year):
+        """Set year attribute."""
         logging.info(f"Setting year: {year}")
         print(f"Setting year: {year}")
+        if str(year) not in config.VALID_YEARS:
+            error = f"Invalid year: {year}"
+            logging.warning(error)
+            return_val = {'status': 'FAIL',
+                          'error': error}
+            return return_val
         self.current_year = str(year)
+        if self.mode != config.MODE_AUTO:
+            error = "No action taken when not in AUTO mode. Use setAuto command."
+            logging.warning(error)
+            return_val = {'status': 'FAIL',
+                          'cmd': 'setYear',
+                          'error': error}
+            return return_val
+        self.play_transition()
         self.play_new()
+        return_val = {'status': 'OK',
+                      'cmd': 'setYear'}
+        return return_val
+
+    def play_transition(self):
+        """Play transition between station changes"""
+        pygame.mixer.music.unload()
+        pygame.mixer.music.load(config.RADIO_TRANSITION)
+        pygame.mixer.music.play()
+        time.sleep(config.RADIO_TRANSITION_LEN)
 
     def play_new(self):
+        """Play new audio file."""
         # print(f"choices: {self.filetable[str(self.current_year)]}")
         filename = random.choice(self.filetable[str(self.current_year)])
+        self.most_recent = filename
         logging.info(f"Playing audio: {filename}")
         print(f"Playing audio: {filename}")
         # used by audio mixer
+        pygame.mixer.music.unload()
         pygame.mixer.music.load(filename)
         pygame.mixer.music.play()
+
+    def stop_audio(self):
+        """Stop all audio output."""
+        logging.info("Stopping audio")
+        print("Stopping audio")
+        # used by audio mixer
+        pygame.mixer.music.pause()
+
+
 
     """
         MAIN LOOP
     """
 
     def main_loop(self):
-        """
-        Gets orders and acts on them
-        """
+        """Get orders and acts on them."""
         while True:
-            self.__act_on_order(self.receive_order())
-            self.check_for_new_audio()
+            self.act_on_order(self.receive_order())
+            if self.mode != config.MODE_OFF:
+                self.check_for_new_audio()
             time.sleep(config.RADIO_LOOP_DELAY)
 
 
     def start(self):
+        """Get this party started."""
         logging.info('Starting.')
-        print(self.full_report)
         self.main_loop()
 
 
 def main():
-    """For testing the class"""
+    """Test the class."""
     import sys
     logging.basicConfig(filename=sys.stderr,
                         encoding='utf-8',
                         format='%(asctime)s %(levelname)s:%(message)s',
                         level=logging.DEBUG)
-    logger = logging.getLogger()
     radio = Radio()
     radio.order_act_loop()
 

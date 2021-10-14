@@ -2,42 +2,61 @@
 
 from shared import config
 from shared.controller import Controller
-
 from lights.lights import Lights
+from flask import Flask, request, jsonify
+from flask_cors import CORS, cross_origin
+import threading
 from shared.streamtologger import StreamToLogger
-
-import sys
 import logging
-import pprint
-from datetime import datetime, timedelta
 
+logging.basicConfig(
+    filename=config.LOG_FILENAME,
+    # encoding='utf-8',
+    filemode='a', format='%(asctime)s %(levelname)s:%(message)s',
+    level=config.LOG_LEVEL)
+logger = logging.getLogger("lights")
 
-def main():
-    logging.basicConfig(
-        filename=config.LOG_FILENAME,
-        # encoding='utf-8',
-        filemode='a',
-      Lightsmat='%(asctime)s %(levelname)s:%(message)s',
-        level=config.LOG_LEVEL)
-    logger = logging.getLogger("lights")
-    whoami = "Lights"
+# redirect stdout and stderr to log file - do this before production
+# sys.stdout = StreamToLogger(logger,logging.INFO)
+# sys.stderr = StreamToLogger(logger,logging.ERROR)
 
-    # redirect stdout and stderr to log file - do this before production
-    # sys.stdout = StreamToLogger(logger,logging.INFO)
-    # sys.stderr = StreamToLogger(logger,logging.ERROR)
-
+def init_controller_obj():
     # let's get this party started
-    lights = Lights()
+    controller_obj = Lights()
+    return controller_obj
 
+def program_loop(controller_obj):
     try:
-        lights.start()
+        controller_obj.start()
     except KeyboardInterrupt:
         logging.info(f"{whoami} interrupted.")
-        lights.stop()
+        controller_obj.stop()
     except:
         logging.exception('Got exception on main handler')
         raise
 
+whoami = "lights"
+controller_obj = init_controller_obj()
 
-if __name__ == '__main__':
-    main()
+# threaded program_loop(controller_obj)
+#
+thread_obj = threading.Thread(target=program_loop,  args=(controller_obj,), daemon=True)
+thread_obj.start()
+
+# flask controller
+#
+app = Flask(__name__) # Create the server object
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+
+@app.route("/cmd",methods = ['POST', 'GET'])
+def cmd():
+    if request.method == 'GET':
+        order_obj = request.args.to_dict(flat=True)
+    else:
+        order_obj = request.get_json(force=True)
+    response = jsonify(controller_obj.act_on_order(order_obj))
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+app.run(port=config.CONTROLLERS[whoami]["port"], debug=config.DEBUG, use_reloader=False)

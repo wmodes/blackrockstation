@@ -16,3 +16,5 @@ Morning Express SLC to Oakland,train,18:18,3,westbound,passenger-through,30,Leav
 City of San Francisco/California Zephyr - SF to Chicago,train,19:48,6,eastbound,passenger-stop,0,"City of San Francisco (pre-1949) / California Zephyr. Eastbound: Trona, Winnemucca, Elko, Wells, Salt Lake City, and Points Beyond to Chicago. 38hr trip w BRC about 1/3 of the way",city-of-san-francisco-california-zephyr-sf-to-chicago,1:29
 Afternoon Express Oakland to SLC,train,22:13,3,eastbound,passenger-through,30,Leaves Oakland 4pm. Express is 18hrs w BRC about 1/3 of the way. Comes through BRC at 10pm.,,2:25
 Night Through Freight (hot),train,16:35,3,westbound,freight-through,45,Through freight to the coast,,1:05
+Night Through Freight (hot),train,17:05,3,westbound,freight-through,45,Through freight to the coast,,1:05
+City of San Francisco/California Zephyr - Chicago to SF,train,17:18,6,westbound,passenger-stop,0,"City of San Francisco (pre-1949) / California Zephyr. Westbound: Gerlach, Oroville, Marysville, Sacramento, and Points Beyond to San Francisco. 38hr trip w BRC about 2/3 of the way",city-of-san-francisco-california-zephyr-chicago-to-sf,0:57

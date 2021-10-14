@@ -4,34 +4,20 @@ from shared import config
 from shared.controller import Controller
 
 import logging
-from pprint import pprint
-from datetime import datetime, timedelta
-import csv
 import time
-import os
-import glob
-import random
-import re
 import RPi.GPIO as GPIO
 
-# CONSTANTS
-OFF = 0
-ON = 1
-GPIO_OFF = 1
-GPIO_ON = 0
 
 logger = logging.getLogger()
-
-TODO: full_report should report state (as should status)
 
 class Crossing(Controller):
     """Crossing controller class."""
 
     def __init__(self):
+        """Initialize."""
         super().__init__()
-        self.whoami = "Crossing"
-        self.status = OFF
-        print(f"Current state: {self.onoff(self.status)}")
+        self.whoami = "crossing"
+        self.status = config.STATE_OFF
         self.init_crossing()
         self.set_crossing()
 
@@ -40,120 +26,178 @@ class Crossing(Controller):
     """
 
     def init_crossing(self):
+        """Initialize GPIO."""
         GPIO.setmode(config.CROSS_PINOUT_SCHEME)
         GPIO.setup(config.CROSS_PIN, GPIO.OUT)
+
+    """
+        REPORTS
+    """
+
+    def get_status(self):
+        """Full status for controller."""
+        return {
+            "controller" : self.whoami,
+            "running" : True,
+            "state" : self.onoff(self.status)
+        }
 
     """
         ORDERS
     """
 
-    def __act_on_order(self, order):
-        """
-        Takes action based on order.
+    def act_on_order(self, order):
+        """Take action based on order.
 
         Possible comnmands:
-            - set on
-            - set off
-            - request status
-            - request log [num_events]
-            - request report
+            - setOn
+            - setOff
+            - reqStatus
+            - reqLog [num_events]
         """
         if not order:
-            return
-        logging.debug(f"Acting on order: {order}")
+            error = "No command received"
+            return_val = {'status': 'FAIL',
+                          'error': error}
+            return return_val
+        if "cmd" not in order:
+            error = f"No 'cmd' in order received: '{order}'"
+            logging.info(error)
+            return_val = {'status': 'FAIL',
+                          'error': error}
+            return return_val
         #
         # request status
+        # Format: {
+        #   "cmd" : "reqStatus"
+        # }
         #
-        if order.startswith("request status"):
-            print(self.report_status())
+        if order['cmd'].lower() == "reqstatus":
+            return_val = {'status': 'OK',
+                       'cmd': 'reqStatus',
+                       'results': self.get_status()}
+            return return_val
         #
         # request log
+        # Format: {
+        #   "cmd" : "reqLog",
+        #   "qty" : **integer**
+        # }
         #
-        elif order.startswith("request log"):
-            order_list = order.split()
-            if len(order_list) > 2:
-                print(self.report_logs(int(order_list[2])))
+        elif order['cmd'].lower() == "reqlog":
+            if "qty" in order:
+                results = self.get_logs(order["qty"])
             else:
-                print(self.report_logs())
-        #
-        # request status
-        #
-        elif order.startswith("request report"):
-            print(self.full_report())
+                results = self.get_logs()
+            return_val = {'status': 'OK',
+                          'cmd': 'reqLogs',
+                          'results': results}
+            return return_val
         #
         # set off
+        # Format: {
+        #   "cmd" : "setOff"
+        # }
         #
-        elif order.startswith("set off"):
+        elif order['cmd'].lower() == "setoff":
+            self.mode = config.MODE_OFF
             self.set_off()
+            return_val = {'status': 'OK',
+                          'cmd': 'setOff'}
+            return return_val
         #
         # set on
+        # Format: {
+        #   "cmd" : "setOn"
+        # }
         #
-        elif order.startswith("set on"):
+        elif order['cmd'].lower() == "seton":
+            self.mode = config.MODE_ON
             self.set_on()
+            return_val = {'status': 'OK',
+                          'cmd': 'setOn'}
+            return return_val
+        #
+        # help
+        #
+        elif order['cmd'].lower() == "help":
+            cmds = [
+                {'cmd': 'setOff'},
+                {'cmd': 'setOn'},
+                {'cmd': 'reqStatus'},
+                {'cmd': 'reqLog',
+                 'qty': '10'}
+            ]
+            return_val = {'status': 'OK',
+                          'cmd': 'help',
+                          'commands': cmds}
+            return return_val
         #
         # invalid order
         #
         else:
-            logging.info(f"invalid order received: {order}")
+            error = f"invalid order received"
+            logging.warning(error + ': ' + order['cmd'])
+            return_val = {'status': 'FAIL',
+                          'cmd': order['cmd'],
+                          'error': error}
+            return return_val
 
     """
         ACTIONS
     """
 
     def set_off(self):
+        """Set status off."""
         logging.info("Setting off")
         print("Setting off")
-        self.status = OFF
+        self.status = config.STATE_OFF
         self.set_crossing()
 
     def set_on(self):
+        """Set status ob."""
         logging.info("Setting on")
         print("Setting on")
-        self.status = ON
+        self.status = config.STATE_ON
         self.set_crossing()
 
     """
         CROSSING
     """
 
-    def onoff(self, value):
-        return ("on" if value == ON else "off")
-
     def set_crossing(self):
+        """Set crossing based on status."""
         logging.info(f"Setting crossing: {self.onoff(self.status)}")
         print(f"Setting crossing: {self.onoff(self.status)}")
-        if self.status == ON:
-            GPIO.output(config.CROSS_PIN, GPIO_ON)
+        if self.status == config.STATE_ON:
+            GPIO.output(config.CROSS_PIN, config.GPIO_ON)
         else:
-            GPIO.output(config.CROSS_PIN, GPIO_OFF)
+            GPIO.output(config.CROSS_PIN, config.GPIO_OFF)
 
     """
         MAIN LOOP
     """
 
     def main_loop(self):
-        """
-        Gets orders and acts on them
-        """
+        """Get orders and act on them."""
         while True:
-            self.__act_on_order(self.receive_order())
+            self.act_on_order(self.receive_order())
             time.sleep(config.CROSS_LOOP_DELAY)
 
 
     def start(self):
+        """Get this party started."""
         logging.info('Starting.')
-        print(self.full_report)
         self.main_loop()
 
 
 def main():
-    """For testing the class"""
+    """Test the class."""
     import sys
     logging.basicConfig(filename=sys.stderr,
                         encoding='utf-8',
                         format='%(asctime)s %(levelname)s:%(message)s',
                         level=logging.DEBUG)
-    logger = logging.getLogger()
     crossing = Crossing()
     crossing.order_act_loop()
 

@@ -1,7 +1,7 @@
 # Black Rock Station
 Code for Black Rock Station, honorarium art project for Burning Man 2021.
 
-Various subsystems (lights, audio, video, etc) rely on a network of semi-autonomous controller modules receiving commands from a central scheduling controller.
+Various subsystems (lights, audio, video, etc) rely on a network of semi-autonomous controller modules receiving orders from a central scheduling controller.
 
 ## Authors
 
@@ -26,7 +26,7 @@ Because python 3.7 is the latest pre-built version for the Raspberry Pi, we use 
 
 `% python --version`
 
-It should report python 3.10.x
+It should report python 3.7.x
 
 Create a virtual environment in your envs folder with:
 
@@ -36,7 +36,7 @@ Activate the venv with:
 
 `% source ~/dev/envs/blackrockstation/bin/activate`
 
-Clone the repo and `cd blackrockstation` into this folder.
+Clone the repo from Github, then `cd blackrockstation` into the new repoI’m  folder.
 
 Install the python module requirements with:
 
@@ -44,7 +44,7 @@ Install the python module requirements with:
 
 You'll probably need the media files for testing. Download the mediafiles to the root:
 
-[media-files.tar.gz](https://drive.google.com/file/d/1_eMsQjETB9L_u6GMdJ2qZpQZf2TpKboU/view?usp=sharing)
+[media.tar.gz](https://drive.google.com/file/d/1_eMsQjETB9L_u6GMdJ2qZpQZf2TpKboU/view?usp=sharing)
 
 And unpack with:
 
@@ -65,36 +65,29 @@ sudo apt-get install -y qt5-default pyqt5-dev pyqt5-dev-tools python3-pyqt5 pyth
 
 ## Executing
 
+### Testing on the command line
+
 Use `start.py` to start each subsystem. For example, to start the announce subsystem:
 
 `% python start.py announce`
 
 `start.py` without arguments lists available controllers.
 
-## Run on Boot
+### Running from systemd during production
 
 After testing, you probably want the Rpi to run the controller on boot. We'll add a unit file to `systemd`. A sample unit file is included in the repo.
 
-In the root dir, edit the file `brs.service`. Find the line:
+First copy this file out of the repo (lest your modified version be overwritten by a `git pull`) to your home directory:
+
+  `cp brs.service ~`
+
+Edit your copied unit file `brs.service`. Find the line:
 
   `ExecStart=/usr/bin/python3 -u start.py scheduler`
 
-Change `scheduler` to whichever of the controllers you want your Rpi to take on the identity. Available controllers are:
+Change `scheduler` to whichever of the controllers you want your Rpi to take on the identity. Available controllers are `announce`, `crossing`, `lights`, `radio`, `scheduler`, `signal`, `train`, and `television`. (Note that the radio, television, announce, and train controllers will each need their media files in their respective data directories.)
 
-```
-  announce
-  crossing
-  lights
-  radio
-  scheduler
-  signal
-  train
-  television
-```
-
-Note that the radio, television, announce, and train controllers will each need their media files in their respective data directories.
-
-Finally, from the blackrockstation root, enable `brs.service`:
+From your home directory, using the modified unit file, enable `brs.service`:
 
 ```
 sudo systemctl enable brs.service
@@ -176,20 +169,28 @@ The central controller controls the scheduling of both trains and time-slips. It
 -   "Random" events can be randomly seeded through the database. This ensures they don't collide with other events. It also allows us to know when the next event is.
 -   The length of each event can be recorded in the database, so we can prevent collisions. Though the controllers themselves can be the final arbiter.
 -   We keep a database of the schedule of events
--   We also keep a database of the events themselves, including length, clients involved, and commands for clients, and any tricky timing (like a little asynchronous  recipe?)
+-   We also keep a database of the events themselves, including length, clients involved, and orders for clients, and any tricky timing (like a little asynchronous  recipe?)
 -   How events work will require some thought because they have their own timing and desire to avoid collisions
 -   If event scheduling can be simplified, scheduling will be easier. For instance, crossing bells and announcements happen before, during and after a train event every time. Maybe rules rather than explicit scheduling? Then we have to be more careful about collisions.
 -   Care should be taken to choose a database that is least likely to be corrupted by sudden power interruptions
 
-### Commands
+### Orders
 
-Here are the commands the scheduler controller responds to:
+Here are the Orders the scheduler controller responds to:
 
-- *controller* *command*
-- request future [num_events]
-- request status
-- request log [num_events]
-- request report
+- order *controller* *command*
+- reqTrains [num_events]
+- reqStatus
+- reqLog [num_events]
+
+This is passed as an JSON string:
+
+```
+{
+  "cmd" :   "reqTrains",
+  "qty" :     10
+}
+```
 
 ## Train Audio Controller
 
@@ -207,9 +208,9 @@ The train audio controller handles the sounds of trains. It needs to be given sc
 -   For the mic small diaphragm condenser microphones with a cardioid pattern are preferred, though others may work
 -   Good wind protection is necessary
 
-### Commands
+### Orders
 
-Here are the commands the train controller responds to:
+Here are the orders the train controller responds to:
 
 - set off
 - set on
@@ -226,9 +227,9 @@ The announce controller handles announcements. It needs to be given scheduled ev
 - Must be coordinated with scheduled trains
 - It will not be interrupted by time-slips (or will it?)
 
-### Commands
+### Orders
 
-Here are the commands the train controller responds to:
+Here are the orders the train controller responds to:
 
 - set off
 - set on
@@ -249,9 +250,9 @@ The crossing mast controller handles turning the crossing lights and bell on and
 - The masts themselves are a distance apart. I suspect it is simpler to have one controller turn them on and off, with power wiring from the least distant to the most distant.
 - Timing-wise, the lights/bell begin some number of seconds before a train "arrives" and turns off as soon as a train passes the station.
 
-### Commands
+### Orders
 
-Here are the commands the crossing controller responds to:
+Here are the orders the crossing controller responds to:
 
 - set on
 - set off
@@ -270,9 +271,9 @@ The signal bridge controller handles turning the lights on the signal bridge. Un
 - 5-10 minutes before a train passes, the signal would go to highball.
 - Timing-wise, the lights go from highball to stop after the train passes the station.
 
-### Commands
+### Orders
 
-Here are the commands the signal controller responds to:
+Here are the orders the signal controller responds to:
 
 - set go *direction*
 - set stop
@@ -288,9 +289,9 @@ The light controller controls the internal lighting. It has recipes for glitch e
 -   Can put in fully sealed box with external plugs for wiring simplicity
 -   Control low wattage LED blubs and fluorescent lights
 
-### Commands
+### Orders
 
-Here are the commands the light controller responds to:
+Here are the orders the light controller responds to:
 
 - set off [num]
 - set on [num]
@@ -307,9 +308,9 @@ The radio controller handles audio coming from the radio. It only needs to know 
 - Glitch/static sounds during time-slips
 - Possibly keeping track of announcements, news, and music to mix them up as necessary.
 
-### Commands
+### Orders
 
-Here are the commands the radio controller responds to:
+Here are the orders the radio controller responds to:
 
 - set off
 - set on
@@ -323,9 +324,9 @@ Here are the commands the radio controller responds to:
 
 The television controller handles audio/video coming from the television. Like the radio, it only needs to know what era it is operating in. It has the same considerations as the radio controller.
 
-### Commands
+### Orders
 
-Here are the commands the television controller responds to:
+Here are the orders the television controller responds to:
 
 - set off
 - set on
