@@ -9,6 +9,7 @@ monitor_factor = 1
 
 def playVideo(video_path):
     cap = cv2.VideoCapture(video_path)
+    winname = "Video"
     cv2.namedWindow(winname, cv2.WND_PROP_FULLSCREEN)
     cv2.setWindowProperty(winname, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     if (cap.isOpened() == False):
@@ -23,7 +24,6 @@ def playVideo(video_path):
                 break
             if cv2.waitKey(28) & 0xFF == ord("q"):
                 break
-            winname = "Video"
             # resized_frame = cv2.resize(frame, (2880, 1800))
             cv2.imshow(winname, frame)
             if val != 'eof' and audio_frame is not None:
