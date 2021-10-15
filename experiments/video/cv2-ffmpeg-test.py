@@ -9,10 +9,8 @@ monitor_factor = 1
 
 def playVideo(video_path):
     cap = cv2.VideoCapture(video_path)
-    # print(str(monitor))
-    # print(type(monitor))
-    # screen_width = monitor.width * monitor_factor
-    # screen_height = monitor.height * monitor_factor
+    cv2.namedWindow(winname, cv2.WND_PROP_FULLSCREEN)
+    cv2.setWindowProperty(winname, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     if (cap.isOpened() == False):
         print("Error opening video stream or file")
     else:
@@ -26,8 +24,6 @@ def playVideo(video_path):
             if cv2.waitKey(28) & 0xFF == ord("q"):
                 break
             winname = "Video"
-            cv2.namedWindow(winname, cv2.WND_PROP_FULLSCREEN)
-            cv2.setWindowProperty(winname, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
             # resized_frame = cv2.resize(frame, (2880, 1800))
             cv2.imshow(winname, frame)
             if val != 'eof' and audio_frame is not None:
