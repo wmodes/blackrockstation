@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 #ffpyplayer for playing audio
 from ffpyplayer.player import MediaPlayer
-from screeninfo import get_monitors
 
 video_path="../data/070_SHARP_Titles_Flower_Titles.mp4"
 
