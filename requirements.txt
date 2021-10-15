@@ -3,7 +3,6 @@ charset-normalizer==2.0.6
 click==8.0.1
 Columnar==1.3.1
 ezenv==0.92
-fake-rpi==0.7.1
 ffpyplayer==4.3.2
 Flask==2.0.2
 Flask-Cors==3.0.10
