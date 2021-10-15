@@ -9,7 +9,6 @@ monitor_factor = 1
 
 def playVideo(video_path):
     cap = cv2.VideoCapture(video_path)
-    monitor = get_monitors()[0]
     # print(str(monitor))
     # print(type(monitor))
     screen_width = monitor.width * monitor_factor
