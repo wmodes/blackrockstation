@@ -11,8 +11,8 @@ def playVideo(video_path):
     cap = cv2.VideoCapture(video_path)
     # print(str(monitor))
     # print(type(monitor))
-    screen_width = monitor.width * monitor_factor
-    screen_height = monitor.height * monitor_factor
+    # screen_width = monitor.width * monitor_factor
+    # screen_height = monitor.height * monitor_factor
     if (cap.isOpened() == False):
         print("Error opening video stream or file")
     else:
