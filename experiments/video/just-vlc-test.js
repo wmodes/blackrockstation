@@ -1,23 +1,23 @@
 $(document).ready(function()
 {
-  url = "http://localhost:9090/"
-  var username = $('input[name=username]').val();
-  var password = $('input[name=password]').val();
-  //
-  var endpoint = $('input[name=endpoint]').val();
-  var url = url + endpoint;
-  //
-  var data = {}
-  var command = $('input[name=command]').val();
-  if (command !== "") {
-    data.command = command;
-  }
-  var input = $('input[name=input]').val();
-  if (input !== "") {
-    data.input = input;
-  }
 
   $('#submit').click(function() {
+    var url = "http://localhost:9090/"
+    var username = $('input[name=username]').val();
+    var password = $('input[name=password]').val();
+    //
+    var endpoint = $('input[name=endpoint]').val();
+    url = url + endpoint;
+    //
+    var data = {}
+    var command = $('input[name=command]').val();
+    if (command !== "") {
+      data.command = command;
+    }
+    var input = $('input[name=input]').val();
+    if (input !== "") {
+      data.input = input;
+    }
     console.log("click");
     $.ajax(
       {
@@ -35,4 +35,6 @@ $(document).ready(function()
       }
     );
   });
+
+  
 });
