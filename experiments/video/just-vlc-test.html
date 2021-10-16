@@ -3,15 +3,19 @@
   <head>
     <meta charset="utf-8">
     <title>Just VLC Test Control</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+      crossorigin="anonymous"></script>
+    <script type="text/javascript" src="just-vlc-test.js"></script>
   </head>
   <body>
     <main id="content">
       <h1>Just VLC Test Control</h1>
-      <form method="GET" action="http://localhost/status.json">
-        <input type=input name="command" value="in_play"><br>
-        <input type=input name="input" value="file://Videos/example.mov"><br>
-        <input type=submit>
-      </form>
+      Username: <input tpye="input" name="username" value=""><br>
+      Password: <input tpye="input" name="password" value="vlc"><br>
+      Command: <input type="input" name="command" value="in_play"><br>
+      Input: <input type="input" name="input" value="file://Videos/example.mov"><br>
+      <input id="submit" type="submit">
+      <pre><code id="output"></code></pre>
     </main>
   </body>
 </html>
