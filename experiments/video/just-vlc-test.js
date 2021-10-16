@@ -9,11 +9,11 @@ $(document).ready(function()
   //
   var data = {}
   var command = $('input[name=command]').val();
-  if (command) {
+  if (command !== "") {
     data.command = command;
   }
   var input = $('input[name=input]').val();
-  if (input) {
+  if (input !== "") {
     data.input = input;
   }
 
