@@ -2,7 +2,7 @@ $(document).ready(function()
 {
 
   $('#submit').click(function() {
-    var url = "http://localhost:9090/"
+    var url = "http://localhost:9090/requests/"
     var username = $('input[name=username]').val();
     var password = $('input[name=password]').val();
     //
@@ -36,5 +36,5 @@ $(document).ready(function()
     );
   });
 
-  
+
 });
