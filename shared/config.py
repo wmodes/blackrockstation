@@ -141,6 +141,21 @@ TV_VIDEO_DIR = "television/data/"
 TV_LOOP_DELAY = 0.25
 TV_VIDEO_EXT = ".mp4"
 TV_VOLUME = "0.8"
+# extra options to enable extra http interface
+# "--extraintf", "http", "--http-host", "localhost", "--http-port", "9090", "--http-password", "vlc"
+TV_PLATFORM = {
+    "raspi": {
+        "start": ["/usr/bin/cvlc", "--playlist-autostart", "--video-on-top", "--random", "--loop", "--fullscreen", "--no-video-title", "--autoscale", "--extraintf", "http", "--http-host", "localhost", "--http-port", "9090", "--http-password", "vlc"],
+        "clear": ["curl", "http://localhost:9090/requests/status.xml?command=pl_empty", "-u", ":vlc"],
+        "stop": ["killall", "vlc"]
+    },
+    "macos": {
+        "start": ["/usr/local/bin/vlc", "--playlist-autostart", "--video-on-top", "--random", "--loop", "--fullscreen", "--no-video-title", "--autoscale", "--extraintf", "http", "--http-host", "localhost", "--http-port", "9090", "--http-password", "vlc"],
+        # "clear": ["/usr/bin/curl", "http://localhost:9090/requests/status.xml?command=pl_empty", "-u", ":vlc"],
+        "stop": ["/usr/bin/killall", "vlc"]
+    }
+}
+TV_CLEAR_URL = "http://:vlc@localhost:9090/requests/status.xml?command=pl_empty"
 
 if sys.platform == "darwin":
     # OS X

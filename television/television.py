@@ -4,11 +4,13 @@ from shared import config
 from shared.controller import Controller
 
 import logging
-import pygame
 import time
 import os
 import glob
 import random
+import platform
+import subprocess
+import requests
 
 logger = logging.getLogger()
 
@@ -20,23 +22,29 @@ class Television(Controller):
         """Initialize."""
         super().__init__()
         self.whoami = "television"
+        self.system = self.__determine_platform()
         self.mode = config.MODE_AUTO
-        self.filetable = self.__read_files()
         self.current_year = config.SCHED_YEARS[0]
         self.most_recent = ""
-        # used by audio mixer
-        # pygame.mixer.init()
-        # pygamemixer.music.set_volume(float(config.TV_VOLUME))
-        pygame.init()
-        clock = pygame.time.Clock()
-
+        self.video_thread = None
 
     """
         SETUP
     """
 
+    def __determine_platform(self):
+        """
+        Determine platform we are running on.
+
+        Returns a short string we can use as an index.
+        """
+        if 'arm' in platform.platform().lower():
+            return "rapsi"
+        elif 'darwin' in platform.platform().lower():
+            return "macos"
+
     def __read_files(self):
-        """Look for audio files in data directory and construct dict of arrays of possibilities.
+        """UNUSED: Look for audio files in data directory and construct dict of arrays of possibilities.
 
         {
             "glitch": ["glitch-file1.mp4", "glitch-file2.mp4"],
@@ -175,9 +183,7 @@ class Television(Controller):
                               'cmd': 'setGlitch',
                               'error': error}
                 return return_val
-            self.set_glitch()
-            return_val = {'status': 'OK',
-                          'cmd': 'setGlitch'}
+            return_val = self.set_year('glitch')
             return return_val
         #
         # set year
@@ -230,13 +236,6 @@ class Television(Controller):
         PLAY STUFF
     """
 
-    def set_glitch(self):
-        """Set glitch mode."""
-        logging.info("Setting glitch")
-        print("Setting glitch")
-        self.current_year = "glitch"
-        self.play_new()
-
     def set_year(self, year):
         """Set year attribute."""
         logging.info(f"Setting year: {year}")
@@ -247,6 +246,7 @@ class Television(Controller):
             return_val = {'status': 'FAIL',
                           'error': error}
             return return_val
+        # set current year
         self.current_year = str(year)
         if self.mode != config.MODE_AUTO:
             error = "No action taken when not in AUTO mode. Use setAuto command."
@@ -255,6 +255,7 @@ class Television(Controller):
                           'cmd': 'setYear',
                           'error': error}
             return return_val
+        self.stop_video()
         self.play_new()
         return_val = {'status': 'OK',
                       'cmd': 'setYear'}
@@ -262,22 +263,33 @@ class Television(Controller):
 
     def play_new(self):
         """Play new video file."""
-        filename = random.choice(self.filetable[str(self.current_year)])
-        self.most_recent = filename
-        logging.info(f"Playing video: {filename}")
-        # used by audio mixer
-        # pygame.mixer.music.load(filepath + filename)
-        # pygame.mixer.music.play()
-        movie = pygame.movie.Movie(filename)
-        screen = pygame.display.set_mode(movie.get_size())
-        movie_screen = pygame.Surface(movie.get_size()).convert()
-        movie.set_display(movie_screen)
-        movie.play()
+        full_path = f"{config.TV_VIDEO_DIR}{self.current_year}/"
+        logging.info(f"Playing random selections in {full_path}")
+        self.play_all_in(full_path)
+
+    def play_all_in(self, path):
+        """Spawn thead to play video."""
+        args = config.TV_PLATFORM[self.system]["start"]
+        args.append(path)
+        self.video_thread = subprocess.Popen(args, shell=False)
 
     def stop_video(self):
-        """Stop currently playing video."""
-        pass
-        #TODO: Flesh this out
+        """Stop all currently playing video threads."""
+        # args = config.TV_PLATFORM[self.system]["clear"]
+        # subprocess.Popen(args, shell=False)
+        try:
+            results = requests.get(config.TV_CLEAR_URL, timeout=0.5)
+        except:
+            logging.warning(f"Failed to connect with vlc to clear playlist")
+        # args = args.insert(0, "/bin/echo")
+        # subprocess.Popen(args, shell=False)
+        time.sleep(0.5)
+        if self.video_thread:
+            self.video_thread.kill()
+        else:
+            args = config.TV_PLATFORM[self.system]["stop"]
+            self.video_thread = subprocess.Popen(args, shell=False)
+
 
     """
         MAIN LOOP

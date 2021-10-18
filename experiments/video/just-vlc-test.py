@@ -1,7 +1,9 @@
 
+# on MacOS
+# vlc *.mp4 --video-on-top --random --loop --fullscreen --no-video-title --autoscale
 
 # Start cvlc and keep it running
-#   cvlc blackrockstation/experiments/data/* --random --loop --fullscreen --no-video-title --autoscale --intf http --http-host localhost --http-port 9090 --http-password vlc
+#   cvlc experiments/data/* --random --loop --fullscreen --no-video-title --autoscale --intf http --http-host localhost --http-port 9090 --http-password vlc
 # Use the http interface to send comnmands
 #   https://wiki.videolan.org/Interfaces/
 #   https://wiki.videolan.org/VLC_HTTP_requests/

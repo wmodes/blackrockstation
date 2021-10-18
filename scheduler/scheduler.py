@@ -339,7 +339,11 @@ class Scheduler(Controller):
         """Send an arbitrary order to another controller."""
         now_dt = datetime.now()
         self.display.display_status(f"{now_dt.strftime('%H:%M')}: Sending command to {controller}: {str(cmd_obj)}")
-        return self.comms.send_order(controller, cmd_obj)
+        results = self.comms.send_order(controller, cmd_obj)
+        if results["status"] == 'FAIL':
+            logging.warning(f"order to {controller} failed: {results['error']}")
+        return results
+
 
     """
         TIME HELPERS
