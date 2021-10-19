@@ -27,6 +27,7 @@ class Television(Controller):
         self.current_year = config.SCHED_YEARS[0]
         self.most_recent = ""
         self.video_thread = None
+        self.start_player()
 
     """
         SETUP
@@ -141,7 +142,7 @@ class Television(Controller):
         #
         elif order['cmd'].lower() == "setoff":
             self.mode = config.MODE_OFF
-            self.stop_video()
+            self.stop_player()
             return_val = {'status': 'OK',
                           'cmd': 'setOff'}
             return return_val
@@ -153,7 +154,7 @@ class Television(Controller):
         #
         elif order['cmd'].lower() == "seton":
             self.mode = config.MODE_ON
-            self.play_new()
+            self.start_player()
             return_val = {'status': 'OK',
                           'cmd': 'setOn'}
             return return_val
@@ -165,7 +166,7 @@ class Television(Controller):
         #
         elif order['cmd'].lower() == "setauto":
             self.mode = config.MODE_AUTO
-            self.play_new()
+            self.start_player()
             return_val = {'status': 'OK',
                           'cmd': 'setAuto'}
             return return_val
@@ -255,7 +256,6 @@ class Television(Controller):
                           'cmd': 'setYear',
                           'error': error}
             return return_val
-        self.stop_video()
         self.play_new()
         return_val = {'status': 'OK',
                       'cmd': 'setYear'}
@@ -263,33 +263,49 @@ class Television(Controller):
 
     def play_new(self):
         """Play new video file."""
-        full_path = f"{config.TV_VIDEO_DIR}{self.current_year}/"
-        logging.info(f"Playing random selections in {full_path}")
-        self.play_all_in(full_path)
+        filepath = f"{config.TV_VIDEO_DIR}{self.current_year}/"
+        logging.info(f"Playing random selections in {filepath}")
+        self.clear_playlist()
+        self.enqueue_playlist(filepath)
 
-    def play_all_in(self, path):
+    def start_player(self):
         """Spawn thead to play video."""
         args = config.TV_PLATFORM[self.system]["start"]
-        args.append(path)
         self.video_thread = subprocess.Popen(args, shell=False)
+        time.sleep(1)
+        self.clear_playlist()
+        filepath = f"{config.TV_VIDEO_DIR}{config.TV_DEFAULT_VID}"
+        self.enqueue_playlist(filepath)
 
-    def stop_video(self):
+    def stop_player(self):
         """Stop all currently playing video threads."""
-        # args = config.TV_PLATFORM[self.system]["clear"]
-        # subprocess.Popen(args, shell=False)
-        try:
-            results = requests.get(config.TV_CLEAR_URL, timeout=0.5)
-        except:
-            logging.warning(f"Failed to connect with vlc to clear playlist")
-        # args = args.insert(0, "/bin/echo")
-        # subprocess.Popen(args, shell=False)
-        time.sleep(0.5)
         if self.video_thread:
             self.video_thread.kill()
         else:
             args = config.TV_PLATFORM[self.system]["stop"]
             self.video_thread = subprocess.Popen(args, shell=False)
 
+    def clear_playlist(self):
+        """Clear playlist on video player"""
+        url = config.TV_URL["clear"]
+        try:
+            results = requests.get(url, timeout=0.5)
+            logging.debug(f"Successfully cleared playlist: {str(results)}")
+            print(f"Successfully cleared playlist: {str(results)}")
+        except:
+            logging.warning(f"Failed to connect with vlc to clear playlist")
+            print(f"Failed to connect with vlc to clear playlist")
+
+    def enqueue_playlist(self, filepath):
+        """Enqueue playlist on video player"""
+        url = f"{config.TV_URL['enqueue']}{filepath}"
+        try:
+            results = requests.get(url, timeout=0.5)
+            logging.debug(f"Successfully enqueued playlist: {str(results)}")
+            print(f"Successfully enqueued playlist: {str(results)}")
+        except:
+            logging.warning(f"Failed to connect with vlc to enqueued playlist")
+            print(f"Failed to connect with vlc to enqueued playlist")
 
     """
         MAIN LOOP
