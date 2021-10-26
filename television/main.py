@@ -60,5 +60,5 @@ def cmd():
     return response
 
 app.run(port=config.CONTROLLERS[whoami]["port"],
-        host=config.CONTROLLERS[whoami]["server"],
+        host=0.0.0.0,
         debug=config.DEBUG, use_reloader=False)
