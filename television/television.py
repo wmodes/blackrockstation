@@ -40,7 +40,7 @@ class Television(Controller):
         Returns a short string we can use as an index.
         """
         if 'arm' in platform.platform().lower():
-            return "rapsi"
+            return "raspi"
         elif 'darwin' in platform.platform().lower():
             return "macos"
 
