@@ -638,7 +638,7 @@ class Scheduler(Controller):
             self.current_year = year;
         else:
             # find out what the index of the current year is
-            index = config.SCHED_YEARS.index(self.current_year)
+            index = config.SCHED_YEARS.index(int(self.current_year))
             # increment one
             index += 1
             # make sure we don't have index overrun
@@ -658,7 +658,7 @@ class Scheduler(Controller):
             self.delay_event({
                 "controller": controller,
                 "event": "year",
-                "time_dt": datetime.now() + timedelta(minutes=config.SCHED_TIMESLIP_GLITCH)
+                "time_dt": datetime.now() + timedelta(seconds=config.SCHED_TIMESLIP_GLITCH)
             })
         #pprint(self.delayed_events)
 

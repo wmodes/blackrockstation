@@ -58,7 +58,7 @@ SCHED_LOOP_DELAY = 0.25
 SCHED_DEFAULT_LOG = 100
 SCHED_YEARS = [1938, 1959, 1982, 2014, 2066, 2110, 1858, 1888]
 SCHED_TIMESLIP_INTERVAL = 14        # time in minutes default=26
-SCHED_TIMESLIP_GLITCH = 0.5         # time in minutes
+SCHED_TIMESLIP_GLITCH = 31         # time in seeconds
 SCHED_PERIODIC = [
     {"controller": "announce", "announceid": "periodic-announcement-1", "times_per_day": 3},
     {"controller": "announce", "announceid": "periodic-announcement-2", "times_per_day": 3},
