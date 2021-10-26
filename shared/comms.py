@@ -61,7 +61,7 @@ class Comms(object):
         # print(f"{datetime.now().strftime('%H:%M:%S')} Sending command to {controller}: {str(cmd_obj)}")
         server = self.__controller_table[controller]
         try:
-            results = requests.post(server, json=cmd_obj, timeout=0.01)
+            results = requests.post(server, json=cmd_obj, timeout=config.COMMS_TIMEOUT)
             return_val = {'status': 'OK',
                           'return': str(results)}
         except requests.exceptions.RequestException as error:
