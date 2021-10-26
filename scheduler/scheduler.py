@@ -459,7 +459,7 @@ class Scheduler(Controller):
     def set_year(self, year):
         """Set year attribute."""
         logging.info(f"Setting year: {year}")
-        print(f"Setting year: {year}")
+        # print(f"Setting year: {year}")
         if str(year) not in config.VALID_YEARS:
             error = f"Invalid year: {year}"
             logging.warning(error)
