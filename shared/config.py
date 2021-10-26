@@ -44,7 +44,7 @@ CONTROLLERS = {
 	"train":      {"port": 8086,
                    "server": "localhost"},
 	"television": {"port": 8087,
-                   "server": "localhost"}
+                   "server": "brs-tv.local"}
 }
 
 
