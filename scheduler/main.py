@@ -59,4 +59,5 @@ def cmd():
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
-app.run(port=config.CONTROLLERS[whoami]["port"], debug=config.DEBUG, use_reloader=False)
+app.run(host="0.0.0.0", port=config.CONTROLLERS[whoami]["port"],
+        debug=config.DEBUG, use_reloader=False)
