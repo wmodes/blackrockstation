@@ -31,7 +31,7 @@ COMMS_TIMEOUT = 1
 # Start
 CONTROLLERS = {
 	"scheduler":  {"port": 8080,
-                   "server": "localhost"},
+                   "server": "brs-scheduler.local"},
 	"announce":   {"port": 8081,
                    "server": "localhost"},
 	"bridge":     {"port": 8082,
