@@ -45,7 +45,12 @@ thread_obj.start()
 
 # flask controller
 #
-app = Flask(__name__) # Create the server object
+# Create the server object
+app = Flask(__name__,
+            static_url_path="",
+            # static_folder="static",
+            # template_folder="template"
+            )
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
@@ -59,5 +64,18 @@ def cmd():
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
+# @app.route("/<path:filename>")
+# def upload1():
+#     return send_static_file("json.html")
+
+# @app.route('/json')
+# def send_json():
+#     filepath = "send-json/index.html"
+#     logging.debug(f"looking for static file: {filepath}")
+#     content = get_file(filepath)
+#     return Response(content, mimetype="text/html")
+
 app.run(host="0.0.0.0", port=config.CONTROLLERS[whoami]["port"],
-        debug=config.DEBUG, use_reloader=False)
+        # debug=config.DEBUG,
+        debug=True,
+        use_reloader=False)

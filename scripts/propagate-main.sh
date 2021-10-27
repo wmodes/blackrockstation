@@ -1,5 +1,5 @@
 
-full_list="scheduler announce bridge crossing lights radio television train"
+full_list="announce bridge crossing lights radio television train"
 
 /bin/echo "Propagate changes from one subsystem main.py to others."
 /bin/echo "Subsystems: $full_list"
