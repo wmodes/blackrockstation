@@ -4,7 +4,7 @@ url_pre = "http://"
 url_post = "/cmd"
 CONTROLLERS = {
 	"scheduler":  {"port": 8080,
-                   "server": "localhost"},
+                   "server": "brs-scheduler.local"},
 	"announce":   {"port": 8081,
                    "server": "localhost"},
 	"bridge":     {"port": 8082,
@@ -18,7 +18,7 @@ CONTROLLERS = {
 	"train":      {"port": 8086,
                    "server": "localhost"},
 	"television": {"port": 8087,
-                   "server": "localhost"}
+                   "server": "brs-tv.local"}
 }
 
 var COMMANDS = {
