@@ -14,8 +14,9 @@ dest_dir = "final"
 # unlike on the command line, complicated cli options don't need
 # to be quoted when using subprocess options
 ffmpeg_opts = [
-    "-vf", "scale=-1:480, crop=ih/3*4:ih",
-    # "scale=iw*480/ih:480, crop=ih/3*4:ih",
+    "-vf", # "scale=-1:480, crop=ih/3*4:ih",
+    # "scale=w=640:h=480:force_original_aspect_ratio=increase",
+    "scale=iw*480/ih:480, crop=ih/3*4:ih",
     "-c:v", "libx264",
     "-preset", "medium",
     "-crf", "23",
