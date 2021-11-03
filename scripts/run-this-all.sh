@@ -7,7 +7,7 @@ full_list="scheduler announce bridge crossing lights radio tv train"
 /bin/echo -n "Command: "
 read command
 /bin/echo
-/bin/echo "Running command: \"$prop\""
+/bin/echo "Running command: \"$command\""
 /bin/echo
 
 for sub in $full_list; do

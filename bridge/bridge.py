@@ -28,8 +28,9 @@ class Bridge(Controller):
 
     def init_signals(self):
         """Initialize signal GPIO."""
+        logging.info("Setting up GPIO pins to output")
         GPIO.setmode(config.BRIDGE_PINOUT_SCHEME)
-        for signal_pin in range(len(config.BRIDGE_PIN_TABLE)):
+        for signal_pin in config.BRIDGE_PIN_TABLE:
             GPIO.setup(signal_pin, GPIO.OUT)
 
     """

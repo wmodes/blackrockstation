@@ -33,8 +33,8 @@ class Lights(Controller):
         """Initialize lighting system."""
         self.light_model = [config.STATE_OFF] * config.LIGHTS_TOTAL
         GPIO.setmode(config.LIGHTS_PINOUT_SCHEME)
-        for light in range(config.LIGHTS_TOTAL):
-            GPIO.setup(config.LIGHTS_PIN_TABLE[light], GPIO.OUT)
+        for pin in config.LIGHTS_PIN_TABLE:
+            GPIO.setup(pin, GPIO.OUT)
 
     """
         REPORTS
