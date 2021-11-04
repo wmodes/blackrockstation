@@ -18,7 +18,7 @@ CONTROLLERS = {
 	"train":      {"port": 8086,
                    "server": "brs-train.local"},
 	"television": {"port": 8087,
-                   "server": "brs-tv.local"}
+                   "server": "brs-television.local"}
 }
 
 var COMMANDS = {

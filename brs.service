@@ -1,10 +1,45 @@
+### Running from systemd during production
+#
+# After testing, you probably want the Rpi to run the controller on boot.
+# We'll add a unit file to systemd. A sample unit file is included in the
+# repo.
+#
+# First copy this file out of the repo (lest your modified version be
+# overwritten by a git pull) to your home directory:
+#
+#   cp brs.service ~
+#
+# Edit your copied unit file brs.service. Find the line:
+#
+# ExecStart=/usr/bin/python3 -u start.py scheduler
+#
+# Change scheduler to whichever of the controllers you want your Rpi to
+# take on the identity. Available controllers are announce, crossing,
+# lights, radio, scheduler, signal, train, and television. (Note that
+# the radio, television, announce, and train controllers will each need
+# their media files in their respective data directories.)
+#
+# From your home directory, using the modified unit file, enable brs.service:
+#
+#   sudo systemctl enable brs.service
+#   sudo systemctl start brs.service
+#
+# Later, if you want to turn off the service:
+#
+#   sudo systemctl stop brs.service
+#
+# NOTE: You must run `python start.py [controller]` once before the service
+# starts so the .identity file is writen
+
 [Unit]
 Description=Black Rock Station
 After=network.target
 
 [Service]
 User=pi
-ExecStart=/usr/bin/python3 -u start.py scheduler
+# see note above about the following 2 lines
+#ExecStart=/usr/bin/python3 -u start.py scheduler
+ExecStart=/usr/bin/python3 -u start.py
 WorkingDirectory=/home/pi/blackrockstation
 StandardOutput=inherit
 StandardError=inherit
