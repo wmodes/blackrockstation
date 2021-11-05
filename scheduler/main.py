@@ -77,6 +77,4 @@ def cmd():
 #     return Response(content, mimetype="text/html")
 
 app.run(host="0.0.0.0", port=config.CONTROLLERS[whoami]["port"],
-        # debug=config.DEBUG,
-        debug=True,
-        use_reloader=False)
+        debug=config.DEBUG,use_reloader=False)
