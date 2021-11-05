@@ -8,6 +8,7 @@ from flask_cors import CORS, cross_origin
 import threading
 from shared.streamtologger import StreamToLogger
 import logging
+import sys
 
 logging.basicConfig(
     filename=config.LOG_FILENAME,
@@ -17,8 +18,8 @@ logging.basicConfig(
 logger = logging.getLogger("scheduler")
 
 # redirect stdout and stderr to log file - do this before production
-# sys.stdout = StreamToLogger(logger,logging.INFO)
-# sys.stderr = StreamToLogger(logger,logging.ERROR)
+sys.stdout = StreamToLogger(logger,logging.INFO)
+sys.stderr = StreamToLogger(logger,logging.ERROR)
 
 def init_controller_obj():
     # let's get this party started

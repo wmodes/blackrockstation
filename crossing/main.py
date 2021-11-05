@@ -8,6 +8,7 @@ from flask_cors import CORS, cross_origin
 import threading
 from shared.streamtologger import StreamToLogger
 import logging
+import sys
 
 logging.basicConfig(
     filename=config.LOG_FILENAME,
