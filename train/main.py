@@ -17,8 +17,8 @@ logging.basicConfig(
 logger = logging.getLogger("train")
 
 # redirect stdout and stderr to log file - do this before production
-# sys.stdout = StreamToLogger(logger,logging.INFO)
-# sys.stderr = StreamToLogger(logger,logging.ERROR)
+sys.stdout = StreamToLogger(logger,logging.INFO)
+sys.stderr = StreamToLogger(logger,logging.ERROR)
 
 def init_controller_obj():
     # let's get this party started
@@ -59,5 +59,5 @@ def cmd():
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
-app.run(host="0.0.0.0", port=config.CONTROLLERS[whoami]["port"], 
+app.run(host="0.0.0.0", port=config.CONTROLLERS[whoami]["port"],
         debug=config.DEBUG, use_reloader=False)
