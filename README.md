@@ -90,7 +90,7 @@ Change `scheduler` to whichever of the controllers you want your Rpi to take on 
 From your home directory, using the modified unit file, enable `brs.service`:
 
 ```
-sudo systemctl enable brs.service
+sudo systemctl enable ~/brs.service
 sudo systemctl start brs.service
 ```
 
