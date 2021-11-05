@@ -46,6 +46,8 @@ You'll probably need the media files for testing. Download the mediafiles to the
 
 [media.tar.gz](https://drive.google.com/file/d/1_eMsQjETB9L_u6GMdJ2qZpQZf2TpKboU/view?usp=sharing)
 
+(not sure this link currently works. will update soon.)
+
 And unpack with:
 
 `% tar xvf media-files.tar.gz`
