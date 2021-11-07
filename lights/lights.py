@@ -290,7 +290,7 @@ class Lights(Controller):
             self.light_status[light] = config.STATE_OFF
         else:
             self.light_status[light] = config.STATE_ON
-        loggin.debug(f"Glitch: light {light} to {self.onoff(self.light_status[light])}")
+        logging.debug(f"Glitch: light {light} to {self.onoff(self.light_status[light])}")
         self.switch_light_to(light, self.light_status[light])
 
     def switch_all_lights_to(self, status):
