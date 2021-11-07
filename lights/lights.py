@@ -18,10 +18,11 @@ class Lights(Controller):
         super().__init__()
         self.whoami = "lights"
         self.mode = config.MODE_AUTO
-        self.light_model = []
+        self.light_status = []
         self.glitch_state = config.STATE_OFF
         self.current_year = str(config.SCHED_YEARS[0])
-        print(f"Current year: {self.current_year}")
+        logging.info(f"Current year: {self.current_year}")
+        # print(f"Current year: {self.current_year}")
         self.init_lights()
         self.set_lights_for_year()
 
@@ -31,7 +32,7 @@ class Lights(Controller):
 
     def init_lights(self):
         """Initialize lighting system."""
-        self.light_model = [config.STATE_OFF] * config.LIGHTS_TOTAL
+        self.light_status = [config.STATE_OFF] * config.LIGHTS_TOTAL
         GPIO.setmode(config.LIGHTS_PINOUT_SCHEME)
         for pin in config.LIGHTS_PIN_TABLE:
             GPIO.setup(pin, GPIO.OUT)
@@ -47,7 +48,7 @@ class Lights(Controller):
             lights_status.append({
                 "number" : light_num,
                 "name" : config.LIGHT_NAME_TABLE[light_num],
-                "state" : self.onoff(self.light_model[light_num])
+                "state" : self.onoff(self.light_status[light_num])
             })
         return {
             "controller" : self.whoami,
@@ -227,11 +228,12 @@ class Lights(Controller):
         """
         if self.current_year != "glitch":
             return
-        denominator = config.LIGHTS_GLITCH_LENGTH * (1/config.LIGHTS_LOOP_DELAY)
-        # an N in 8 chance
-        if random.random() < 1/denominator:
-            # lucky you! you get chosen!
-            self.glitch_state_change()
+        for light in range(config.LIGHTS_TOTAL):
+            denominator = config.LIGHTS_GLITCH_LENGTH * (1/config.LIGHTS_LOOP_DELAY)
+            # an N in 8 chance
+            if random.random() < 1/denominator:
+                # lucky you! you get chosen!
+                self.glitch_this_light(light)
 
     """
         PLAY STUFF
@@ -240,13 +242,13 @@ class Lights(Controller):
     def set_glitch(self):
         """Set glitch mode by setting year attribute."""
         logging.info("Setting glitch")
-        print("Setting glitch")
+        # print("Setting glitch")
         self.current_year = "glitch"
 
     def set_year(self, year):
         """Set year attribute."""
         logging.info(f"Setting year: {year}")
-        print(f"Setting year: {year}")
+        # print(f"Setting year: {year}")
         if str(year) not in config.VALID_YEARS:
             logging.warning("Invalid year: {year}")
             return_val = {'status':'FAIL',
@@ -273,38 +275,30 @@ class Lights(Controller):
         """Set appropriate lights for current year."""
         light_config_for_year = config.LIGHTS_TABLE[self.current_year]
         logging.info(f"Setting lights for {self.current_year}: ({light_config_for_year})")
-        print(f"Setting lights for {self.current_year}: ({light_config_for_year})")
+        # print(f"Setting lights for {self.current_year}: ({light_config_for_year})")
         if self.current_year == "glitch":
             return
         # iterate over light_config
         for light_num in range(config.LIGHTS_TOTAL):
             self.switch_light_to(light_num, light_config_for_year[light_num])
-            self.light_model[light_num] = light_config_for_year[light_num]
+            self.light_status[light_num] = light_config_for_year[light_num]
 
-    def glitch_state_change(self):
-        """Toggle glitch state."""
+    def glitch_this_light(self, light):
+        """Toggle glitch state for a particular light."""
         # if current state is on, make it off, otherwise make it on
-        if self.glitch_state == config.STATE_ON:
-            self.glitch_state = config.STATE_OFF
+        if self.light_status[light] == config.STATE_ON:
+            self.light_status[light] = config.STATE_OFF
         else:
-            self.glitch_state = config.STATE_ON
-        print(f"Glitch: {self.onoff(self.glitch_state)}")
-        self.switch_all_lights_to(self.glitch_state)
+            self.light_status[light] = config.STATE_ON
+        loggin.debug(f"Glitch: light {light} to {self.onoff(self.light_status[light])}")
+        self.switch_light_to(light, self.light_status[light])
 
     def switch_all_lights_to(self, status):
         """Set all lights to on/off."""
         logging.info(f"Switching all lights to {self.onoff(status)}")
-        print(f"Switching all lights to {self.onoff(status)}")
-        if status == config.STATE_ON:
-            pin_status = config.GPIO_ON
-        elif status == config.STATE_OFF:
-            pin_status = config.GPIO_OFF
-        try:
-            for light in range(config.LIGHTS_TOTAL):
-                GPIO.output(config.LIGHTS_PIN_TABLE[light], pin_status)
-                self.light_model[light] = status
-        except:
-            logging.warning("Failed to switch all lights (GPIO) to {self.onoff(status)}")
+        # print(f"Switching all lights to {self.onoff(status)}")
+        for light in range(config.LIGHTS_TOTAL):
+            self.switch_light_to(light, status)
 
     def switch_light_to(self, light, status):
         """
@@ -313,14 +307,14 @@ class Lights(Controller):
         light (integer) specifies the light number
         """
         logging.info(f"Switching light {light} to {self.onoff(status)}")
-        print(f"Switching light {light} to {self.onoff(status)}")
+        # print(f"Switching light {light} to {self.onoff(status)}")
         if status == config.STATE_ON:
             pin_status = config.GPIO_ON
         elif status == config.STATE_OFF:
             pin_status = config.GPIO_OFF
         try:
             GPIO.output(config.LIGHTS_PIN_TABLE[light], pin_status)
-            self.light_model[light] = status
+            self.light_status[light] = status
         except:
             logging.warning(f"Failed to switch light (GPIO): light {light} to {self.onoff(status)}")
 

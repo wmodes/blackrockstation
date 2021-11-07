@@ -135,7 +135,7 @@ TRAIN_AUDIO_DIR = "train/data/"
 TRAIN_TMP_FILE = "train/data/tmp-audio.mp3"
 TRAIN_LOOP_DELAY = 0.25
 TRAIN_AUDIO_EXT = ".mp3"
-TRAIN_VOLUME = "0.9"
+TRAIN_VOLUME = 1.0
 
 # TV class
 TV_VIDEO_DIR = "television/data/"
