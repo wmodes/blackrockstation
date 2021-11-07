@@ -13,8 +13,8 @@ class Display(object):
 
     def __init__(self):
         # DONE: check for terminal before initiating curses
-        # TODO: better error handling if terminal disconnected
-        # TODO: periodically check for terminal and init if found
+        # DONE: better error handling if terminal disconnected
+        # DONE: periodically check for terminal and init if found
         # DONE: make sure if not term, all the methods fail gracefully
         self.screen_avail = None;
         self.try_to_init()
