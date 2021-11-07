@@ -22,6 +22,7 @@ class Display(object):
         try:
             self.init_screen()
             self.screen_avail = True;
+            logging.info("Screen found, displaying")
         except:
             logging.info("No screen found, continuing without it")
             self.screen_avail = False;
