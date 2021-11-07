@@ -306,7 +306,7 @@ class Lights(Controller):
 
         light (integer) specifies the light number
         """
-        logging.info(f"Switching light {light} to {self.onoff(status)}")
+        logging.debug(f"Switching light {light} to {self.onoff(status)}")
         # print(f"Switching light {light} to {self.onoff(status)}")
         if status == config.STATE_ON:
             pin_status = config.GPIO_ON
