@@ -30,8 +30,7 @@ class Scheduler(Controller):
         self.current_year = config.SCHED_YEARS[0]
         self.last_event = ""
         self.last_timeslip = datetime.now()
-        self.count_time = 0
-        self.count_sched = 0
+        self.cycle_count = 0
         self.display = Display()
 
     """
@@ -667,6 +666,10 @@ class Scheduler(Controller):
         DISPLAY
     """
 
+    def check_for_display(self):
+        if not self.display.screen_avail:
+            self.display.try_to_init()
+
     def draw_status_display(self):
         self.display.display_status()
 
@@ -678,14 +681,30 @@ class Scheduler(Controller):
         self.display.display_sched(sched_str)
 
     def update_display(self):
-        if self.count_time <= 0:
+        # TODO: Convert this to use a continuous count (Rather than a countdown)
+        # TODO: Add check for display
+        #
+        # increment counter
+        self.cycle_count += 1
+        #
+        # CHECK FOR DISPLAY
+        # we should run this after how many cycles?
+        update_check_count = round(config.SCHED_DISPLAY_CHECK_FREQ / config.SCHED_LOOP_DELAY)
+        if self.cycle_count % update_check_count == 0:
+            self.check_for_display()
+        #
+        # CHECK FOR TIME UPDATE
+        # we should run this after how many cycles?
+        update_time_count = round(config.SCHED_DISPLAY_TIME_FREQ / config.SCHED_LOOP_DELAY)
+        if self.cycle_count % update_time_count == 0:
             self.update_time_display()
-            self.count_time = round(config.SCHED_DISPLAY_TIME_FREQ / config.SCHED_LOOP_DELAY)
-        self.count_time -= 1
-        if self.count_sched <= 0:
+        #
+        # CHECK FOR SCHEDULE UPDATE
+        # we should run this after how many cycles?
+        update_sched_count = round(config.SCHED_DISPLAY_SCHED_FREQ / config.SCHED_LOOP_DELAY)
+        if self.cycle_count % update_sched_count == 0:
             self.update_sched_display()
-            self.count_sched = round(config.SCHED_DISPLAY_SCHED_FREQ / config.SCHED_LOOP_DELAY)
-        self.count_sched -= 1
+
 
     """
         MAIN LOOP

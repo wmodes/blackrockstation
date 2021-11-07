@@ -12,10 +12,13 @@ class Display(object):
     """Display controller class."""
 
     def __init__(self):
-        # TODO: check for terminal before initiating curses
+        # DONE: check for terminal before initiating curses
         # TODO: better error handling if terminal disconnected
         # TODO: periodically check for terminal and init if found
-        # TODO: make sure if not term, all the methods fail gracefully
+        # DONE: make sure if not term, all the methods fail gracefully
+        self.try_to_init()
+
+    def try_to_init(self):
         try:
             self.init_screen()
             self.screen_avail = True;
