@@ -681,11 +681,8 @@ class Scheduler(Controller):
         self.display.display_sched(sched_str)
 
     def update_display(self):
-        # TODO: Convert this to use a continuous count (Rather than a countdown)
-        # TODO: Add check for display
-        #
-        # increment counter
-        self.cycle_count += 1
+        # DONE: Convert this to use a continuous count (Rather than a countdown)
+        # DONE: Add check for display
         #
         # CHECK FOR DISPLAY
         # we should run this after how many cycles?
@@ -704,6 +701,9 @@ class Scheduler(Controller):
         update_sched_count = round(config.SCHED_DISPLAY_SCHED_FREQ / config.SCHED_LOOP_DELAY)
         if self.cycle_count % update_sched_count == 0:
             self.update_sched_display()
+        #
+        # increment counter
+        self.cycle_count += 1
 
 
     """
