@@ -16,6 +16,7 @@ class Display(object):
         # TODO: better error handling if terminal disconnected
         # TODO: periodically check for terminal and init if found
         # DONE: make sure if not term, all the methods fail gracefully
+        self.screen_avail = None;
         self.try_to_init()
 
     def try_to_init(self):
@@ -24,7 +25,8 @@ class Display(object):
             self.screen_avail = True;
             logging.info("Screen found, displaying")
         except:
-            logging.info("No screen found, continuing without it")
+            if self.screen_avail == None:
+                logging.info("No screen found, continuing without it")
             self.screen_avail = False;
 
     def init_screen(self):
