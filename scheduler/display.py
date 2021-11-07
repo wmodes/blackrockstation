@@ -12,6 +12,18 @@ class Display(object):
     """Display controller class."""
 
     def __init__(self):
+        # TODO: check for terminal before initiating curses
+        # TODO: better error handling if terminal disconnected
+        # TODO: periodically check for terminal and init if found
+        # TODO: make sure if not term, all the methods fail gracefully
+        try:
+            self.init_screen()
+            self.screen_avail = True;
+        except:
+            logging.info("No screen found, continuing without it")
+            self.screen_avail = False;
+
+    def init_screen(self):
         """Initialize Display class."""
         self.screen = curses.initscr()
         curses.start_color()
@@ -64,10 +76,14 @@ class Display(object):
         self.fix2_vert = self.status_win_y_origin
 
     def update(self):
+        if ! self.screen_avail:
+            return
         self.screen.clear()
         self.time_win.refresh()
 
     def display_sched(self, text):
+        if ! self.screen_avail:
+            return
         self.sched_win.clear
         self.sched_win_wrap.clear
         self.sched_win_wrap.addch(0, 0, curses.ACS_LTEE)
@@ -89,6 +105,8 @@ class Display(object):
         self.sched_win.refresh()
 
     def display_time(self, traintime, timeslip, year):
+        if ! self.screen_avail:
+            return
         now = datetime.now()
         date_str = now.strftime(config.SCHED_TIME_FORMAT)
         self.time_win.clear
@@ -104,6 +122,8 @@ class Display(object):
         self.time_win.refresh()
 
     def display_status(self, text=None):
+        if ! self.screen_avail:
+            return
         self.status_win.clear
         self.status_win_wrap.clear
         self.status_win_wrap.addch(0, 0, curses.ACS_LTEE)
