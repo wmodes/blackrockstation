@@ -4,7 +4,7 @@ body {
   background-color: black;
   color: #eee;
   margin: 0;
-  font-size: 24px;
+  font-size: 22px;
   background-color: #000;
 }
 
@@ -83,7 +83,7 @@ section.group.alerts {
 }
 
 
-#time-current, #time-slip, #time-train, #next-train {
+#time-current, #time-slip, #time-train, #next-train, #current-year {
   font-weight: 600;
   color: white;
   text-shadow: 0 0 2px white;
@@ -102,7 +102,7 @@ section.group.alerts {
 
 @media only screen and (orientation: landscape) {
   body {
-    font-size: 18px;
+    font-size: 16px;
   }
 
   section#meta-meta-group {

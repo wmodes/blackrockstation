@@ -48,6 +48,7 @@ var COMMANDS = {
 
 var nextSlipTime = null;
 var nextTrainTime = null;
+var currentYear = null;
 
 //
 // AJAX
@@ -152,6 +153,9 @@ function processAjaxResults(type, controller, results) {
 			// if we we have "mode", we should use that
 			if (results.status == "OK")  {
 				//
+				// update current year
+				currentYear = results.results.currentYear;
+				//
 				// parse and update timeslip
 				var nextTimeslip = results.results.nextTimeslip;
 				var split = nextTimeslip.split(':');
@@ -201,7 +205,10 @@ function updateTimes() {
 	}
 	// otherwise display current time, timeslip, and train arrival
 	else {
+		// display current time
 		$("#time-current").html(formatDate(now));
+		// display current year
+		$("#current-year").html(currentYear);
 		// display timeslip time
 		if (nextSlipTime) {
 			$("#time-slip").html(msToTime(nextSlipTime - now));
