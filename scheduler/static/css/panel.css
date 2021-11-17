@@ -1,15 +1,10 @@
 
-@media only screen and (max-width: 600px) {
-  body {
-    background-color: lightblue !important;
-  }
-}
 
 body {
   background-color: black;
   color: #eee;
   margin: 0;
-  font-size: 28px;
+  font-size: 26px;
   background-color: #000;
 }
 
@@ -107,7 +102,7 @@ section.group.alerts {
 
 @media only screen and (orientation: landscape) {
   body {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   section#meta-meta-group {
