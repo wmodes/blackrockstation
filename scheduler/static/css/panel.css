@@ -27,6 +27,9 @@ h2 {
 
 .btn {
     font-size: 0.9em;
+    text-align: center;
+    padding-left: auto;
+    padding-right: auto;
 }
 
 section#meta-meta-group {

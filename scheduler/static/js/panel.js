@@ -46,6 +46,13 @@ var COMMANDS = {
 								   "note": "Scheduler requires only index, while train subsystem requires all others except index"}
 }
 
+var TRAINS = {
+	"frt-through" : 2,
+	"frt-stop" : 8,
+	"psgr-through" : 3,
+	"psgr-stop" : 6
+}
+
 var nextSlipTime = null;
 var nextTrainTime = null;
 var currentYear = null;
@@ -105,92 +112,99 @@ function submitCmd(type, controller, cmdObj) {
 // 	controller - controller that we sent to
 // 	results - results from ajax (errors return at null)
 function processAjaxResults(type, controller, results) {
-	if (type == "status") {
-		// if no results, i.e., ajax error
-		if (!results) {
-			changeStatus(controller, "unknown");
-			CONTROLLERS[controller].status = "unknown";
-		}
-		// if we have a status, which we should if we get anything
-		else if ("status" in results) {
-			// if we we have "mode", we should use that
-			if ("mode" in results.results) {
-				changeStatus(controller, results.results.mode);
-				CONTROLLERS[controller].status = results.results.mode;
-			}
-			else if (results.status == "OK") {
-				changeStatus(controller, "ok");
-				CONTROLLERS[controller].status = "ok";
-			}
-			else if (results.status == "FAIL") {
-				changeStatus(controller, "error");
-				CONTROLLERS[controller].status = "error";
-			}
-			else {
-				changeStatus(controller, "unknown");
-				CONTROLLERS[controller].status = "unknown";
-			}
-		}
-		// if status not present
-		else {
-			changeStatus(controller, "unknown");
-			CONTROLLERS[controller].status = "unknown";
-		}
-	}
-	else if (type == "call") {
-		if (!results) {
+	// first let's check and update status
+	var statusOkay = wasStatusOkay(controller, results);
 
-		}
+	if (type == "calltrain") {
+		msg = "Train has been called. New calls temporarily disabled."
+		displayCallAlert("alert-warning", msg);
+		setTimeout(function(){
+			clearCallAlert();
+			enableCalls();
+		}, 5 * 60 * 1000);
+	}
+	else if (type == "callyear") {
+		msg = "Timeslip triggered. New calls temporarily disabled."
+		displayCallAlert("alert-warning", msg);
+		setTimeout(function(){
+			clearCallAlert();
+			enableCalls();
+		}, 50 * 1000);
+	}
+	else if (type == "changemode") {
+		$(`[data-contr="${controller}"]`).prop("disabled", false);
+		var cmdObj = COMMANDS.reqStatus;
+		submitCmd("status", controller, cmdObj);
+		setTimeout(alertSummary,1000);
 	}
 	else if (type == "time") {
 		// if no results, i.e., ajax error
-		if (!results) {
+		if (! statusOkay) {
 			nextSlipTime = null;
 			nextTrainTime = null;
 		}
-		// if we have a status, which we should if we get anything
-		else if ("status" in results) {
-			// if we we have "mode", we should use that
-			if (results.status == "OK")  {
-				//
-				// update current year
-				currentYear = results.results.currentYear;
-				//
-				// parse and update timeslip
-				var nextTimeslip = results.results.nextTimeslip;
-				var split = nextTimeslip.split(':');
-				var ms = 1000 * (parseInt(split[0]) * 60 + parseInt(split[1]));
-				// get current time
-				var t = new Date();
-				// add timeslip to current to get future time
-				var ts = new Date(t.getTime() + ms);
-				nextSlipTime = ts;
-				//
-				// parse and update train time
-				nextTrainTime = parseFutureHHMM( results.results.nextTrain.time);
-				// update train description
-				var trainDesc = results.results.nextTrain.event;
-				updateTrain(trainDesc);
-			}
-			// if status other than "OK"
-			else {
-				nextSlipTime = null;
-				nextTrainTime = null;
-			}
-		}
-		// if "status" not in results (shouldn't happen)
+		// if the status is okay
 		else {
-			nextSlipTime = null;
-			nextTrainTime = null;
+			//
+			// update current year
+			currentYear = results.results.currentYear;
+			//
+			// parse and update timeslip
+			var nextTimeslip = results.results.nextTimeslip;
+			var split = nextTimeslip.split(':');
+			var ms = 1000 * (parseInt(split[0]) * 60 + parseInt(split[1]));
+			// get current time
+			var t = new Date();
+			// add timeslip to current to get future time
+			var ts = new Date(t.getTime() + ms);
+			nextSlipTime = ts;
+			//
+			// parse and update train time
+			nextTrainTime = parseFutureHHMM( results.results.nextTrain.time);
+			// update train description
+			var trainDesc = results.results.nextTrain.event;
+			updateTrain(trainDesc);
 		}
 	}
 }
 
-
-$("button").click(function(){
-	var buttonData = $(this).data("btn");
-	console.log(buttonData);
-})
+// if we have AJAX errors, or the status we get back is not okay
+// we need to update status
+function wasStatusOkay(controller, results) {
+	// if no results, i.e., ajax error
+	if (!results) {
+		changeStatus(controller, "unknown");
+		CONTROLLERS[controller].status = "unknown";
+	}
+	// if we have a status, which we should if we get anything
+	else if ("status" in results) {
+		// if we we have "mode", we should use that
+		if ("results" in results && "mode" in results.results) {
+			changeStatus(controller, results.results.mode);
+			CONTROLLERS[controller].status = results.results.mode;
+			return true;
+		}
+		else if (results.status == "OK") {
+			changeStatus(controller, "ok");
+			CONTROLLERS[controller].status = "ok";
+			return true
+		}
+		else if (results.status == "FAIL") {
+			changeStatus(controller, "error");
+			CONTROLLERS[controller].status = "error";
+		}
+		else {
+			changeStatus(controller, "unknown");
+			CONTROLLERS[controller].status = "unknown";
+		}
+	}
+	// if status not present
+	else {
+		changeStatus(controller, "unknown");
+		CONTROLLERS[controller].status = "unknown";
+	}
+	return false;
+}
 
 
 //
@@ -312,6 +326,22 @@ function displayStatusAlert(alertClass, alertText) {
 	alertEl.addClass(alertClass);
 }
 
+function displayCallAlert(alertClass, alertText) {
+	alertEl = $("#alert-calls");
+	alertColors = ["alert-primary", "alert-secondary", "alert-success", "alert-danger", "alert-warning", "alert-info", "alert-light", "alert-dark"];
+	alertEl.removeClass(alertColors);
+	alertEl.html(alertText);
+	alertEl.addClass(alertClass);
+}
+
+function clearCallAlert() {
+	alertEl = $("#alert-calls");
+	alertColors = ["alert-primary", "alert-secondary", "alert-success", "alert-danger", "alert-warning", "alert-info", "alert-light", "alert-dark"];
+	alertEl.removeClass(alertColors);
+	alertEl.html("No current calls...");
+	alertEl.addClass("alert-dark");
+}
+
 
 //
 // STATUS UPDATES
@@ -346,11 +376,73 @@ function changeStatus(controller, status) {
 		btnText = "Off";
 		btnClass = "btn-dark";
 	}
-	btnEl = $(`[data-btn="${controller}"]`);
+	btnEl = $(`[data-contr="${controller}"]`);
 	btnColors = ["btn-primary", "btn-secondary", "btn-success", "btn-danger", "btn-warning", "btn-info", "btn-light", "btn-dark"];
 	btnEl.removeClass(btnColors);
 	btnEl.html(btnText);
 	btnEl.addClass(btnClass);
+}
+
+function setupStatusBtns() {
+	$(".controller .btn").click(function() {
+		var activeContrs = ["announce", "lights", "radio", "television", "train"];
+		var controller = $(this).data("contr");
+		if (activeContrs.includes(controller)) {
+			var currentStatus = CONTROLLERS[controller].status;
+			if (currentStatus == "auto") {
+				var cmdObj = COMMANDS.setOff;
+			}
+			else if (currentStatus == "off") {
+				var cmdObj = COMMANDS.setOn;
+			}
+			else {
+				var cmdObj = COMMANDS.setAuto;
+			}
+			$(this).prop("disabled", true);
+			submitCmd("changemode", controller, cmdObj)
+		}
+		else {
+
+		}
+	});
+}
+
+
+//
+// TRAIN AND TIMESLIP CALLS
+//
+
+function setupTrainCallBtns() {
+	$("#trains .btn").click(function() {
+		var controller = "scheduler";
+		var call = $(this).data("call");
+		var index = TRAINS[call];
+		var cmdObj = COMMANDS.setTrain;
+		cmdObj.index = index;
+		submitCmd("calltrain", controller, cmdObj);
+		disableCalls();
+	});
+}
+
+function setupTimeslipCallBtns() {
+	$("#years .btn").click(function() {
+		var controller = "scheduler";
+		var year = $(this).data("year");
+		var cmdObj = COMMANDS.setYear;
+		cmdObj.year = year;
+		submitCmd("callyear", controller, cmdObj);
+		disableCalls();
+	});
+}
+
+function disableCalls() {
+	$("#trains .btn").prop("disabled", true);
+	$("#years .btn").prop("disabled", true);
+}
+
+function enableCalls() {
+	$("#trains .btn").prop("disabled", false);
+	$("#years .btn").prop("disabled", false);
 }
 
 
@@ -359,6 +451,9 @@ function changeStatus(controller, status) {
 //
 
 function main() {
+	setupStatusBtns();
+	setupTrainCallBtns();
+	setupTimeslipCallBtns();
 	getNextTimes();
 	setInterval(updateTimes, 1000);
 	checkAllStatus();

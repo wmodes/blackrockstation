@@ -72,6 +72,7 @@ class Train(Controller):
         Possible commands:
             - setOff
             - setOn
+            - setAuto
             - setTrain *direction* *traintype* *year*
             - reqStatus
             - reqLog [num_events]
@@ -174,6 +175,7 @@ class Train(Controller):
             cmds = [
                 {'cmd': 'setOff'},
                 {'cmd': 'setOn'},
+                {'cmd': 'setAuto'},
                 {'cmd': 'setTrain',
                  'direction': ['westbound', 'eastbound'],
                  'traintype': "freight-through",
