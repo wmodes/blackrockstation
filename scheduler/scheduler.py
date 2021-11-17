@@ -65,7 +65,8 @@ class Scheduler(Controller):
             "controller" : self.whoami,
             "running" : True,
             "currentYear" : self.current_year,
-            "nextTrain" : self.get_next_train()
+            "nextTrain" : self.get_next_train(),
+            "nextTimeslip" : self.next_timeslip()
         }
 
     def get_next_train(self):

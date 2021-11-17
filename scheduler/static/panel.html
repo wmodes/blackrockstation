@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Black Rock Station Control Panel</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/panel.css">
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/panel.js" defer ></script>
+  </head>
+  <body>
+    <main class="container-fluid">
+      <section id="title-section" class="group">
+        <h1>BRS Control Panel</h1>
+      </section>
+      <section id="meta-meta-group">
+        <section id="meta-group" class="meta-group1">
+          <section class="group">
+          <h2>Status</h2>
+          <p class="note">Show and change status.</p>
+            <div id="status">
+              <div class="col1">
+                <div class="controller scheduler row">
+                  <div class="con-name col-sm-6">Scheduler</div>
+                  <div class="col-sm-6">
+                    <button class="btn btn-secondary" data-btn="scheduler">
+                      Unknown</button>
+                  </div>
+                </div>
+                <div class="controller announce row">
+                  <div class="con-name col-sm-6">Announce</div>
+                  <div class="col-sm-6">
+                    <button class="btn btn-secondary" data-btn="announce">
+                      Unknown</button>
+                  </div>
+                </div>
+                <div class="controller bridge row">
+                  <div class="con-name col-sm-6">Bridge</div>
+                  <div class="col-sm-6">
+                    <button class="btn btn-secondary" data-btn="bridge">
+                      Unknown</button>
+                  </div>
+                </div>
+                <div class="controller crossing row">
+                  <div class="con-name col-sm-6">Crossing</div>
+                  <div class="col-sm-6">
+                    <button class="btn btn-secondary" data-btn="crossing">
+                      Unknown</button>
+                  </div>
+                </div>
+              </div>
+              <div class="col2">
+                <div class="controller lights row">
+                  <div class="con-name col-sm-6">Lights</div>
+                  <div class="col-sm-6">
+                    <button class="btn btn-secondary" data-btn="lights">
+                      Unknown</button>
+                  </div>
+                </div>
+                <div class="controller radio row">
+                  <div class="con-name col-sm-6">Radio</div>
+                  <div class="col-sm-6">
+                    <button class="btn btn-secondary" data-btn="radio">
+                      Unknown</button>
+                  </div>
+                </div>
+                <div class="controller television row">
+                  <div class="con-name col-sm-6">Television</div>
+                  <div class="col-sm-6">
+                    <button class="btn btn-secondary" data-btn="television">
+                      Unknown</button>
+                  </div>
+                </div>
+                <div class="controller train row">
+                  <div class="con-name col-sm-6">Train</div>
+                  <div class="col-sm-6">
+                    <button class="btn btn-secondary" data-btn="train">
+                      Unknown</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </section>
+        <section class="meta-group2">
+          <section class="group currents">
+            <div class="time">
+              Current: <span id="time-current"></span>
+            </div>
+            <div class="time">
+              Est Timeslip: <span id="time-slip"></span>
+            </div>
+            <div class="train">
+              Next Train: <span id="time-train"></span>
+            </div>
+            <div class="time">
+              <div id="next-train">Searching...</div>
+            </div>
+          </section>
+          <section class="group alerts">
+            <div class="alert alert-secondary" id="alert-status">
+              Loading panel...
+            </div>
+            <div class="alert alert-dark" id="alert-calls">
+              No calls at this time.
+            </div>
+          </section>
+          <section class="group">
+            <h2>Train Call</h2>
+            <p class="note">Trigger a train arrival.</p>
+            <div id="trains">
+              <div>
+                <button class="btn btn-light" data-btn="freight-through">
+                  Frt Thru</button>
+              </div>
+              <div>
+                <button class="btn btn-light" data-btn="freight-stop">
+                  Frt Stop</button>
+              </div>
+              <div>
+                <button class="btn btn-light" data-btn="pass-through">
+                  Psgr Thru</button>
+              </div>
+              <div>
+                <button class="btn btn-light" data-btn="pass-through">
+                  Psgr Stop</button>
+              </div>
+            </div>
+          </section>
+          <section class="group">
+            <h2>Timeslip Call</h2>
+            <p class="note">Trigger a timeslip.</p>
+            <div id="years">
+              <div>
+                <button class="btn btn-light" data-btn="1852">
+                  1852</button>
+              </div>
+              <div>
+                <button class="btn btn-light" data-btn="1888">
+                  1888</button>
+              </div>
+              <div>
+                <button class="btn btn-light" data-btn="1938">
+                  1938</button>
+              </div>
+              <div>
+                <button class="btn btn-light" data-btn="1959">
+                  1959</button>
+              </div>
+              <div>
+                <button class="btn btn-light" data-btn="1982">
+                  1982</button>
+              </div>
+              <div>
+                <button class="btn btn-light" data-btn="2014">
+                  2014</button>
+              </div>
+              <div>
+                <button class="btn btn-light" data-btn="2066">
+                  2066</button>
+              </div>
+              <div>
+                <button class="btn btn-light" data-btn="2110">
+                  2110</button>
+              </div>
+            </div>
+          </section>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>
