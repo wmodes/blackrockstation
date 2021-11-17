@@ -3,6 +3,7 @@
 // GLOBALS
 //
 
+statusInterval = 15 * 1000;
 // url = "http://localhost:8080/cmd";
 url_pre = "http://"
 url_post = "/cmd"
@@ -86,12 +87,12 @@ function submitCmd(type, controller, cmdObj) {
 		// do AJAX call
     $.ajax(ajax_obj)
     .done(function(data) {
-			console.log("Success:",controller);
+			// console.log("Success:",controller);
       //var json = JSON.parse(data);
       processAjaxResults(type, controller, data);
     })
     .fail(function(request,error) {
-			console.log("Fail:",controller);
+			// console.log("Fail:",controller);
       // var json = JSON.parse(request);
 			processAjaxResults(type, controller, null);
     })
@@ -141,7 +142,43 @@ function processAjaxResults(type, controller, results) {
 		}
 	}
 	else if (type == "time") {
-
+		// if no results, i.e., ajax error
+		if (!results) {
+			nextSlipTime = null;
+			nextTrainTime = null;
+		}
+		// if we have a status, which we should if we get anything
+		else if ("status" in results) {
+			// if we we have "mode", we should use that
+			if (results.status == "OK")  {
+				//
+				// parse and update timeslip
+				var nextTimeslip = results.results.nextTimeslip;
+				var split = nextTimeslip.split(':');
+				var ms = 1000 * (parseInt(split[0]) * 60 + parseInt(split[1]));
+				// get current time
+				var t = new Date();
+				// add timeslip to current to get future time
+				var ts = new Date(t.getTime() + ms);
+				nextSlipTime = ts;
+				//
+				// parse and update train time
+				nextTrainTime = parseFutureHHMM( results.results.nextTrain.time);
+				// update train description
+				var trainDesc = results.results.nextTrain.event;
+				updateTrain(trainDesc);
+			}
+			// if status other than "OK"
+			else {
+				nextSlipTime = null;
+				nextTrainTime = null;
+			}
+		}
+		// if "status" not in results (shouldn't happen)
+		else {
+			nextSlipTime = null;
+			nextTrainTime = null;
+		}
 	}
 }
 
@@ -155,6 +192,40 @@ $("button").click(function(){
 //
 // TIME UPDATES
 //
+
+function updateTimes() {
+	var now = new Date();
+	// check for new times
+	if (nextSlipTime < now || nextTrainTime < now) {
+		getNextTimes();
+	}
+	// otherwise display current time, timeslip, and train arrival
+	else {
+		$("#time-current").html(formatDate(now));
+		// display timeslip time
+		if (nextSlipTime) {
+			$("#time-slip").html(msToTime(nextSlipTime - now));
+		} else {
+			$("#time-slip").html("???");
+		}
+		// display train time
+		if (nextTrainTime) {
+			$("#time-train").html(msToTime(nextTrainTime - now));
+		} else {
+			$("#time-train").html("???");
+		}
+	}
+}
+
+function updateTrain(text) {
+	$("#next-train").html(text);
+}
+
+function getNextTimes() {
+	var cmdObj = COMMANDS.reqStatus;
+	var controller = "scheduler";
+	submitCmd("time", controller, cmdObj);
+}
 
 var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 var days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -188,21 +259,18 @@ function msToTime(duration) {
   return hours + ":" + minutes + ":" + seconds;
 }
 
-function updateTimes() {
-	var d = new Date();
-	$("#time-current").html(formatDate(d));
-	if (nextSlipTime != null) {
-		$("#time-slip").html(msToTime(new Date() - nextSlipTime));
-	}
-	if (nextTrainTime != null) {
-		$("#time-train").html(msToTime(new Date() - nextTrainTime));
-	}
-}
-
-function getNextTimes() {
-	var cmdObj = COMMANDS.reqStatus;
-	var controller = "scheduler";
-	submitCmd("time", controller, cmdObj);
+function parseFutureHHMM( t ) {
+   var now = new Date();
+	 var futureDate = new Date();
+   var time = t.match( /(\d+)(?::(\d\d))?\s*(p?)/ );
+   futureDate.setHours( parseInt( time[1]) + (time[3] ? 12 : 0) );
+   futureDate.setMinutes( parseInt( time[2]) || 0 );
+	 // if the constructed date is in the past, add a day
+	 if (futureDate - now < 0) {
+		 var ms = 24*60*60*1000;
+		 futureDate = new Date(futureDate.getTime() + ms);
+	 }
+   return futureDate;
 }
 
 //
@@ -215,7 +283,6 @@ function alertSummary() {
 	for (const controller of controllerList) {
 		statusArray.push(CONTROLLERS[controller].status);
 	}
-	console.log(statusArray);
 	if (statusArray.includes("error")) {
 		displayStatusAlert("alert-danger", "One or more controllers are in Error state");
 	}
@@ -285,9 +352,10 @@ function changeStatus(controller, status) {
 //
 
 function main() {
+	getNextTimes();
 	setInterval(updateTimes, 1000);
 	checkAllStatus();
-	setInterval(updateTimes, 30000);
+	setInterval(checkAllStatus, statusInterval);
 }
 
 main();
