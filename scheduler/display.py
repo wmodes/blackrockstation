@@ -23,10 +23,10 @@ class Display(object):
         try:
             self.init_screen()
             self.screen_avail = True;
-            logging.info("Screen found, displaying")
+            logging.info("screen found, displaying")
         except:
             if self.screen_avail == None:
-                logging.info("No screen found, continuing without it")
+                logging.info("no screen found, continuing without it")
             self.screen_avail = False;
 
     def init_screen(self):
