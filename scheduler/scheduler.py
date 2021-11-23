@@ -731,7 +731,7 @@ class Scheduler(Controller):
             self.draw_status_display()
             self.trigger_timeslip()
             self.main_loop()
-        except KeyboardInterrupt:
+        except:
             self.display.stop_screen()
 
 
