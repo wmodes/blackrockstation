@@ -723,6 +723,7 @@ class Scheduler(Controller):
                 self.check_for_scheduled_event()
                 time.sleep(config.SCHED_LOOP_DELAY)
         except:
+            print("Stopped!!!")
             self.display.stop_screen()
 
     def start(self):
