@@ -82,6 +82,7 @@ class Display(object):
         self.fix2_vert = self.status_win_y_origin
 
     def stop_screen(self):
+        logging.debug("stop_screen() called")
         curses.nocbreak()
         self.screen.keypad(False)
         curses.echo()
