@@ -733,9 +733,19 @@ class Scheduler(Controller):
         self.main_loop()
 
     def start(self):
-        # we call this inside of a curses wrapper to prevent
+        # we tried to call this inside of a curses wrapper to prevent
         # our screen from getting hosed when/if we exit
-        wrapper(self.get_this_party_started())
+        # however, since it is a thread, it isn't happy and doesn't work
+        try:
+            self.get_this_party_started()
+        except:
+            curses.nocbreak()
+            try:
+                self.display.screen.keypad(False)
+            except:
+                pass
+            curses.echo()
+            curses.endwin()
 
 def main():
     """Test the class."""
