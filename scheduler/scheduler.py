@@ -736,6 +736,7 @@ class Scheduler(Controller):
         # we tried to call this inside of a curses wrapper to prevent
         # our screen from getting hosed when/if we exit
         # however, since it is a thread, it isn't happy and doesn't work
+        # this try still doesn't restore our terminal :-(
         try:
             self.get_this_party_started()
         except:
