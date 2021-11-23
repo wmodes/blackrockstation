@@ -41,7 +41,7 @@ controller_obj = init_controller_obj()
 
 # threaded program_loop(controller_obj)
 #
-thread_obj = threading.Thread(target=program_loop,  args=(controller_obj,), daemon=True)
+thread_obj = threading.Thread(target=program_loop,  args=(controller_obj,), daemon=False)
 thread_obj.start()
 
 # flask controller
