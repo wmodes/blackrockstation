@@ -13,6 +13,7 @@ import time
 import re
 import random
 import shutil
+from curses import wrapper
 
 logger = logging.getLogger()
 
@@ -722,19 +723,19 @@ class Scheduler(Controller):
             self.check_for_scheduled_event()
             time.sleep(config.SCHED_LOOP_DELAY)
 
+    def get_this_party_started(self):
+        """Get the party started."""
+        logging.info('Starting.')
+        time.sleep(1)
+        self.update_display()
+        self.draw_status_display()
+        self.trigger_timeslip()
+        self.main_loop()
+
     def start(self):
-        try:
-            """Get the party started."""
-            logging.info('Starting.')
-            time.sleep(1)
-            self.update_display()
-            self.draw_status_display()
-            self.trigger_timeslip()
-            self.main_loop()
-        except:
-            self.display.stop_screen()
-
-
+        # we call this inside of a curses wrapper to prevent
+        # our screen from getting hosed when/if we exit
+        wrapper(self.get_this_party_started())
 
 def main():
     """Test the class."""
