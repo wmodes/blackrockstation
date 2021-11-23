@@ -83,7 +83,7 @@ class Display(object):
 
     def stop_screen(self):
         curses.nocbreak()
-        stdscr.keypad(False)
+        self.screen.keypad(False)
         curses.echo()
         curses.endwin()
 
