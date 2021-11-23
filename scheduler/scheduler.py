@@ -713,15 +713,17 @@ class Scheduler(Controller):
 
     def main_loop(self):
         """Get orders and acts on them."""
-        while True:
-            self.update_display()
-            self.act_on_order(self.receive_order())
-            self.check_for_delayed_events()
-            self.check_for_timeslip()
-            self.check_for_random_events()
-            self.check_for_scheduled_event()
-            time.sleep(config.SCHED_LOOP_DELAY)
-
+        try:
+            while True:
+                self.update_display()
+                self.act_on_order(self.receive_order())
+                self.check_for_delayed_events()
+                self.check_for_timeslip()
+                self.check_for_random_events()
+                self.check_for_scheduled_event()
+                time.sleep(config.SCHED_LOOP_DELAY)
+        except:
+            self.display.stop_screen()
 
     def start(self):
         """Get the party started."""

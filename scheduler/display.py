@@ -81,6 +81,11 @@ class Display(object):
         self.fix1_vert = self.time_win_y_origin + self.time_win_height
         self.fix2_vert = self.status_win_y_origin
 
+    def stop_screen(self):
+        curses.nocbreak()
+        stdscr.keypad(False)
+        curses.echo()
+
     def update(self):
         if not self.screen_avail:
             return
