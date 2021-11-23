@@ -85,6 +85,7 @@ class Display(object):
         curses.nocbreak()
         stdscr.keypad(False)
         curses.echo()
+        curses.endwin()
 
     def update(self):
         if not self.screen_avail:
