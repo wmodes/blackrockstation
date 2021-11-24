@@ -41,7 +41,7 @@ class Display(object):
         # create time window
         self.time_win_y_origin = 0
         self.time_win_x_origin = 0
-        self.time_win_height = config.SCHED_WIN_TIME_HEIGHT
+        self.time_win_height = config.CONSOLE_WIN_TIME_HEIGHT
         self.time_win_width = self.scr_width + 1
         self.time_win_wrap = curses.newwin(
             self.time_win_height, self.time_win_width,
@@ -52,9 +52,9 @@ class Display(object):
             self.time_win_y_origin+1, self.time_win_x_origin+1)
         #
         # create status window
-        self.status_win_y_origin = self.scr_height - config.SCHED_WIN_STATUS_HEIGHT
+        self.status_win_y_origin = self.scr_height - config.CONSOLE_WIN_STATUS_HEIGHT
         self.status_win_x_origin = 0
-        self.status_win_height = config.SCHED_WIN_STATUS_HEIGHT
+        self.status_win_height = config.CONSOLE_WIN_STATUS_HEIGHT
         self.status_win_width = self.scr_width + 1
         self.status_win_wrap = curses.newwin(
             self.status_win_height, self.status_win_width,
@@ -114,24 +114,41 @@ class Display(object):
                 attr = curses.A_NORMAL
             self.sched_win.addstr(i, 0, str_array[i], attr)
             self.sched_win.refresh()
-            time.sleep(config.SCHED_LOOP_DELAY/4)
+            time.sleep(config.CONSOLE_LOOP_DELAY/4)
         self.sched_win.refresh()
 
-    def display_time(self, traintime, timeslip, year):
+    def display_time(self, next_train, next_timeslip, current_year):
         if not self.screen_avail:
             return
-        now = datetime.now()
-        date_str = now.strftime(config.SCHED_TIME_FORMAT)
+        # format current time
+        now_dt = datetime.now()
+        date_str = self.time2txt(now_dt)
+        # current year
+        if current_year:
+            current_year_str = current_year
+        else:
+            current_year_str = "???"
+        # format timeslip
+        if next_timeslip:
+            timeslip_delta = next_timeslip - now_dt
+            timeslip_str = self.delta2txt(timeslip_delta)
+        else:
+            timeslip_str = "???"
+        # format next train time
+        if next_train:
+            train_delta = next_train - now_dt
+            train_str = self.delta2txt(train_delta)
+        else:
+            train_str = "???"
+        # clear the time window
         self.time_win.clear
         self.time_win_wrap.clear
-        # self.time_win_wrap.addch(self.time_win_height-1, 0, curses.ACS_LTEE)
-        # self.time_win_wrap.addch(self.time_win_height-1, curses.COLS - 2, curses.ACS_RTEE)
         self.time_win_wrap.refresh()
         # self.corner_fix()
-        self.time_win.addstr(0, 1, f"Current: {date_str}       ", curses.A_BOLD)
-        self.time_win.addstr(1, 1, f"Next Train: {traintime}       ")
-        self.time_win.addstr(2, 1, f"Est Timeslip: {timeslip}      ")
-        self.time_win.addstr(3, 1, f"Current Year: {year}      ")
+        self.time_win.addstr(0, 1, f"Current Time: {date_str}       ", curses.A_BOLD)
+        self.time_win.addstr(1, 1, f"Current Year: {current_year_str}      ")
+        self.time_win.addstr(2, 1, f"Time Until Timeslip: {timeslip_str}      ")
+        self.time_win.addstr(3, 1, f"Time Until Next Train: {train_str}       ")
         self.time_win.refresh()
 
     def display_status(self, text=None):
@@ -144,7 +161,7 @@ class Display(object):
         self.status_win_wrap.refresh()
         # self.corner_fix()
         if text:
-            self.status_win.addstr(config.SCHED_WIN_STATUS_HEIGHT-3, 1, text+'\n')
+            self.status_win.addstr(config.CONSOLE_WIN_STATUS_HEIGHT-3, 1, text)
         self.status_win.refresh()
 
     def corner_fix(self):
@@ -153,3 +170,15 @@ class Display(object):
         self.screen.addch(self.fix2_vert, 0, curses.ACS_LTEE)
         self.screen.addch(self.fix2_vert, curses.COLS - 1, curses.ACS_RTEE)
         self.screen.refresh()
+
+    #
+    # Time Helpers
+    #
+    def delta2txt(self, delta):
+        s = delta.seconds
+        hrs, rem = divmod(s, 3600)
+        min, sec = divmod(rem, 60)
+        return f"{hrs:02d}:{min:02d}:{sec:02d}"
+
+    def time2txt(self, time_dt):
+        return time_dt.strftime(config.CONSOLE_TIME_FORMAT)

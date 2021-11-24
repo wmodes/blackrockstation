@@ -18,7 +18,7 @@ logging.basicConfig(
 logger = logging.getLogger("scheduler")
 
 # redirect stdout and stderr to log file - do this before production
-sys.stdout = StreamToLogger(logger,logging.INFO)
+sys.stdout = StreamToLogger(logger,logging.DEBUG)
 sys.stderr = StreamToLogger(logger,logging.ERROR)
 
 def init_controller_obj():

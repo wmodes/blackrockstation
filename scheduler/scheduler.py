@@ -2,10 +2,8 @@
 
 from shared import config
 from shared.controller import Controller
-from scheduler.display import Display
 
 import logging
-from pprint import pprint
 from datetime import datetime, timedelta
 import csv
 from columnar import columnar
@@ -32,7 +30,6 @@ class Scheduler(Controller):
         self.last_event = ""
         self.last_timeslip = datetime.now()
         self.cycle_count = 0
-        self.display = Display()
 
     """
         SETUP
@@ -113,7 +110,6 @@ class Scheduler(Controller):
                     break
                 future_list.append(event)
         return future_list
-        #return self.display_train_schedule(future_list)
 
     def display_future_trains(self, n=10):
         """Return human-readable schedule of future trains."""
@@ -339,7 +335,7 @@ class Scheduler(Controller):
     def send_order_to_controller(self, controller, cmd_obj):
         """Send an arbitrary order to another controller."""
         now_dt = datetime.now()
-        self.display.display_status(f"{now_dt.strftime('%H:%M')}: Sending command to {controller}: {str(cmd_obj)}")
+        logging.info(f"Sending command to {controller}: {str(cmd_obj)}")
         results = self.comms.send_order(controller, cmd_obj)
         if results["status"] == 'FAIL':
             logging.warning(f"order to {controller} failed: {results['error']}")
@@ -460,7 +456,6 @@ class Scheduler(Controller):
     def set_year(self, year):
         """Set year attribute."""
         logging.info(f"Setting year: {year}")
-        # print(f"Setting year: {year}")
         if str(year) not in config.VALID_YEARS:
             error = f"Invalid year: {year}"
             logging.warning(error)
@@ -661,51 +656,6 @@ class Scheduler(Controller):
                 "event": "year",
                 "time_dt": datetime.now() + timedelta(seconds=config.SCHED_TIMESLIP_GLITCH)
             })
-        #pprint(self.delayed_events)
-
-
-    """
-        DISPLAY
-    """
-
-    def check_for_display(self):
-        if not self.display.screen_avail:
-            self.display.try_to_init()
-
-    def draw_status_display(self):
-        self.display.display_status()
-
-    def update_time_display(self):
-        self.display.display_time(self.next_train(), self.next_timeslip(), self.current_year)
-
-    def update_sched_display(self):
-        sched_str = self.display_future_trains(config.SCHED_DISPLAY_TRAINS)
-        self.display.display_sched(sched_str)
-
-    def update_display(self):
-        # DONE: Convert this to use a continuous count (Rather than a countdown)
-        # DONE: Add check for display
-        #
-        # CHECK FOR DISPLAY
-        # we should run this after how many cycles?
-        update_check_count = round(config.SCHED_DISPLAY_CHECK_FREQ / config.SCHED_LOOP_DELAY)
-        if self.cycle_count % update_check_count == 0:
-            self.check_for_display()
-        #
-        # CHECK FOR TIME UPDATE
-        # we should run this after how many cycles?
-        update_time_count = round(config.SCHED_DISPLAY_TIME_FREQ / config.SCHED_LOOP_DELAY)
-        if self.cycle_count % update_time_count == 0:
-            self.update_time_display()
-        #
-        # CHECK FOR SCHEDULE UPDATE
-        # we should run this after how many cycles?
-        update_sched_count = round(config.SCHED_DISPLAY_SCHED_FREQ / config.SCHED_LOOP_DELAY)
-        if self.cycle_count % update_sched_count == 0:
-            self.update_sched_display()
-        #
-        # increment counter
-        self.cycle_count += 1
 
 
     """
@@ -715,7 +665,6 @@ class Scheduler(Controller):
     def main_loop(self):
         """Get orders and acts on them."""
         while True:
-            self.update_display()
             self.act_on_order(self.receive_order())
             self.check_for_delayed_events()
             self.check_for_timeslip()
@@ -723,30 +672,12 @@ class Scheduler(Controller):
             self.check_for_scheduled_event()
             time.sleep(config.SCHED_LOOP_DELAY)
 
-    def get_this_party_started(self):
+    def start(self):
         """Get the party started."""
         logging.info('Starting.')
         time.sleep(1)
-        self.update_display()
-        self.draw_status_display()
         self.trigger_timeslip()
         self.main_loop()
-
-    def start(self):
-        # we tried to call this inside of a curses wrapper to prevent
-        # our screen from getting hosed when/if we exit
-        # however, since it is a thread, it isn't happy and doesn't work
-        # this try still doesn't restore our terminal :-(
-        try:
-            self.get_this_party_started()
-        except:
-            curses.nocbreak()
-            try:
-                self.display.screen.keypad(False)
-            except:
-                pass
-            curses.echo()
-            curses.endwin()
 
 def main():
     """Test the class."""

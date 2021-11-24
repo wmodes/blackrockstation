@@ -3,7 +3,6 @@
 from shared import config
 
 import logging
-# import pprint
 from datetime import datetime
 import os
 import json
@@ -23,7 +22,7 @@ class Comms(object):
         for key, value in config.CONTROLLERS.items():
             url = f"http://{value['server']}:{value['port']}/cmd"
             self.__controller_table[key] = url
-        logging.debug(f"controller table: {str(self.__controller_table)}")
+        # logging.debug(f"controller table: {str(self.__controller_table)}")
 
     def get_order(self):
         """Get order from queue."""
@@ -58,12 +57,10 @@ class Comms(object):
     def send_order(self, controller, cmd_obj):
         """Send an arbitrary order to another controller."""
         logging.info(f"Sending command to {controller}: {str(cmd_obj)}")
-        # print(f"{datetime.now().strftime('%H:%M:%S')} Sending command to {controller}: {str(cmd_obj)}")
         server = self.__controller_table[controller]
         try:
-            results = requests.post(server, json=cmd_obj, timeout=config.COMMS_TIMEOUT)
-            return_val = {'status': 'OK',
-                          'return': str(results)}
+            response = requests.post(server, json=cmd_obj, timeout=config.COMMS_TIMEOUT)
+            return_val = json.loads(response.text)
         except requests.exceptions.RequestException as error:
             return_val = {'status': 'FAIL',
                           'error': str(error)}
