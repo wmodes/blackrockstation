@@ -382,14 +382,16 @@ class Console(Controller):
     def start(self):
         # call this inside of a curses wrapper to prevent
         # our screen from getting hosed when/if we exit
-        curses.wrapper(self.get_this_party_started())
-        curses.nocbreak()
         try:
-            self.display.screen.keypad(False)
-        except:
-            pass
-        curses.echo()
-        curses.endwin()
+            curses.wrapper(self.get_this_party_started())
+        except KeyboardInterrupt:
+            curses.nocbreak()
+            try:
+                self.display.screen.keypad(False)
+            except:
+                pass
+            curses.echo()
+            curses.endwin()
 
 def main():
     """Test the class."""
