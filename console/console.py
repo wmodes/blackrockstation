@@ -154,6 +154,10 @@ class Console(Controller):
         results = self.comms.send_order(controller, cmd_obj)
         if results["status"] == 'FAIL':
             logging.warning(f"order to {controller} failed: {results['error']}")
+            self.current_year = None
+            self.next_timeslip = None
+            self.next_train = None
+            return
         self.current_year = results["results"]["currentYear"]
         next_timeslip_txt = results["results"]["nextTimeslip"]
         self.next_timeslip = self.str_delta_plus_now(next_timeslip_txt)
