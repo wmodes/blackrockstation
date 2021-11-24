@@ -11,6 +11,7 @@ import glob
 import random
 
 logger = logging.getLogger()
+logger.setLevel(config.LOG_LEVEL)
 
 class Radio(Controller):
     """Radio controller class."""

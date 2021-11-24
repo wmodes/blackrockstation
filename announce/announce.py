@@ -11,7 +11,7 @@ import glob
 import random
 
 logger = logging.getLogger()
-
+logger.setLevel(config.LOG_LEVEL)
 
 class Announce(Controller):
     """Announcements controller class."""

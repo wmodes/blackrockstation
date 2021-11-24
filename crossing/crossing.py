@@ -9,6 +9,7 @@ import RPi.GPIO as GPIO
 
 
 logger = logging.getLogger()
+logger.setLevel(config.LOG_LEVEL)
 
 class Crossing(Controller):
     """Crossing controller class."""

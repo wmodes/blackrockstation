@@ -9,6 +9,7 @@ import random
 import RPi.GPIO as GPIO
 
 logger = logging.getLogger()
+logger.setLevel(config.LOG_LEVEL)
 
 class Lights(Controller):
     """Lights controller class."""

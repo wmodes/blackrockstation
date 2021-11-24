@@ -7,6 +7,7 @@ from datetime import datetime
 import time
 
 logger = logging.getLogger()
+logger.setLevel(config.LOG_LEVEL)
 
 class Display(object):
     """Display controller class."""

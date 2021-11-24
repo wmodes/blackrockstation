@@ -16,6 +16,7 @@ import shutil
 import curses
 
 logger = logging.getLogger()
+logger.setLevel(config.LOG_LEVEL)
 
 class Console(Controller):
     """Console controller class."""

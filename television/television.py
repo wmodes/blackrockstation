@@ -13,7 +13,7 @@ import subprocess
 import requests
 
 logger = logging.getLogger()
-
+logger.setLevel(config.LOG_LEVEL)
 
 class Television(Controller):
     """Television controller class."""

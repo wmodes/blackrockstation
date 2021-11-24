@@ -11,7 +11,7 @@ import sox
 from pathlib import Path
 
 logger = logging.getLogger()
-
+logger.setLevel(config.LOG_LEVEL)
 
 class Train(Controller):
     """Train controller class."""
