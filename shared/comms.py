@@ -8,6 +8,9 @@ import os
 import json
 import requests
 
+logger = logging.getLogger()
+logger.setLevel(config.LOG_LEVEL)
+
 class Comms(object):
     """Comm class for all controllers."""
 
