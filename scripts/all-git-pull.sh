@@ -1,1 +1,1 @@
-sh ~/dev/blackrockstation/scripts/run-this-all.sh "cd blackrockstation; git pull"
+sh ~/dev/blackrockstation/scripts/all-do-this.sh "cd blackrockstation; git pull"

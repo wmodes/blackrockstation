@@ -11,11 +11,13 @@ import logging
 import sys
 
 logging.basicConfig(
-    filename=config.LOG_FILENAME,
+    filename=config.LOG_DIR + "crossing.log"
     # encoding='utf-8',
     filemode='a', format='%(asctime)s %(levelname)s:%(message)s',
     level=config.LOG_LEVEL)
 logger = logging.getLogger("crossing")
+werklog = logging.getLogger('werkzeug')
+werklog.setLevel(logging.ERROR)
 
 # redirect stdout and stderr to log file - do this before production
 sys.stdout = StreamToLogger(logger,logging.DEBUG)

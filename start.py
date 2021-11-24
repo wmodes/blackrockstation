@@ -56,7 +56,7 @@ def main():
     controller = controller_candidate
     write_identity(controller)
     # handle logging
-    logging.basicConfig(filename=config.LOG_FILENAME,
+    logging.basicConfig(filename=config.LOG_DIR + controller + ".log",
                         format=f"%(asctime)s {controller}: %(levelname)s: %(message)s",
                         level=logging.DEBUG)
     # logger = logging.getLogger()

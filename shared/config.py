@@ -14,7 +14,7 @@ import logging
 DEBUG = False
 ID_FILE = ".identity"
 PKG_ROOT = "blackrockstation"
-LOG_FILENAME = "logs/controller.log"
+LOG_DIR = "logs/"
 LOG_LEVEL = logging.INFO
 ORDER_FILE = ".order"   # temp solution for comms orders
 STATE_OFF = 0
