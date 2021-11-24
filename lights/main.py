@@ -11,7 +11,7 @@ import logging
 import sys
 
 logging.basicConfig(
-    filename=config.LOG_DIR + "lights.log"
+    filename=config.LOG_DIR + "lights.log",
     # encoding='utf-8',
     filemode='a', format='%(asctime)s %(levelname)s:%(message)s',
     level=config.LOG_LEVEL)
