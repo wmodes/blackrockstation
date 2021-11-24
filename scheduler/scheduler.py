@@ -13,7 +13,7 @@ import random
 import shutil
 from curses import wrapper
 
-logger = logging.getLogger()
+logger = logging.getLogger(level=config.LOG_LEVEL)
 
 class Scheduler(Controller):
     """Scheduler controller class."""

@@ -16,6 +16,7 @@ logging.basicConfig(
     filemode='a', format='%(asctime)s %(levelname)s:%(message)s',
     level=config.LOG_LEVEL)
 logger = logging.getLogger("scheduler")
+logger.setLevel(config.LOG_LEVEL)
 werklog = logging.getLogger('werkzeug')
 werklog.setLevel(logging.ERROR)
 
