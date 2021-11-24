@@ -205,6 +205,7 @@ class Console(Controller):
         results = self.comms.send_order(controller, cmd_obj)
         if results["status"] == 'FAIL':
             logging.warning(f"order to {controller} failed: {results['error']}")
+            return
         self.schedule = results["results"]
 
     def get_scheduler_logs(self):
@@ -221,6 +222,7 @@ class Console(Controller):
         results = self.comms.send_order(controller, cmd_obj)
         if results["status"] == 'FAIL':
             logging.warning(f"order to {controller} failed: {results['error']}")
+            return
         self.current_logs = results["results"]
 
 
