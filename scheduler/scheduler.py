@@ -336,7 +336,6 @@ class Scheduler(Controller):
     def send_order_to_controller(self, controller, cmd_obj):
         """Send an arbitrary order to another controller."""
         now_dt = datetime.now()
-        logging.info(f"Sending command to {controller}: {str(cmd_obj)}")
         results = self.comms.send_order(controller, cmd_obj)
         if results["status"] == 'FAIL':
             logging.warning(f"order to {controller} failed: {results['error']}")
