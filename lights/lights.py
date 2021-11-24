@@ -23,7 +23,6 @@ class Lights(Controller):
         self.glitch_state = config.STATE_OFF
         self.current_year = str(config.SCHED_YEARS[0])
         logging.info(f"Current year: {self.current_year}")
-        # print(f"Current year: {self.current_year}")
         self.init_lights()
         self.set_lights_for_year()
 
@@ -243,13 +242,11 @@ class Lights(Controller):
     def set_glitch(self):
         """Set glitch mode by setting year attribute."""
         logging.info("Setting glitch")
-        # print("Setting glitch")
         self.current_year = "glitch"
 
     def set_year(self, year):
         """Set year attribute."""
         logging.info(f"Setting year: {year}")
-        # print(f"Setting year: {year}")
         if str(year) not in config.VALID_YEARS:
             logging.warning("Invalid year: {year}")
             return_val = {'status':'FAIL',
@@ -276,7 +273,6 @@ class Lights(Controller):
         """Set appropriate lights for current year."""
         light_config_for_year = config.LIGHTS_TABLE[self.current_year]
         logging.info(f"Setting lights for {self.current_year}: ({light_config_for_year})")
-        # print(f"Setting lights for {self.current_year}: ({light_config_for_year})")
         if self.current_year == "glitch":
             return
         # iterate over light_config
@@ -297,7 +293,6 @@ class Lights(Controller):
     def switch_all_lights_to(self, status):
         """Set all lights to on/off."""
         logging.info(f"Switching all lights to {self.onoff(status)}")
-        # print(f"Switching all lights to {self.onoff(status)}")
         for light in range(config.LIGHTS_TOTAL):
             self.switch_light_to(light, status)
 
@@ -308,7 +303,6 @@ class Lights(Controller):
         light (integer) specifies the light number
         """
         logging.debug(f"Switching light {light} to {self.onoff(status)}")
-        # print(f"Switching light {light} to {self.onoff(status)}")
         if status == config.STATE_ON:
             pin_status = config.GPIO_ON
         elif status == config.STATE_OFF:

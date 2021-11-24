@@ -151,14 +151,12 @@ class Crossing(Controller):
     def set_off(self):
         """Set status off."""
         logging.info("Setting off")
-        print("Setting off")
         self.status = config.STATE_OFF
         self.set_crossing()
 
     def set_on(self):
         """Set status ob."""
         logging.info("Setting on")
-        print("Setting on")
         self.status = config.STATE_ON
         self.set_crossing()
 
@@ -169,7 +167,6 @@ class Crossing(Controller):
     def set_crossing(self):
         """Set crossing based on status."""
         logging.info(f"Setting crossing: {self.onoff(self.status)}")
-        print(f"Setting crossing: {self.onoff(self.status)}")
         if self.status == config.STATE_ON:
             GPIO.output(config.CROSS_PIN, config.GPIO_ON)
         else:

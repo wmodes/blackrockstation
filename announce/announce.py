@@ -237,14 +237,12 @@ class Announce(Controller):
     def set_glitch(self):
         """Play glitch audio."""
         logging.info("Setting glitch")
-        print("Setting glitch")
         if self.mode != config.MODE_AUTO:
             logging.warning("setGlitch no action taken when not in AUTO mode. Use setAuto command.")
             return
         filename = random.choice(self.glitchtable)
         self.most_recent = filename
         logging.info(f"Playing audio: {filename}")
-        print(f"Playing audio: {filename}")
         # used by audio mixer
         mixer.music.load(filename)
         mixer.music.play()
@@ -279,7 +277,6 @@ class Announce(Controller):
     def stop_audio(self):
         """Stop all audio output."""
         logging.info("Stopping audio")
-        print("Stopping audio")
         # used by audio mixer
         mixer.music.pause()
 

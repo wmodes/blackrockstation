@@ -5,7 +5,6 @@ from shared.controller import Controller
 from shared.display import Display
 
 import logging
-from pprint import pprint
 from datetime import datetime, timedelta
 import csv
 from columnar import columnar
@@ -377,7 +376,6 @@ class Console(Controller):
         logging.info(f'{self.whoami} starting.')
         time.sleep(1)
         self.update_display()
-        print("Display updated.")
         self.draw_status_display()
         self.main_loop()
 

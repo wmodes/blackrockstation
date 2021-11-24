@@ -240,7 +240,6 @@ class Television(Controller):
     def set_year(self, year):
         """Set year attribute."""
         logging.info(f"Setting year: {year}")
-        print(f"Setting year: {year}")
         if str(year) not in config.VALID_YEARS:
             error = f"Invalid year: {year}"
             logging.warning(error)
@@ -291,10 +290,8 @@ class Television(Controller):
         try:
             results = requests.get(url, timeout=0.5)
             logging.debug(f"Successfully cleared playlist: {str(results)}")
-            print(f"Successfully cleared playlist: {str(results)}")
         except:
             logging.warning(f"Failed to connect with vlc to clear playlist")
-            print(f"Failed to connect with vlc to clear playlist")
 
     def enqueue_playlist(self, filepath):
         """Enqueue playlist on video player"""
@@ -302,10 +299,8 @@ class Television(Controller):
         try:
             results = requests.get(url, timeout=0.5)
             logging.debug(f"Successfully enqueued playlist: {str(results)}")
-            print(f"Successfully enqueued playlist: {str(results)}")
         except:
             logging.warning(f"Failed to connect with vlc to enqueued playlist")
-            print(f"Failed to connect with vlc to enqueued playlist")
 
     """
         MAIN LOOP

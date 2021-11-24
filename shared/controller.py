@@ -4,7 +4,6 @@ from shared import config
 from shared.comms import Comms
 
 import logging
-# import pprint
 # from datetime import datetime, timedelta
 
 logger = logging.getLogger()

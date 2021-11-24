@@ -19,7 +19,6 @@ class Bridge(Controller):
         self.whoami = "bridge"
         self.eastbound = config.STATE_STOP
         self.westbound = config.STATE_STOP
-        print(f"Current state: Westbound is {self.stopgo(self.westbound)}, Eastbound is {self.stopgo(self.eastbound)}")
         self.init_signals()
         self.set_signals()
 
@@ -167,7 +166,6 @@ class Bridge(Controller):
     def set_stop(self):
         """Set signals to stio for all directions."""
         logging.info("Setting stop")
-        print("Setting stop")
         self.eastbound = config.STATE_STOP
         self.westbound = config.STATE_STOP
         self.set_signals()
@@ -175,7 +173,6 @@ class Bridge(Controller):
     def set_go(self, direction):
         """Set signals to go for given direction."""
         logging.info(f"Setting go {direction}")
-        print(f"Setting go {direction}")
         if direction.lower().startswith("e"):
              self.eastbound = config.STATE_GO
              self.westbound = config.STATE_STOP
@@ -191,7 +188,6 @@ class Bridge(Controller):
     def set_signals(self):
         """Set signals based on current status."""
         logging.info(f"Setting signal: Westbound is {self.stopgo(self.westbound)}, Eastbound is {self.stopgo(self.eastbound)}")
-        print(f"Setting signal: Westbound is {self.stopgo(self.westbound)}, Eastbound is {self.stopgo(self.eastbound)}")
         if self.westbound == config.STATE_GO:
             GPIO.output(config.BRIDGE_PIN_TABLE[config.BRIDGE_WB_STOP], config.GPIO_OFF)
             GPIO.output(config.BRIDGE_PIN_TABLE[config.BRIDGE_WB_GO], config.GPIO_ON)

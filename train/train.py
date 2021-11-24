@@ -46,7 +46,6 @@ class Train(Controller):
                 # add filename to filetable
                 index = f"{row['year']}-{row['traintype']}"
                 filetable[index] = row['filename']
-        #pprint(filetable)
         return filetable
 
     """

@@ -108,7 +108,6 @@ class Display(object):
         # self.corner_fix()
         str_array = text.splitlines()
         for i in range(min(len(str_array), self.sched_win_height-3)):
-            # print(str_array[i])
             if i == 3:
                 attr = curses.A_REVERSE
             else:

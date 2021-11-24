@@ -27,7 +27,6 @@ class Radio(Controller):
         # used by audio mixer
         pygame.mixer.init()
         pygame.mixer.music.set_volume(float(config.RADIO_VOLUME))
-        #pprint(self.filetable)
 
     """
         SETUP
@@ -244,7 +243,6 @@ class Radio(Controller):
     def set_glitch(self):
         """Set glitch mode."""
         logging.info("Setting glitch")
-        print("Setting glitch")
         self.current_year = "glitch"
         self.play_transition()
         self.play_new()
@@ -252,7 +250,6 @@ class Radio(Controller):
     def set_year(self, year):
         """Set year attribute."""
         logging.info(f"Setting year: {year}")
-        print(f"Setting year: {year}")
         if str(year) not in config.VALID_YEARS:
             error = f"Invalid year: {year}"
             logging.warning(error)
@@ -282,11 +279,9 @@ class Radio(Controller):
 
     def play_new(self):
         """Play new audio file."""
-        # print(f"choices: {self.filetable[str(self.current_year)]}")
         filename = random.choice(self.filetable[str(self.current_year)])
         self.most_recent = filename
         logging.info(f"Playing audio: {filename}")
-        print(f"Playing audio: {filename}")
         # used by audio mixer
         pygame.mixer.music.unload()
         pygame.mixer.music.load(filename)
@@ -295,7 +290,6 @@ class Radio(Controller):
     def stop_audio(self):
         """Stop all audio output."""
         logging.info("Stopping audio")
-        print("Stopping audio")
         # used by audio mixer
         pygame.mixer.music.pause()
 
