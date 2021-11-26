@@ -13,4 +13,4 @@ thread_obj = threading.Thread(target=runomx)
 thread_obj.start()
 
 sleep(20)
-killomx()s
+killomx()
