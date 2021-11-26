@@ -1,6 +1,6 @@
 
 import subprocess
-import threaded
+import threading
 from time import sleep
 
 def runomx():
