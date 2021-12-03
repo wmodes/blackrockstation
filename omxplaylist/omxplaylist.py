@@ -9,6 +9,7 @@ from os import listdir
 from os.path import isfile, join
 
 import subprocess
+import threading
 
 #omx_command = ['omxplayer', "-o", "hdmi", "-b"]
 omx_command = ['omxplayer', "-o", "local", "-b"]
@@ -95,4 +96,5 @@ if __name__ == '__main__':
     else:
         loglevel = logging.INFO
 
-    main(args, loglevel)
+    thread_obj = threading.Thread(target=main,  args=(args, loglevel), daemon=False)
+    thread_obj.start()
