@@ -24,5 +24,7 @@ def killomx():
 thread_obj = threading.Thread(target=runomx)
 thread_obj.start()
 
+print(process)
+
 sleep(20)
-killomx()
+killomx(process)
