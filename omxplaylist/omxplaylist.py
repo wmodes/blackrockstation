@@ -10,9 +10,7 @@ from os.path import isfile, join
 
 import subprocess
 
-#omx_command = ['omxplayer', "-o", "hdmi", "-b"]
-omx_command = ['omxplayer', "-o", "local", "-b"]
-
+omx_command = ['omxplayer', "-p", "-o", "local"]
 
 def generatePlaylist(inpath):
     return [f for f in listdir(inpath) if isfile(join(inpath, f))]
