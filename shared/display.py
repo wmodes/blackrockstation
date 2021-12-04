@@ -33,8 +33,8 @@ class Display(object):
     def init_screen(self):
         """Initialize Display class."""
         self.screen = curses.initscr()
-        curses.start_color()
-        curses.use_default_colors()
+        # curses.start_color()
+        # curses.use_default_colors()
         curses.curs_set(2)
         self.scr_height = curses.LINES - 1
         self.scr_width = curses.COLS - 1
