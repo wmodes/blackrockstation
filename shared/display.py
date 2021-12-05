@@ -100,10 +100,10 @@ class Display(object):
             return
         self.sched_win.clear
         self.sched_win_wrap.clear
-        self.sched_win_wrap.addch(0, 0, curses.ACS_LTEE)
-        self.sched_win_wrap.addch(0, curses.COLS - 1, curses.ACS_RTEE)
-        self.sched_win_wrap.addch(self.sched_win_height-1, 0, curses.ACS_LTEE)
-        self.sched_win_wrap.addch(self.sched_win_height-1, curses.COLS - 2, curses.ACS_RTEE)
+        # self.sched_win_wrap.addch(0, 0, curses.ACS_LTEE)
+        # self.sched_win_wrap.addch(0, curses.COLS - 1, curses.ACS_RTEE)
+        # self.sched_win_wrap.addch(self.sched_win_height-1, 0, curses.ACS_LTEE)
+        # self.sched_win_wrap.addch(self.sched_win_height-1, curses.COLS - 2, curses.ACS_RTEE)
         self.sched_win_wrap.refresh()
         # self.corner_fix()
         str_array = text.splitlines()
