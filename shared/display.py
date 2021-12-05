@@ -69,7 +69,7 @@ class Display(object):
         # create schedule window
         self.sched_win_y_origin = self.time_win_height - 1
         self.sched_win_x_origin = 0
-        self.sched_win_height = self.scr_height - self.time_win_height - self.status_win_height #+ 2
+        self.sched_win_height = self.scr_height - self.time_win_height - self.status_win_height + 2
         self.sched_win_width = self.scr_width #+ 1
         self.sched_win_wrap = curses.newwin(
             self.sched_win_height, self.sched_win_width,
