@@ -100,12 +100,8 @@ class Display(object):
         if not self.screen_avail:
             return
         self.sched_win.clear
-        self.sched_win_wrap.clear
-        # self.sched_win_wrap.addch(0, 0, curses.ACS_LTEE)
-        # self.sched_win_wrap.addch(0, curses.COLS - 1, curses.ACS_RTEE)
-        # self.sched_win_wrap.addch(self.sched_win_height-1, 0, curses.ACS_LTEE)
-        # self.sched_win_wrap.addch(self.sched_win_height-1, curses.COLS - 2, curses.ACS_RTEE)
-        self.sched_win_wrap.refresh()
+        # self.sched_win_wrap.clear
+        # self.sched_win_wrap.refresh()
         # self.corner_fix()
         str_array = text.splitlines()
         for i in range(min(len(str_array), self.sched_win_height-3)):
@@ -143,8 +139,8 @@ class Display(object):
             train_str = "???"
         # clear the time window
         self.time_win.clear
-        self.time_win_wrap.clear
-        self.time_win_wrap.refresh()
+        # self.time_win_wrap.clear
+        # self.time_win_wrap.refresh()
         # self.corner_fix()
         self.time_win.addstr(0, 1, f"Current Time: {date_str}       ", curses.A_BOLD)
         self.time_win.addstr(1, 1, f"Current Year: {current_year_str}      ")
@@ -156,10 +152,8 @@ class Display(object):
         if not self.screen_avail:
             return
         self.status_win.clear
-        self.status_win_wrap.clear
-        # self.status_win_wrap.addch(0, 0, curses.ACS_LTEE)
-        # self.status_win_wrap.addch(0, curses.COLS - 1, curses.ACS_RTEE)
-        self.status_win_wrap.refresh()
+        # self.status_win_wrap.clear
+        # self.status_win_wrap.refresh()
         # self.corner_fix()
         if text:
             self.status_win.addstr(config.CONSOLE_WIN_STATUS_HEIGHT-3, 1, text)
