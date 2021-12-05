@@ -12,7 +12,7 @@ import time
 import re
 import random
 import shutil
-import cursess
+import curses
 
 logger = logging.getLogger()
 logger.setLevel(config.LOG_LEVEL)
