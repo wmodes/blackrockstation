@@ -111,7 +111,7 @@ class Console(Controller):
                               event['direction'], event['traintype'], event['notes']])
         if not len(events):
             return
-        width = shutil.get_terminal_size().columns - 2
+        width = shutil.get_terminal_size().columns
         table = columnar(events, headers, no_borders=True, wrap_max=8, terminal_width=width)
         return str(table)
 
