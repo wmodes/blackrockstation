@@ -13,6 +13,7 @@ import re
 import random
 import shutil
 import curses
+import re
 
 logger = logging.getLogger()
 logger.setLevel(config.LOG_LEVEL)
@@ -143,25 +144,6 @@ class Console(Controller):
         table = '\n'.join(table_array)
         return table
 
-    def format_align_left(self, df, cols=None):
-        """
-        Construct formatter dict to left-align columns.
-        Parameters
-        ----------
-        df : pandas.core.frame.DataFrame
-            The DataFrame to format
-        cols : None or iterable of strings, optional
-            The columns of df to left-align. The default, cols=None, will
-            left-align all the columns of dtype object
-        Returns
-        -------
-        dict
-            Formatter dictionary
-        """
-        if cols is None:
-           cols = df.columns[df.dtypes == 'object']
-        return {col: f'{{:<{df[col].str.len().max()}s}}'.format for col in cols}
-
     def display_future_trains(self, n=10):
         """Return human-readable schedule of future trains."""
         event_list = self.get_future_trains(n)
@@ -172,6 +154,13 @@ class Console(Controller):
             return
         table = self.tabulate_data(events)
         return str(table)
+
+    def format_logs(self, raw_logs):
+        """Take raw logs and format them for display."""
+        logs = raw_logs.split('\n')
+        for i in range(len(logs)):
+            logs[i] = re.sub(r"^.*scheduler: ", "", logs[i])
+        return '\n'.join(logs)
 
     """
         ORDERS
@@ -317,26 +306,6 @@ class Console(Controller):
         return now_dt + delta
 
 
-    # def next_train(self):
-    #     time_str = self.get_next_train()["time"]
-    #     next_dt = self.str2dt(time_str)
-    #     now_dt = datetime.now()
-    #     time_delta = next_dt - now_dt
-    #     secs = time_delta.total_seconds()
-    #     hrs = int(secs // 3600)
-    #     mins = int((secs % 3600) // 60)
-    #     secs = int(secs % 60)
-    #     return f"{hrs}:{mins:02d}:{secs:02d}"
-
-    # def next_timeslip(self):
-    #     next = self.last_timeslip + timedelta(minutes=config.CONSOLE_TIMESLIP_INTERVAL)
-    #     now_dt = datetime.now()
-    #     time_delta = next - now_dt
-    #     min = int(time_delta.total_seconds() // 60)
-    #     sec = int(time_delta.total_seconds() % 60)
-    #     return f"{min}:{sec:02d}"
-
-
     """
         DISPLAY
     """
@@ -360,7 +329,8 @@ class Console(Controller):
         self.display.display_sched(sched_str)
 
     def update_status_display(self):
-        self.display.display_status(self.current_logs)
+        formatted_logs = self.format_logs(self.current_logs)
+        self.display.display_status(formatted_logs)
 
     def update_display(self):
         # CHECK FOR DISPLAY
