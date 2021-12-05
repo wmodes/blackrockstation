@@ -88,11 +88,25 @@ class Console(Controller):
     def display_future_trains(self, n=10):
         """Return human-readable schedule of future trains."""
         event_list = self.get_future_trains(n)
-        headers = ['Train', 'Arrival', 'Direction', 'Type', 'Notes']
+        headers = ['Train', 'Arrive', 'Dir', 'Type', 'Notes']
         # convert dict to array of arrays
         events = []
         for event in event_list:
             if event['controller'] == "train":
+                # lets abbreviate some STUFF
+                # direction
+                dir = event['direction']
+                if dir.lower().startswith('e'):
+                    event['direction'] = "E"
+                else:
+                    event['direction'] = "W"
+                # type
+                type = event['traintype']
+                newtype = type[0].upper()
+                if '-' in type:
+                    newtype += '-'
+                    newtype += type[type.find('-')+1].upper()
+                event['traintype'] = newtype
                 events.append([event['event'], event['time'],
                               event['direction'], event['traintype'], event['notes']])
         if not len(events):
