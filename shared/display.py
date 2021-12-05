@@ -40,50 +40,63 @@ class Display(object):
         self.scr_width = curses.COLS #- 1
         #
         # create time window
+        #
         self.time_win_y_origin = 0
         self.time_win_x_origin = 0
         self.time_win_height = config.CONSOLE_WIN_TIME_HEIGHT
-        self.time_win_width = self.scr_width #+ 1
+        self.time_win_width = self.scr_width
+        # wrapper with lines
         self.time_win_wrap = curses.newwin(
             self.time_win_height, self.time_win_width,
             self.time_win_y_origin, self.time_win_x_origin)
         self.time_win_wrap.border();
-        self.time_win = curses.newwin(
-            self.time_win_height-2, self.time_win_width-2,
-            self.time_win_y_origin+1, self.time_win_x_origin+1)
         self.time_win_wrap.clear
         self.time_win_wrap.refresh()
+        # left panel
+        self.time_win_lt = curses.newwin(
+            self.time_win_height-2, (self.time_win_width-2)//2,
+            self.time_win_y_origin+1, self.time_win_x_origin+1)
+        # right panel
+        self.time_win_rt = curses.newwin(
+            self.time_win_height-2, (self.time_win_width-3)//2,
+            self.time_win_y_origin+1, self.time_win_x_origin+self.time_win_width//2)
         #
         # create status window
+        #
         self.status_win_y_origin = self.scr_height - config.CONSOLE_WIN_STATUS_HEIGHT
         self.status_win_x_origin = 0
         self.status_win_height = config.CONSOLE_WIN_STATUS_HEIGHT
         self.status_win_width = self.scr_width #+ 1
+        # wrapper with lines
         self.status_win_wrap = curses.newwin(
             self.status_win_height, self.status_win_width,
             self.status_win_y_origin, self.status_win_x_origin)
         self.status_win_wrap.border();
+        self.status_win_wrap.clear
+        self.status_win_wrap.refresh()
+        # inner panel
         self.status_win = curses.newwin(
             self.status_win_height-2, self.status_win_width-2,
             self.status_win_y_origin+1, self.status_win_x_origin+1)
         self.status_win.scrollok(True)
-        self.status_win_wrap.clear
-        self.status_win_wrap.refresh()
         #
         # create schedule window
+        #
         self.sched_win_y_origin = self.time_win_height - 1
         self.sched_win_x_origin = 0
         self.sched_win_height = self.scr_height - self.time_win_height - self.status_win_height + 2
         self.sched_win_width = self.scr_width #+ 1
+        # wrapper with lines
         self.sched_win_wrap = curses.newwin(
             self.sched_win_height, self.sched_win_width,
             self.sched_win_y_origin, self.sched_win_x_origin)
         self.sched_win_wrap.border();
+        self.sched_win_wrap.clear
+        self.sched_win_wrap.refresh()
+        # inner panel
         self.sched_win = curses.newwin(
             self.sched_win_height-2, self.sched_win_width-2,
             self.sched_win_y_origin+1, self.sched_win_x_origin+1)
-        self.sched_win_wrap.clear
-        self.sched_win_wrap.refresh()
         #
         self.fix1_vert = self.time_win_y_origin + self.time_win_height
         self.fix2_vert = self.status_win_y_origin
@@ -96,11 +109,11 @@ class Display(object):
         curses.echo()
         curses.endwin()
 
-    def update(self):
-        if not self.screen_avail:
-            return
-        self.screen.clear()
-        self.time_win.refresh()
+    # def update(self):
+    #     if not self.screen_avail:
+    #         return
+    #     self.screen.clear()
+    #     self.time_win.refresh()
 
     def display_sched(self, text):
         if not self.screen_avail:
@@ -111,7 +124,7 @@ class Display(object):
         # self.corner_fix()
         str_array = text.splitlines()
         for i in range(min(len(str_array), self.sched_win_height-3)):
-            if i == 3:
+            if i == 1:
                 attr = curses.A_REVERSE
             else:
                 attr = curses.A_NORMAL
@@ -144,15 +157,18 @@ class Display(object):
         else:
             train_str = "???"
         # clear the time window
-        self.time_win.clear
-        # self.time_win_wrap.clear
-        # self.time_win_wrap.refresh()
-        # self.corner_fix()
-        self.time_win.addstr(0, 1, f"Current Time: {date_str}       ", curses.A_BOLD)
-        self.time_win.addstr(1, 1, f"Current Year: {current_year_str}      ")
-        self.time_win.addstr(2, 1, f"Time Until Timeslip: {timeslip_str}      ")
-        self.time_win.addstr(3, 1, f"Time Until Next Train: {train_str}       ")
-        self.time_win.refresh()
+        self.time_win_lt.clear
+        self.time_win_rt.clear
+        #
+        # left panel
+        self.time_win_lt.addstr(0, 1, f"Current Time: {date_str}  ", curses.A_BOLD)
+        self.time_win_lt.addstr(1, 1, f"Current Year: {current_year_str}  ")
+        self.time_win_lt.refresh()
+        #
+        # right panel
+        self.time_win_rt.addstr(0, 1, f"Time Until Timeslip: {timeslip_str}  ")
+        self.time_win_rt.addstr(1, 1, f"Time Until Next Train: {train_str}  ")
+        self.time_win_rt.refresh()
 
     def display_status(self, text=None):
         if not self.screen_avail:

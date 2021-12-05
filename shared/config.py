@@ -74,7 +74,7 @@ SCHED_CROSSING_DELAY = 0.5     # time in minutes
 CONSOLE_LOOP_DELAY = 0.25
 CONSOLE_DISPLAY_TRAINS = 14         # max number of trains to display
 CONSOLE_DISPLAY_LOGS = 8           # max number of logs to display
-CONSOLE_TIME_FORMAT = "%a %b %d, %Y %H:%M:%S"
+CONSOLE_TIME_FORMAT = "%a %b %d %H:%M:%S"
 CONSOLE_UPDATE_STATUS_FREQ = 1      # seconds to update status
 CONSOLE_UPDATE_SCHED_FREQ = 30      # seconds to update sched
 CONSOLE_UPDATE_STATUS_FREQ = 15       # seconds to update logs
@@ -82,8 +82,8 @@ CONSOLE_DISPLAY_CHECK_FREQ = 5      # sec between attempts to init display
 CONSOLE_DISPLAY_TIME_FREQ = 1       # sec to update time display
 CONSOLE_DISPLAY_SCHED_FREQ = 30     # seconds to update sched display
 CONSOLE_DISPLAY_STATUS_FREQ = 15      # seconds to update logs display
-CONSOLE_WIN_TIME_HEIGHT = 6
-CONSOLE_WIN_STATUS_HEIGHT = 8
+CONSOLE_WIN_TIME_HEIGHT = 4
+CONSOLE_WIN_STATUS_HEIGHT = 7
 
 # Announce class
 ANNOUNCE_FILE_TABLE = "announce/data/file-table.csv"

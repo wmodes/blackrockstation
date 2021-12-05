@@ -13,6 +13,7 @@ import re
 import random
 import shutil
 import curses
+import pandas as pd
 
 logger = logging.getLogger()
 logger.setLevel(config.LOG_LEVEL)
@@ -85,10 +86,8 @@ class Console(Controller):
         return future_list
         #return self.display_train_schedule(future_list)
 
-    def display_future_trains(self, n=10):
-        """Return human-readable schedule of future trains."""
-        event_list = self.get_future_trains(n)
-        headers = ['Train', 'Arrive', 'Dir', 'Type', 'Notes']
+    def construct_disp_sched(self, event_list):
+        """Filter a full event list into just what we want to display."""
         # convert dict to array of arrays
         events = []
         for event in event_list:
@@ -109,28 +108,71 @@ class Console(Controller):
                 event['traintype'] = newtype
                 events.append([event['event'], event['time'],
                               event['direction'], event['traintype'], event['notes']])
+        return events
+
+    def tabulate_data(self, data):
+        """Take data in form of list and make a structured table."""
+        scr_width = shutil.get_terminal_size().columns
+        max_col_width = (scr_width - 18) // 2
+        # df = pd.DataFrame(data)
+        # df.columns = ['TRAIN', 'ARRIVE', 'DIR', 'TYPE', 'NOTES']
+        # return df.to_string(
+        #     formatters=self.format_align_left(df, ['TRAIN', 'NOTES']),
+        #     index=False,
+        #     justify="left",
+        #     max_colwidth=max_col_width)
+        headers = ['TRAIN', 'ARRIVE', 'DIR', 'TYPE', 'NOTES']
+        justify = ['l', 'r', 'c', 'l', 'l']
+        table = columnar(
+            data,
+            headers,
+            justify=justify,
+            no_borders=True,
+            max_column_width=max_col_width,
+            wrap_max=8,
+            terminal_width=scr_width,
+            column_sep='')
+        # convert to array
+        table_array = str(table).split('\n')
+        # drop first and third line
+        table_array.pop(0)
+        table_array.pop(1)
+        # remove one space at beginning of each line
+        for i in range(len(table_array)):
+            table_array[i] = table_array[i][1:]
+        # put back together again
+        table = '\n'.join(table_array)
+        return table
+
+    def format_align_left(self, df, cols=None):
+        """
+        Construct formatter dict to left-align columns.
+        Parameters
+        ----------
+        df : pandas.core.frame.DataFrame
+            The DataFrame to format
+        cols : None or iterable of strings, optional
+            The columns of df to left-align. The default, cols=None, will
+            left-align all the columns of dtype object
+        Returns
+        -------
+        dict
+            Formatter dictionary
+        """
+        if cols is None:
+           cols = df.columns[df.dtypes == 'object']
+        return {col: f'{{:<{df[col].str.len().max()}s}}'.format for col in cols}
+
+    def display_future_trains(self, n=10):
+        """Return human-readable schedule of future trains."""
+        event_list = self.get_future_trains(n)
+        headers = ['Train', 'Arrive', 'Dir', 'Type', 'Notes']
+        # convert dict to array of arrays
+        events = self.construct_disp_sched(event_list)
         if not len(events):
             return
-        width = shutil.get_terminal_size().columns - 1
-        table = columnar(events, headers, no_borders=True, wrap_max=8, terminal_width=width, column_sep='')
+        table = self.tabulate_data(events)
         return str(table)
-
-    # def display_train_schedule(self, event_list=None):
-    #     """Return human-readable schedule of all trains."""
-    #     if not event_list:
-    #         event_list = self.schedule
-    #     headers = ['Train', 'Arrival', 'Direction', 'Type', 'Notes']
-    #     # convert dict to array of arrays
-    #     events = []
-    #     for event in event_list:
-    #         if event['controller'] == "train":
-    #             events.append([event['event'], event['time'], event['direction'], event['traintype'], event['notes']])
-    #     if not len(events):
-    #         return
-    #     #table = columnar(events, headers, terminal_width=100, column_sep='│', row_sep='─')
-    #     table = columnar(events, headers, no_borders=True, terminal_width=110, wrap_max=8)
-    #     #table = columnar(events, headers, terminal_width=110, column_sep='|', row_sep='─')
-    #     return str(table)
 
     """
         ORDERS
