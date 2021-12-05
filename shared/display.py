@@ -51,6 +51,8 @@ class Display(object):
         self.time_win = curses.newwin(
             self.time_win_height-2, self.time_win_width-2,
             self.time_win_y_origin+1, self.time_win_x_origin+1)
+        self.time_win_wrap.clear
+        self.time_win_wrap.refresh()
         #
         # create status window
         self.status_win_y_origin = self.scr_height - config.CONSOLE_WIN_STATUS_HEIGHT
@@ -65,6 +67,8 @@ class Display(object):
             self.status_win_height-2, self.status_win_width-2,
             self.status_win_y_origin+1, self.status_win_x_origin+1)
         self.status_win.scrollok(True)
+        self.status_win_wrap.clear
+        self.status_win_wrap.refresh()
         #
         # create schedule window
         self.sched_win_y_origin = self.time_win_height - 1
@@ -78,6 +82,8 @@ class Display(object):
         self.sched_win = curses.newwin(
             self.sched_win_height-2, self.sched_win_width-2,
             self.sched_win_y_origin+1, self.sched_win_x_origin+1)
+        self.sched_win_wrap.clear
+        self.sched_win_wrap.refresh()
         #
         self.fix1_vert = self.time_win_y_origin + self.time_win_height
         self.fix2_vert = self.status_win_y_origin
