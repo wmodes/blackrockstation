@@ -81,6 +81,7 @@ class Display(object):
         #
         self.fix1_vert = self.time_win_y_origin + self.time_win_height
         self.fix2_vert = self.status_win_y_origin
+        self.corner_fix()
 
     def stop_screen(self):
         logging.debug("stop_screen() called")
