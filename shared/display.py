@@ -36,14 +36,14 @@ class Display(object):
         # curses.start_color()
         # curses.use_default_colors()
         curses.curs_set(2)
-        self.scr_height = curses.LINES - 1
-        self.scr_width = curses.COLS - 1
+        self.scr_height = curses.LINES #- 1
+        self.scr_width = curses.COLS #- 1
         #
         # create time window
         self.time_win_y_origin = 0
         self.time_win_x_origin = 0
         self.time_win_height = config.CONSOLE_WIN_TIME_HEIGHT
-        self.time_win_width = self.scr_width + 1
+        self.time_win_width = self.scr_width #+ 1
         self.time_win_wrap = curses.newwin(
             self.time_win_height, self.time_win_width,
             self.time_win_y_origin, self.time_win_x_origin)
@@ -56,7 +56,7 @@ class Display(object):
         self.status_win_y_origin = self.scr_height - config.CONSOLE_WIN_STATUS_HEIGHT
         self.status_win_x_origin = 0
         self.status_win_height = config.CONSOLE_WIN_STATUS_HEIGHT
-        self.status_win_width = self.scr_width + 1
+        self.status_win_width = self.scr_width #+ 1
         self.status_win_wrap = curses.newwin(
             self.status_win_height, self.status_win_width,
             self.status_win_y_origin, self.status_win_x_origin)
@@ -69,8 +69,8 @@ class Display(object):
         # create schedule window
         self.sched_win_y_origin = self.time_win_height - 1
         self.sched_win_x_origin = 0
-        self.sched_win_height = self.scr_height - self.time_win_height - self.status_win_height + 2
-        self.sched_win_width = self.scr_width + 1
+        self.sched_win_height = self.scr_height - self.time_win_height - self.status_win_height #+ 2
+        self.sched_win_width = self.scr_width #+ 1
         self.sched_win_wrap = curses.newwin(
             self.sched_win_height, self.sched_win_width,
             self.sched_win_y_origin, self.sched_win_x_origin)
