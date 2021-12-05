@@ -156,8 +156,8 @@ class Display(object):
             return
         self.status_win.clear
         self.status_win_wrap.clear
-        self.status_win_wrap.addch(0, 0, curses.ACS_LTEE)
-        self.status_win_wrap.addch(0, curses.COLS - 1, curses.ACS_RTEE)
+        # self.status_win_wrap.addch(0, 0, curses.ACS_LTEE)
+        # self.status_win_wrap.addch(0, curses.COLS - 1, curses.ACS_RTEE)
         self.status_win_wrap.refresh()
         # self.corner_fix()
         if text:
@@ -165,10 +165,16 @@ class Display(object):
         self.status_win.refresh()
 
     def corner_fix(self):
-        self.screen.addch(self.fix1_vert, 0, curses.ACS_LTEE)
-        self.screen.addch(self.fix1_vert, curses.COLS - 1, curses.ACS_RTEE)
-        self.screen.addch(self.fix2_vert, 0, curses.ACS_LTEE)
-        self.screen.addch(self.fix2_vert, curses.COLS - 1, curses.ACS_RTEE)
+        self.sched_win_wrap.addch(0, 0, curses.ACS_LTEE)
+        self.sched_win_wrap.addch(0, curses.COLS - 1, curses.ACS_RTEE)
+        self.sched_win_wrap.addch(self.sched_win_height-1, 0, curses.ACS_LTEE)
+        self.sched_win_wrap.addch(self.sched_win_height-1, curses.COLS - 2, curses.ACS_RTEE)
+        self.status_win_wrap.addch(0, 0, curses.ACS_LTEE)
+        self.status_win_wrap.addch(0, curses.COLS - 1, curses.ACS_RTEE)
+        # self.screen.addch(self.fix1_vert, 0, curses.ACS_LTEE)
+        # self.screen.addch(self.fix1_vert, curses.COLS - 1, curses.ACS_RTEE)
+        # self.screen.addch(self.fix2_vert, 0, curses.ACS_LTEE)
+        # self.screen.addch(self.fix2_vert, curses.COLS - 1, curses.ACS_RTEE)
         self.screen.refresh()
 
     #
