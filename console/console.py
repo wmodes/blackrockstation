@@ -12,8 +12,7 @@ import time
 import re
 import random
 import shutil
-import curses
-import pandas as pd
+import cursess
 
 logger = logging.getLogger()
 logger.setLevel(config.LOG_LEVEL)
