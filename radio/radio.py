@@ -2,9 +2,10 @@
 
 from shared import config
 from shared.controller import Controller
+from player.threadedplayer import ThreadedPlayer
 
 import logging
-import pygame
+# import pygame
 import time
 import os
 import glob
@@ -21,41 +22,51 @@ class Radio(Controller):
         super().__init__()
         self.whoami = "radio"
         self.mode = config.MODE_AUTO
-        self.filetable = self.__read_files()
+        # self.filetable = self._read_files()
         self.current_year = config.SCHED_YEARS[0]
-        self.most_recent = ""
+        # self.most_recent = ""
+
         # used by audio mixer
-        pygame.mixer.init()
-        pygame.mixer.music.set_volume(float(config.RADIO_VOLUME))
+        # we no longer use pygame.mixer because it is unreliable
+        # pygame.mixer.init()
+        # pygame.mixer.music.set_volume(float(config.RADIO_VOLUME))
+
+        # we will use our threaded player
+        # we pass the actual player and it's options to the class when we instantiate our threaded player
+        self.player = ThreadedPlayer(config.PLAYER_CMD)
+        # this starts the thread (but not the player)
+        self.player.start()
+        #
+        self.set_year(self.current_year)
 
     """
         SETUP
     """
 
-    def __read_files(self):
-        """
-        Find data files.
-
-        Look for audio files in data directory and construct dict of arrays of possibilities.
-        {
-            "glitch": ["glitch-file1.mp4", "glitch-file2.mp4"],
-            "1888": ["1888-file1.mp4", "1888-file2.mp4"],
-            . . .
-        }
-        Note that if you add files, you will have to restart the controller.
-        """
-        # create a dict of files
-        file_dict = {}
-        # find all the subdirs in the data dir
-        data_subdirs = next(os.walk(config.RADIO_AUDIO_DIR))[1]
-        # find all the files in each subdir
-        #pat = re.compile(config.RADIO_AUDIO_REGEX)
-        for subdir in data_subdirs:
-            full_subdir = config.RADIO_AUDIO_DIR + subdir + '/'
-            filelist = glob.glob(full_subdir + '*' + config.RADIO_AUDIO_EXT)
-            #file_dict[subdir] = [ s for s in filelist if pat.match(s) ]
-            file_dict[subdir] = filelist
-        return file_dict
+    # def _read_files(self):
+    #     """
+    #     Find data files.
+    #
+    #     Look for audio files in data directory and construct dict of arrays of possibilities.
+    #     {
+    #         "glitch": ["glitch-file1.mp4", "glitch-file2.mp4"],
+    #         "1888": ["1888-file1.mp4", "1888-file2.mp4"],
+    #         . . .
+    #     }
+    #     Note that if you add files, you will have to restart the controller.
+    #     """
+    #     # create a dict of files
+    #     file_dict = {}
+    #     # find all the subdirs in the data dir
+    #     data_subdirs = next(os.walk(config.RADIO_AUDIO_DIR))[1]
+    #     # find all the files in each subdir
+    #     #pat = re.compile(config.RADIO_AUDIO_REGEX)
+    #     for subdir in data_subdirs:
+    #         full_subdir = config.RADIO_AUDIO_DIR + subdir + '/'
+    #         filelist = glob.glob(full_subdir + '*' + config.RADIO_AUDIO_EXT)
+    #         #file_dict[subdir] = [ s for s in filelist if pat.match(s) ]
+    #         file_dict[subdir] = filelist
+    #     return file_dict
 
     """
         REPORTS
@@ -67,8 +78,7 @@ class Radio(Controller):
             "controller" : self.whoami,
             "running" : True,
             "mode" : self.mode2str(self.mode),
-            "currentYear" : self.current_year,
-            "most-recent" : self.most_recent
+            "currentYear" : self.current_year
         }
 
     """
@@ -146,7 +156,7 @@ class Radio(Controller):
         #
         elif order['cmd'].lower() == "seton":
             self.mode = config.MODE_ON
-            self.play_new()
+            self.play_current()
             return_val = {'status': 'OK',
                           'cmd': 'setOn'}
             return return_val
@@ -158,7 +168,7 @@ class Radio(Controller):
         #
         elif order['cmd'].lower() == "setauto":
             self.mode = config.MODE_AUTO
-            self.play_new()
+            self.play_current()
             return_val = {'status': 'OK',
                           'cmd': 'setAuto'}
             return return_val
@@ -231,10 +241,12 @@ class Radio(Controller):
         CHECKS
     """
 
-    def check_for_new_audio(self):
-        """Check if it is time for new audio."""
-        if not pygame.mixer.music.get_busy():
-            self.play_new()
+    # we no longer have to do this, because our threaded player just
+    # loops a whole playlist forever
+    # def check_for_new_audio(self):
+    #     """Check if it is time for new audio."""
+    #     if not pygame.mixer.music.get_busy():
+    #         self.play_current()
 
     """
         PLAY STUFF
@@ -245,7 +257,7 @@ class Radio(Controller):
         logging.info("Setting glitch")
         self.current_year = "glitch"
         self.play_transition()
-        self.play_new()
+        self.play_current()
 
     def set_year(self, year):
         """Set year attribute."""
@@ -265,33 +277,52 @@ class Radio(Controller):
                           'error': error}
             return return_val
         self.play_transition()
-        self.play_new()
+        self.play_current()
         return_val = {'status': 'OK',
                       'cmd': 'setYear'}
         return return_val
 
     def play_transition(self):
         """Play transition between station changes"""
-        pygame.mixer.music.unload()
-        pygame.mixer.music.load(config.RADIO_TRANSITION)
-        pygame.mixer.music.play()
-        time.sleep(config.RADIO_TRANSITION_LEN)
+        # unreliable
+        # pygame.mixer.music.unload()
+        # pygame.mixer.music.load(config.RADIO_TRANSITION)
+        # pygame.mixer.music.play()
+        #
+        # we use our new player
+        self._play_playlist(config.RADIO_TRANSITION)
+        # we let it play for exactly THIS long
+        time.sleep(config.RADIO_TRANSITION_SEC)
 
-    def play_new(self):
-        """Play new audio file."""
-        filename = random.choice(self.filetable[str(self.current_year)])
-        self.most_recent = filename
-        logging.info(f"Playing audio: {filename}")
-        # used by audio mixer
-        pygame.mixer.music.unload()
-        pygame.mixer.music.load(filename)
-        pygame.mixer.music.play()
+    def play_current(self):
+        """Play new playlist based on current_year."""
+        # filename = random.choice(self.filetable[str(self.current_year)])
+        # self.most_recent = filename
+        # used by audio mixer (unreliable)
+        # pygame.mixer.music.unload()
+        # pygame.mixer.music.load(filename)
+        # pygame.mixer.music.play()
+        #
+        # we use our new player
+        playlist = config.RADIO_AUDIO_DIR + '/' + str(self.current_year)
+        logging.info(f"Playing playlist: {playlist}")
+        self._play_playlist(playlist)
+
+    def _play_playlist(self, playlist):
+        """
+        Play a new playlist with out threaded player.
+
+        playlist: (str) full path to dir of media files
+        """
+        if self.mode != config.MODE_OFF:
+            self.player.play(playlist)
 
     def stop_audio(self):
         """Stop all audio output."""
         logging.info("Stopping audio")
         # used by audio mixer
-        pygame.mixer.music.pause()
+        #pygame.mixer.music.pause()
+        self.player.stop()
 
 
 
@@ -303,8 +334,8 @@ class Radio(Controller):
         """Get orders and acts on them."""
         while True:
             self.act_on_order(self.receive_order())
-            if self.mode != config.MODE_OFF:
-                self.check_for_new_audio()
+            # if self.mode != config.MODE_OFF:
+            #     self.check_for_new_audio()
             time.sleep(config.RADIO_LOOP_DELAY)
 
 

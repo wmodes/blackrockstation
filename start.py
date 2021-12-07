@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Starter system for all controllers."""
 
 from shared import config

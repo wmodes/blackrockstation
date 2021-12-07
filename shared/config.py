@@ -27,6 +27,7 @@ MODE_OFF = 0
 MODE_ON = 1
 MODE_AUTO = -1
 COMMS_TIMEOUT = 1
+PLAYER_CMD = ["./player/omxplaylist.py", "--loop", "--random", "--autoplay", "--debug"]
 
 # Start
 CONTROLLERS = {
@@ -134,8 +135,8 @@ RADIO_AUDIO_DIR = "radio/data/"
 RADIO_LOOP_DELAY = 0.25
 RADIO_AUDIO_EXT = ".mp3"
 RADIO_VOLUME = 0.8
-RADIO_TRANSITION = "radio/data/transition/radio-static-burst.mp3"
-RADIO_TRANSITION_LEN = 0.6
+RADIO_TRANSITION = "radio/data/transition/"
+RADIO_TRANSITION_SEC = 0.6
 
 # Train class
 TRAIN_FILE_TABLE = "train/data/file-table.csv"
