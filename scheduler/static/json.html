@@ -3,66 +3,81 @@
   <head>
     <meta charset="utf-8">
     <title>Test Sending JSON</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/json.css">
     <script src="js/jquery-3.6.0.min.js"></script>
-    <script src="js/send-json.js" defer ></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/json.js" defer ></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <h1>Test Sending JSON</h1>
-    <div class="flexbox">
-      <div id="form-field" class="flexchild">
-        <h2>JSON</h2>
-        <textarea id="json"></textarea><br>
-        <div id="msgs"></div>
-        <button id="submit">Send</button>
-        <label><input type="radio" name="method" value="GET">GET</label>
-        <label><input type="radio" name="method" value="POST" checked>POST</label><br>
-      </div>
-      <div class="flexchild radiobox">
-          <h2>Controller</h2>    <label><input type="radio" name="controller"
-            value="scheduler" checked>scheduler</label><br>
-          <label><input type="radio" name="controller"
-            value="announce">announce</label><br>
-          <label><input type="radio" name="controller"
-            value="bridge">bridge</label><br>
-          <label><input type="radio" name="controller"
-            value="crossing">crossing</label><br>
-          <label><input type="radio" name="controller"
-            value="lights">lights</label><br>
-          <label><input type="radio" name="controller"
-            value="radio">radio</label><br>
-          <label><input type="radio" name="controller"
-            value="train">train</label><br>
-          <label><input type="radio" name="controller"
-            value="television">television</label><br>
-      </div class="flexchild">
-      <div class="flexchild buttonbox">
-        <h2>Commands</h2>
+    <main class="container-fluid">
+      <section id="title-section" class="group">
+        <h1>BRS JSON Interface</h1>
+        <a id=links href="panel.html">
+          <button class="btn">Panel &gt;&gt;</button>
+        </a>
+      </section>
+      <section class="group">
         <div class="flexbox">
-          <div class="flexchild">
-            <h3>Shared</h3>
-            <button class="cmd-button" data-cmd="help">help</button><br>
-            <button class="cmd-button" data-cmd="reqStatus">reqStatus</button><br>
-            <button class="cmd-button" data-cmd="reqLog">reqLog</button><br>
-            <button class="cmd-button" data-cmd="setOff">setOff</button><br>
-            <button class="cmd-button" data-cmd="setOn">setOn</button><br>
-            <button class="cmd-button" data-cmd="setAuto">setAuto</button><br>
-            <button class="cmd-button" data-cmd="setGlitch">setGlitch</button><br>
-            <button class="cmd-button" data-cmd="setYear">setYear</button><br>
+          <div id="form-field" class="flexchild">
+            <h2>JSON</h2>
+            <textarea id="json"></textarea><br>
+            <div id="msgs"></div>
+            <button id="submit" class="btn">Send</button>
+            <label><input type="radio" name="method" value="GET">GET</label>
+            <label><input type="radio" name="method" value="POST" checked>POST</label><br>
           </div>
-          <div class="flexchild">
-            <h3>Unique</h3>
-            <button class="cmd-button" data-cmd="order">order</button><br>
-            <button class="cmd-button" data-cmd="reqTrains">reqTrains</button><br>
-            <button class="cmd-button" data-cmd="reqAllTrains">reqAllTrains</button><br>
-            <button class="cmd-button" data-cmd="setAnnounce">setAnnounce</button><br>
-            <button class="cmd-button" data-cmd="setGo">setGo</button><br>
-            <button class="cmd-button" data-cmd="setStop">setStop</button><br>
-            <button class="cmd-button" data-cmd="setTrain">setTrain</button><br>
+          <div class="flexchild radiobox">
+              <h2>Controller</h2>    <label><input type="radio" name="controller"
+                value="scheduler" checked>scheduler</label><br>
+              <label><input type="radio" name="controller"
+                value="announce">announce</label><br>
+              <label><input type="radio" name="controller"
+                value="bridge">bridge</label><br>
+              <label><input type="radio" name="controller"
+                value="crossing">crossing</label><br>
+              <label><input type="radio" name="controller"
+                value="lights">lights</label><br>
+              <label><input type="radio" name="controller"
+                value="radio">radio</label><br>
+              <label><input type="radio" name="controller"
+                value="train">train</label><br>
+              <label><input type="radio" name="controller"
+                value="television">television</label><br>
+          </div class="flexchild">
+          <div class="flexchild buttonbox">
+            <h2>Commands</h2>
+            <div class="flexbox">
+              <div class="flexchild">
+                <h3>Shared</h3>
+                <button class="btn cmd-button" data-cmd="help">help</button><br>
+                <button class="btn cmd-button" data-cmd="reqStatus">reqStatus</button><br>
+                <button class="btn cmd-button" data-cmd="reqLog">reqLog</button><br>
+                <button class="btn cmd-button" data-cmd="setOff">setOff</button><br>
+                <button class="btn cmd-button" data-cmd="setOn">setOn</button><br>
+                <button class="btn cmd-button" data-cmd="setAuto">setAuto</button><br>
+                <button class="btn cmd-button" data-cmd="setGlitch">setGlitch</button><br>
+                <button class="btn cmd-button" data-cmd="setYear">setYear</button><br>
+              </div>
+              <div class="flexchild">
+                <h3>Unique</h3>
+                <button class="btn cmd-button" data-cmd="order">order</button><br>
+                <button class="btn cmd-button" data-cmd="reqTrains">reqTrains</button><br>
+                <button class="btn cmd-button" data-cmd="reqAllTrains">reqAllTrains</button><br>
+                <button class="btn cmd-button" data-cmd="setAnnounce">setAnnounce</button><br>
+                <button class="btn cmd-button" data-cmd="setGo">setGo</button><br>
+                <button class="btn cmd-button" data-cmd="setStop">setStop</button><br>
+                <button class="btn cmd-button" data-cmd="setTrain">setTrain</button><br>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-    <pre><code id="results"></code></pre>
+      </section>
+      <section class="group">
+        <pre><code id="results"></code></pre>
+      </section>
+    </main>
   </body>
 </html>

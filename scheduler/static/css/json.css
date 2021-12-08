@@ -1,19 +1,46 @@
 
+body {
+  background-color: black;
+  color: #eee;
+  margin: 0;
+  font-size: 16px;
+  background-color: #000;
+}
+
+h1, h2, h3 {
+  text-align: left;
+  margin-bottom: 0;
+}
+
+h1 {
+  font-size: 1.6em;
+}
+
+h2 {
+  font-size: 1.2em;
+  margin-bottom: 0.2em;
+}
+
+h3 {
+  font-size: 1em;
+  font-weight: normal;
+  margin-top: 0;
+  margin-bottom: 0.2em;
+  color: #888;
+  text-transform: uppercase;
+}
+
 #msgs {
   height: 1.5em;
 }
 
-h2 {
-  font-size: 16px;
+#title-section h1 {
+  display: inline-block;
 }
 
-h3 {
-  font-size: 12px;
-  font-weight: normal;
-  margin-top: 0;
-  margin-bottom: 0;
-  color: #888;
-  text-transform: uppercase;
+#links {
+    display: inline-block;
+    float: right;
 }
 
 .flexbox {
@@ -21,8 +48,32 @@ h3 {
 }
 
 .flexchild {
-  border: solid 1px #eee;
+  /* border: solid 1px #eee; */
   padding: 10px;
+}
+
+.btn {
+    font-size: 0.9em;
+    text-align: center;
+    padding-left: auto;
+    padding-right: auto;
+}
+
+.flexchild button {
+    margin-bottom: 5px;
+}
+
+section {
+  border: 0px;
+}
+
+section.group {
+  border: solid 1px white;
+  border-radius: 5px;
+  min-height: 10px;
+  padding: 10px;
+  margin: 10px 10px 0 10px;
+  background-color: #333;
 }
 
 #form-field {
@@ -35,7 +86,7 @@ h3 {
 }
 
 .buttonbox, .radiobox {
-  line-height: 25px;
+  /* line-height: 25px; */
 }
 
 .error {
@@ -45,6 +96,10 @@ h3 {
 
 .success {
   color: darkgreen;
+}
+
+#results {
+  color: white;
 }
 
 pre {

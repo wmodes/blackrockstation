@@ -8,6 +8,15 @@ body {
   background-color: #000;
 }
 
+#title-section h1 {
+  display: inline-block;
+}
+
+#links {
+    display: inline-block;
+    float: right;
+}
+
 h1, h2, h3 {
   text-align: center;
   margin-bottom: 0;

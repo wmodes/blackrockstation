@@ -119,7 +119,8 @@ $("#submit").click(function(){
     $.ajax(ajax_obj)
     .done(function(data) {
       //var json = JSON.parse(data);
-      $('#results').html(JSON.stringify(data, undefined, 2))
+      results = JSON.stringify(data, undefined, 2).replace(/\\n/g, '<br>');
+      $('#results').html(results)
     })
     .fail(function(request,error) {
       // var json = JSON.parse(request);
