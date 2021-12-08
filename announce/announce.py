@@ -2,9 +2,10 @@
 
 from shared import config
 from shared.controller import Controller
+from player.threadedplayer import ThreadedPlayer
 
 import logging
-from pygame import mixer
+# from pygame import mixer
 import csv
 import time
 import glob
@@ -24,8 +25,15 @@ class Announce(Controller):
         self.glitchtable = self.__read_files()
         self.filetable = self.__read_filetable()
         self.most_recent = ""
-        mixer.init()
-        mixer.music.set_volume(float(config.ANNOUNCE_VOLUME))
+        # unreliable
+        # mixer.init()
+        # mixer.music.set_volume(float(config.ANNOUNCE_VOLUME))
+        #
+        # we will use our threaded player
+        # we pass the actual player and it's options to the class when we instantiate our threaded player
+        self.player = ThreadedPlayer(config.ANNOUNCE_PLAYER_CMD)
+        # this starts the thread (but not the player)
+        self.player.start()
 
     """
         SETUP
@@ -244,8 +252,12 @@ class Announce(Controller):
         self.most_recent = filename
         logging.info(f"Playing audio: {filename}")
         # used by audio mixer
-        mixer.music.load(filename)
-        mixer.music.play()
+        # unreliable
+        # mixer.music.load(filename)
+        # mixer.music.play()
+        #
+        # we use our new player
+        self._play_playlist(filename)
 
     def set_announce(self, announceid, year):
         """Play announcement."""
@@ -267,8 +279,12 @@ class Announce(Controller):
         filename = f"{str(year)}-{announceid}{config.ANNOUNCE_AUDIO_EXT}"
         self.most_recent = filepath + filename
         logging.info(f"Playing audio: {filepath}{filename}")
-        mixer.music.load(filepath + filename)
-        mixer.music.play()
+        # unreliable
+        # mixer.music.load(filepath + filename)
+        # mixer.music.play()
+        #
+        # we use our new player
+        self._play_playlist(filepath + filename)
         return_val = {'status': 'OK',
                       'cmd': 'setAnnounce',
                       'file': filepath + filename}
@@ -278,7 +294,17 @@ class Announce(Controller):
         """Stop all audio output."""
         logging.info("Stopping audio")
         # used by audio mixer
-        mixer.music.pause()
+        #mixer.music.pause()
+        self.player.stop()
+
+    def _play_playlist(self, playlist):
+        """
+        Play a new playlist with out threaded player.
+
+        playlist: (str) full path to dir of media files
+        """
+        if self.mode != config.MODE_OFF:
+            self.player.play(playlist)
 
     """
         MAIN LOOP

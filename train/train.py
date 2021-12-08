@@ -2,9 +2,10 @@
 
 from shared import config
 from shared.controller import Controller
+from player.threadedplayer import ThreadedPlayer
 
 import logging
-from pygame import mixer
+# from pygame import mixer
 import csv
 import time
 import sox
@@ -24,8 +25,15 @@ class Train(Controller):
         self.enabled = True
         self.filetable = self.__read_filetable()
         self.most_recent = ""
-        mixer.init()
-        mixer.music.set_volume(float(config.TRAIN_VOLUME))
+        # unreliable
+        # mixer.init()
+        # mixer.music.set_volume(float(config.TRAIN_VOLUME))
+        #
+        # we will use our threaded player
+        # we pass the actual player and it's options to the class when we instantiate our threaded player
+        self.player = ThreadedPlayer(config.TRAIN_PLAYER_CMD)
+        # this starts the thread (but not the player)
+        self.player.start()
 
     """
         SETUP
@@ -248,11 +256,25 @@ class Train(Controller):
             playfile = filename
         self.most_recent = filename
         logging.info(f"Playing audio: {filename}")
-        mixer.music.load(playfile)
-        mixer.music.play()
+        # unreliable
+        # mixer.music.load(playfile)
+        # mixer.music.play()
+        #
+        # we use our new player
+        self._play_playlist(playfile)
+        #
         return_val = {'status': 'OK',
                       'cmd': 'setTrain'}
         return return_val
+
+    def _play_playlist(self, playlist):
+        """
+        Play a new playlist with out threaded player.
+
+        playlist: (str) full path to dir of media files
+        """
+        if self.mode != config.MODE_OFF:
+            self.player.play(playlist)
 
     """
         MAIN LOOP

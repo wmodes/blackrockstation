@@ -33,7 +33,7 @@ class Radio(Controller):
 
         # we will use our threaded player
         # we pass the actual player and it's options to the class when we instantiate our threaded player
-        self.player = ThreadedPlayer(config.PLAYER_CMD)
+        self.player = ThreadedPlayer(config.RADIO_PLAYER_CMD)
         # this starts the thread (but not the player)
         self.player.start()
         #

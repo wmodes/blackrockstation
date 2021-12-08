@@ -11,7 +11,7 @@
 import sys, argparse, logging, random
 
 from os import listdir
-from os.path import isfile, join, splitext
+from os.path import isfile, join, splitext, split
 
 import subprocess
 
@@ -26,38 +26,52 @@ elif 'darwin' in platform.platform().lower():
 class OmxPlaylist(object):
     """Plays all of the media files in a directory with omxplayer."""
 
-    def __init__(self, playlistdir=None, random=False, loop=False, autoplay=False, debug=False, omxoptions=[]):
-        # constants - better to put in external config file
-        self.support_formats = [".3g2", ".3gp", ".aac", ".aiff", ".alac", ".ape", ".avi", ".dsd", ".flac", ".m4a", ".mj2", ".mkv", ".mov", ".mp3", ".mp4", ".mpc", ".mpeg", ".mqa", ".ofr", ".ogg", ".opus", ".wav", ".wv"]
+    # constants - better to put in external config file
+    support_formats = [".3g2", ".3gp", ".aac", ".aiff", ".alac", ".ape", ".avi", ".dsd", ".flac", ".m4a", ".mj2", ".mkv", ".mov", ".mp3", ".mp4", ".mpc", ".mpeg", ".mqa", ".ofr", ".ogg", ".opus", ".wav", ".wv"]
+
+    def __init__(self, playlist=None, random=False, loop=False, autoplay=False, debug=False, options=[]):
+
         # passed parameters
-        self.playlistdir = playlistdir
+        self.play_this = playlist
         self.random = random
         self.loop = loop
-        self.omxoptions = omxoptions
+        self.options = options
         self.autoplay = autoplay
         self.debug = debug
         # create playlist
-        self.generatePlaylist()
-        if autoplay:
+        self.basedir = None
+        self.filelist = None
+        self.get_filelist(playlist)
+        # print (self.basedir)
+        # print (self.filelist)
+        if self.autoplay:
             self.play()
 
     def play(self):
         # get started
         self.play_playlist()
         while self.loop:
-            play_playlist()
+            self.play_playlist()
 
-    def generatePlaylist(self):
-        inpath = self.playlistdir
-        self.playlist = [f for f in listdir(inpath) if isfile(join(inpath, f)) and splitext(f)[1] in self.support_formats]
+    def get_filelist(self, inpath):
+        # if inpath is a file, then it is the only file in the filelist
+        if isfile(inpath):
+            path, file = split(inpath)
+            self.basedir = path
+            self.filelist = [file]
+        else:
+            self.basedir = inpath
+            self.filelist = [f for f in listdir(inpath) if isfile(join(inpath, f)) and splitext(f)[1] in OmxPlaylist.support_formats]
 
     def play_playlist(self):
-        if self.random:
-            random.shuffle(self.playlist)
+        # if random flag is set and there is more than 1 element in filelist
+        if self.random and len(self.filelist) > 1:
+            random.shuffle(self.filelist)
 
-        for f in self.playlist:
-            full_path = self.playlistdir + "/" + f
-            full_command = omx_command + self.omxoptions + [full_path]
+        for f in self.filelist:
+            full_path = self.basedir + "/" + f
+            # print (full_path)
+            full_command = omx_command + self.options + [full_path]
 
             stdout = subprocess.PIPE
             if self.debug:
@@ -95,10 +109,6 @@ if __name__ == '__main__':
         const=True, default=False,
         help='play playlist in random order')
     parser.add_argument(
-        "directory",
-        help="specify playlist directory",
-        metavar="playlist_dir")
-    parser.add_argument(
         "-d",
         "--debug",
         dest='debug', action='store_const',
@@ -110,6 +120,10 @@ if __name__ == '__main__':
         dest='autoplay', action='store_const',
         const=True, default=False,
         help="start playing immediately")
+    parser.add_argument(
+        "playlist",
+        help="specify playlist as a single file or directory",
+        metavar="playlist")
     parser.add_argument(
         'remaining',
         help="catch all other arguments to be passed to OMXplayer",
@@ -124,4 +138,4 @@ if __name__ == '__main__':
 
     logging.basicConfig(format="%(levelname)s: %(message)s", level=loglevel)
 
-    player = OmxPlaylist(args.directory, args.random, args.loop, args.autoplay, args.debug, args.remaining)
+    player = OmxPlaylist(args.playlist, random=args.random, loop=args.loop, autoplay=args.autoplay, debug=args.debug, options=args.remaining)

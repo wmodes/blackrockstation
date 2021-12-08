@@ -27,7 +27,6 @@ MODE_OFF = 0
 MODE_ON = 1
 MODE_AUTO = -1
 COMMS_TIMEOUT = 1
-PLAYER_CMD = ["./player/omxplaylist.py", "--loop", "--random", "--autoplay", "--debug"]
 
 # Start
 CONTROLLERS = {
@@ -88,6 +87,7 @@ CONSOLE_WIN_STATUS_HEIGHT = 7
 
 # Announce class
 ANNOUNCE_FILE_TABLE = "announce/data/file-table.csv"
+ANNOUNCE_PLAYER_CMD = ["./player/omxplaylist.py", "--autoplay"]
 ANNOUNCE_AUDIO_DIR = "announce/data/"
 ANNOUNCE_GLITCH_DIR = "announce/data/glitch/"
 ANNOUNCE_FILE_FIELDS = ['announcement', 'announceid', 'year', 'filename', 'notes']
@@ -132,6 +132,7 @@ LIGHTS_PIN_TABLE = [19, 20, 21, 26]
 
 # Radio class
 RADIO_AUDIO_DIR = "radio/data/"
+RADIO_PLAYER_CMD = ["./player/omxplaylist.py", "--loop", "--random", "--autoplay"]
 RADIO_LOOP_DELAY = 0.25
 RADIO_AUDIO_EXT = ".mp3"
 RADIO_VOLUME = 0.8
@@ -140,6 +141,7 @@ RADIO_TRANSITION_SEC = 0.6
 
 # Train class
 TRAIN_FILE_TABLE = "train/data/file-table.csv"
+TRAIN_PLAYER_CMD = ["./player/omxplaylist.py", "--autoplay"]
 TRAIN_FILE_FIELDS = ['year', 'traintype', 'filename']
 TRAIN_TYPES = ["freight-through", "freight-stop", "passenger-through", "passenger-stop"]
 TRAIN_AUDIO_DIR = "train/data/"
