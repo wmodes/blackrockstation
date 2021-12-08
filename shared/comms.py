@@ -64,7 +64,7 @@ class Comms(object):
         try:
             response = requests.post(server, json=cmd_obj, timeout=config.COMMS_TIMEOUT)
             return_val = json.loads(response.text)
-        except requests.exceptions.RequestException as error:
+        except (requests.exceptions.RequestException, json.decoder.JSONDecodeError) as error:
             return_val = {'status': 'FAIL',
                           'error': str(error)}
         return return_val

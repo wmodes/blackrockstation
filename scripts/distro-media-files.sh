@@ -1,4 +1,4 @@
-
+#!/bin/bash
 
 media_list="announce radio television train"
 

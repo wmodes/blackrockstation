@@ -1,3 +1,4 @@
+#!/bin/bash
 
 full_list="announce bridge crossing lights radio television train"
 

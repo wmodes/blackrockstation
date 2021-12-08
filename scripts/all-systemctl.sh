@@ -1,3 +1,4 @@
+#!/bin/bash
 
 full_list="scheduler announce bridge crossing lights radio television train"
 

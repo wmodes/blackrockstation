@@ -1,3 +1,4 @@
+#!/bin/bash
 
 fromDir="edited"
 destDir="transcode"
