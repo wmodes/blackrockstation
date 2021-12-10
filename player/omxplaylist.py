@@ -18,7 +18,7 @@ import subprocess
 # for testing on the mac
 import platform
 if 'arm' in platform.platform().lower():
-    omx_command = ['/usr/bin/omxplayer', "-p", "-o", "local"]
+    omx_command = ['/usr/bin/omxplayer', "-o", "local"]
 elif 'darwin' in platform.platform().lower():
     # afplay only plays audio, sadly. No equivalent of omxplayer
     omx_command = ['/usr/bin/afplay']
