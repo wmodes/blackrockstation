@@ -33,6 +33,9 @@ class Display(object):
     def init_screen(self):
         """Initialize Display class."""
         self.screen = curses.initscr()
+        # keyboard init
+        curses.noecho()
+        curses.cbreak()
         # curses.start_color()
         # curses.use_default_colors()
         curses.curs_set(2)
@@ -196,6 +199,17 @@ class Display(object):
         # self.screen.addch(self.fix2_vert, 0, curses.ACS_LTEE)
         # self.screen.addch(self.fix2_vert, curses.COLS - 1, curses.ACS_RTEE)
 
+    #
+    # input
+    #
+    def is_keypress(self):
+        if not self.screen_avail:
+            return False
+        key = self.screen.getch()
+        if key == curses.KEY_ENTER or key == 10 or key == 13 or
+           key == ord(' '):
+           return True
+        return False
 
     #
     # Time Helpers

@@ -2,7 +2,7 @@
 
 from shared import config
 from shared.controller import Controller
-from shared.display import Display
+from display import Display
 
 import logging
 from datetime import datetime, timedelta
@@ -21,10 +21,15 @@ logger.setLevel(config.LOG_LEVEL)
 class Console(Controller):
     """Console controller class."""
 
+    MODE_GENERAL = "general"
+    MODE_TRAINS = "trains"
+    MODES = [MODE_GENERAL, MODE_TRAINS]
+
     def __init__(self):
         """Initialize Console class."""
         super().__init__()
         self.whoami = "console"
+        self.mode = 0
         self.schedule = []
         self.current_logs = ""
         self.current_year = None
@@ -381,17 +386,21 @@ class Console(Controller):
         if self.cycle_count % update_sched_count == 0:
             self.get_scheduler_logs()
 
+    def check_for_input(self):
+        if self.display.is_keypress():
+            self.mode += 1
+            if self.mode >= len(self.MODES):
+                self.mode = 0
+                self.cycle_count = 0
+            self.update_display()
 
     def main_loop(self):
         """Get orders and acts on them."""
         while True:
             self.update_data()
             self.update_display()
+            self.check_for_input()
             # self.act_on_order(self.receive_order())
-            # self.check_for_delayed_events()
-            # self.check_for_timeslip()
-            # self.check_for_random_events()
-            # self.check_for_scheduled_event()
             time.sleep(config.CONSOLE_LOOP_DELAY)
             # increment counter
             self.cycle_count += 1
