@@ -2,7 +2,7 @@
 
 from shared import config
 from shared.controller import Controller
-from display import Display
+from console.display import Display
 
 import logging
 from datetime import datetime, timedelta
@@ -22,8 +22,8 @@ class Console(Controller):
     """Console controller class."""
 
     MODE_GENERAL = "general"
-    MODE_TRAINS = "trains"
-    MODES = [MODE_GENERAL, MODE_TRAINS]
+    MODE_DETAIL = "detail"
+    MODES = [MODE_GENERAL, MODE_DETAIL]
 
     def __init__(self):
         """Initialize Console class."""
@@ -45,10 +45,6 @@ class Console(Controller):
     """
         REPORTS
     """
-
-    # def get_next_train(self):
-    #     """Return an obj representing next train."""
-    #     return self.get_future_trains(1)[0]
 
     def get_future_trains(self, n=10):
         """Return array of objects representing future trains.
@@ -74,7 +70,10 @@ class Console(Controller):
             # if we have n events, stop
             if len(future_list) >= n:
                 break
-            future_list.append(event)
+            # since complex datatypes are passed by ref and we want
+            # to be able to change it later without affecting orig
+            # data structure, we copy it
+            future_list.append(event.copy())
         # if we don't have
         if len(future_list) < n:
             for event in self.schedule:
@@ -87,7 +86,11 @@ class Console(Controller):
                 # if we have n events, stop
                 if len(future_list) >= n:
                     break
-                future_list.append(event)
+                # copy it
+                future_list.append(event.copy())
+        # corrections and fixes
+        for item in future_list:
+            item['time'] = self.format_time_str(item['time'])
         return future_list
         #return self.display_train_schedule(future_list)
 
@@ -127,7 +130,7 @@ class Console(Controller):
         #     justify="left",
         #     max_colwidth=max_col_width)
         headers = ['TRAIN', 'ARRIVE', 'DIR', 'TYPE', 'NOTES']
-        justify = ['l', 'r', 'c', 'l', 'l']
+        justify = ['l', 'l', 'c', 'l', 'l']
         table = columnar(
             data,
             headers,
@@ -142,16 +145,16 @@ class Console(Controller):
         # drop first and third line
         table_array.pop(0)
         table_array.pop(1)
-        # remove one space at beginning of each line
+        # remove two spaces at beginning of each line
         for i in range(len(table_array)):
-            table_array[i] = table_array[i][1:]
+            table_array[i] = table_array[i][2:]
         # put back together again
         table = '\n'.join(table_array)
         return table
 
-    def display_future_trains(self, n=10):
+    def display_future_trains(self):
         """Return human-readable schedule of future trains."""
-        event_list = self.get_future_trains(n)
+        event_list = self.get_future_trains(config.CONSOLE_DISPLAY_TRAINS)
         headers = ['Train', 'Arrive', 'Dir', 'Type', 'Notes']
         # convert dict to array of arrays
         events = self.construct_disp_sched(event_list)
@@ -159,6 +162,31 @@ class Console(Controller):
             return
         table = self.tabulate_data(events)
         return str(table)
+
+    def display_train_details(self):
+        """Return human-readable detail of future trains."""
+        event_list = self.get_future_trains(config.CONSOLE_DISPLAY_TRAINS)
+        # print ("display_train_details():  "  + str(event_list))
+        if not len(event_list):
+            return
+        # next train
+        next = event_list[0]
+        output = "NEXT TRAIN\n"
+        output += f"{next['event']}\n"
+        output += f"Arrival: {next['time']}\t"
+        output += f"Type: {next['traintype']}\t"
+        output += f"Dir: {next['direction']}\n"
+        output += f"Notes: {next['notes']}\n"
+        # next passenger train
+        next = [item for item in event_list if item.get('traintype')=='passenger-stop'][0]
+        if next:
+            output += "\n \nNEXT PASSENGER STOP\n"
+            output += f"{next['event']}\n"
+            output += f"Arrival: {next['time']}\t"
+            output += f"Type: {next['traintype']}\t"
+            output += f"Dir: {next['direction']}\n"
+            output += f"Notes: {next['notes']}\n"
+        return output
 
     def format_logs(self, raw_logs):
         """Take raw logs and format them for display."""
@@ -301,6 +329,10 @@ class Console(Controller):
             nexttime_dt = tomorrow_dt
         return nexttime_dt
 
+    def format_time_str(self, time_str):
+        time_dt = self.str2dt(time_str)
+        return time_dt.strftime(config.CONSOLE_SHORT_TIME_FORMAT)
+
     def str_delta_plus_now(self, delta_str):
         """
         Given a delta string in MM:SS format, add it to now and return timedate objects.
@@ -326,7 +358,12 @@ class Console(Controller):
         self.display.display_time(self.next_train, self.next_timeslip, self.current_year)
 
     def update_sched_display(self):
-        sched_str = self.display_future_trains(config.CONSOLE_DISPLAY_TRAINS)
+        if self.MODES[self.mode] == self.MODE_GENERAL:
+        # if self.mode == 0:
+            sched_str = self.display_future_trains()
+        elif self.MODES[self.mode] == self.MODE_DETAIL:
+        # elif self.mode == 1:
+            sched_str = self.display_train_details()
         # just in case we don't get anything, we don't want to
         # freak out downstream
         if sched_str == None:
@@ -387,11 +424,13 @@ class Console(Controller):
             self.get_scheduler_logs()
 
     def check_for_input(self):
-        if self.display.is_keypress():
+        key = self.display.is_keypress()
+        if key:
             self.mode += 1
             if self.mode >= len(self.MODES):
                 self.mode = 0
-                self.cycle_count = 0
+            self.cycle_count = 0
+            logging.info(f"Display mode changed to {self.MODES[self.mode]}")
             self.update_display()
 
     def main_loop(self):
@@ -399,8 +438,9 @@ class Console(Controller):
         while True:
             self.update_data()
             self.update_display()
+            # waits this long checking for keypress
             self.check_for_input()
-            # self.act_on_order(self.receive_order())
+            # no need to sleep
             time.sleep(config.CONSOLE_LOOP_DELAY)
             # increment counter
             self.cycle_count += 1

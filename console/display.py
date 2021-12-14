@@ -33,9 +33,6 @@ class Display(object):
     def init_screen(self):
         """Initialize Display class."""
         self.screen = curses.initscr()
-        # keyboard init
-        curses.noecho()
-        curses.cbreak()
         # curses.start_color()
         # curses.use_default_colors()
         curses.curs_set(2)
@@ -98,12 +95,22 @@ class Display(object):
         self.sched_win_wrap.refresh()
         # inner panel
         self.sched_win = curses.newwin(
-            self.sched_win_height-2, self.sched_win_width-2,
-            self.sched_win_y_origin+1, self.sched_win_x_origin+1)
+            self.sched_win_height-2, self.sched_win_width-4,
+            self.sched_win_y_origin+1, self.sched_win_x_origin+2)
         #
         self.fix1_vert = self.time_win_y_origin + self.time_win_height
         self.fix2_vert = self.status_win_y_origin
         self.corner_fix()
+        # keyboard init
+        # read keys and only display them under certain circumstances
+        curses.noecho()
+        # read keys and only display them under certain circumstances
+        curses.cbreak()
+        # instead of returning special keys as multibyte escape sequences,
+        # return a special values, e.g., curses.KEY_LEFT
+        self.screen.keypad(True)
+        # Make getch() and getkey() non-blocking, i.e, not wait for input
+        self.time_win_rt.nodelay(True)
 
     def stop_screen(self):
         logging.debug("stop_screen() called")
@@ -122,6 +129,7 @@ class Display(object):
         if not self.screen_avail:
             return
         self.sched_win.clear
+        self.sched_win.refresh()
         # self.sched_win_wrap.clear
         # self.sched_win_wrap.refresh()
         # self.corner_fix()
@@ -133,7 +141,7 @@ class Display(object):
                 attr = curses.A_NORMAL
             self.sched_win.addstr(i, 0, str_array[i], attr)
             self.sched_win.refresh()
-            time.sleep(config.CONSOLE_LOOP_DELAY/4)
+            # time.sleep(config.CONSOLE_LOOP_DELAY/4)
         self.sched_win.refresh()
 
     def display_time(self, next_train, next_timeslip, current_year):
@@ -204,12 +212,14 @@ class Display(object):
     #
     def is_keypress(self):
         if not self.screen_avail:
-            return False
-        key = self.screen.getch()
-        if key == curses.KEY_ENTER or key == 10 or key == 13 or
-           key == ord(' '):
-           return True
-        return False
+            return None
+        key = self.time_win_rt.getch()
+        if not key == curses.ERR:
+            return key
+        # if not curses.ERR
+        # if key == curses.KEY_ENTER or key == ord(' '):
+        #    return key
+        return None
 
     #
     # Time Helpers
@@ -221,4 +231,4 @@ class Display(object):
         return f"{hrs:02d}:{min:02d}:{sec:02d}"
 
     def time2txt(self, time_dt):
-        return time_dt.strftime(config.CONSOLE_TIME_FORMAT)
+        return time_dt.strftime(config.CONSOLE_LONG_TIME_FORMAT)
