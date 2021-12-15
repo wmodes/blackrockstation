@@ -176,16 +176,16 @@ class Console(Controller):
         output += f"Arrival: {next['time']}\t"
         output += f"Type: {next['traintype']}\t"
         output += f"Dir: {next['direction']}\n"
-        output += f"Notes: {next['notes']}\n\n"
+        output += self.break_nicely(f"Notes: {next['notes']}", config.CONSOLE_LINE_LEN)
         # next passenger train
         next = [item for item in event_list if item.get('traintype')=='passenger-stop'][0]
         if next:
-            output += "\n \nNEXT PASSENGER STOP\n"
+            output += "\n\nNEXT PASSENGER STOP\n"
             output += f"{next['event']}\n"
             output += f"Arrival: {next['time']}\t"
             output += f"Type: {next['traintype']}\t"
             output += f"Dir: {next['direction']}\n"
-            output += f"Notes: {next['notes']}\n"
+            output += self.break_nicely(f"Notes: {next['notes']}", config.CONSOLE_LINE_LEN)
         return output
 
     def format_logs(self, raw_logs):
@@ -194,6 +194,21 @@ class Console(Controller):
         for i in range(len(logs)):
             logs[i] = re.sub(r"^.*scheduler: ", "", logs[i])
         return '\n'.join(logs)
+
+    def break_nicely(self, text, length):
+        if len(text) <= length:
+            return text
+        # split at length
+        line1 = text[:length]
+        rest = text[length:]
+        # look for last space
+        pos = line1.rfind(' ')
+        # if there is no space in line1, don't try to break nicely
+        if pos != -1:
+            # else break at the space
+            line1_nice = line1[:pos]
+            rest = line1[pos+1:] + rest
+        return line1_nice + '\n' + self.break_nicely(rest, length)
 
     """
         ORDERS

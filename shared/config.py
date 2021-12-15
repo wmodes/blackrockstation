@@ -58,7 +58,7 @@ SCHED_FIELDS = ['event', 'controller', 'time', 'duration', 'direction', 'trainty
 SCHED_LOOP_DELAY = 0.25
 SCHED_DEFAULT_LOG = 100
 SCHED_YEARS = [1938, 1959, 1982, 2014, 2066, 2110, 1858, 1888]
-SCHED_TIMESLIP_INTERVAL = 14        # time in minutes default=26
+SCHED_TIMESLIP_INTERVAL = 26        # time in minutes default=26
 SCHED_TIMESLIP_GLITCH = 31         # time in seeconds
 SCHED_PERIODIC = [
     {"controller": "announce", "announceid": "periodic-announcement-1", "times_per_day": 3},
@@ -85,6 +85,8 @@ CONSOLE_DISPLAY_SCHED_FREQ = 30     # seconds to update sched display
 CONSOLE_DISPLAY_STATUS_FREQ = 15      # seconds to update logs display
 CONSOLE_WIN_TIME_HEIGHT = 4
 CONSOLE_WIN_STATUS_HEIGHT = 7
+CONSOLE_LINE_LEN = 76
+CONSOLE_MAX_COL = 25
 
 # Announce class
 ANNOUNCE_FILE_TABLE = "announce/data/file-table.csv"
