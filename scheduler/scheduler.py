@@ -643,8 +643,8 @@ class Scheduler(Controller):
             # self.current_year = config.YEARS[index]
             #
             # now we pick years at random, but prevent a repeat
-            new_year = 0
-            while new_year != self.current_year:
+            new_year = self.current_year
+            while new_year == self.current_year:
                 new_year = random.choice(config.YEARS)
             self.current_year = new_year
         # record the time of the timeslip to prevent bounce

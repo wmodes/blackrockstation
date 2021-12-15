@@ -132,6 +132,7 @@ experiments/grpc/
 # Audio/Video Files
 *.tar
 *.gz
+*.zip
 *.mp3
 *.mp4
 *.wav

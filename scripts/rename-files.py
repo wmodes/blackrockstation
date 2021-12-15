@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import sys
 import subprocess
@@ -11,8 +13,12 @@ media_re = '.(wav|mp3|mp4|mov|wma|webm)$'
 from_dir = "edited"
 dest_dir = "final"
 
-media_dir_raw = input ("Enter media folder: ")
+if not sys.argv[1]:
+    media_dir_raw = input ("Enter media folder: ")
+else:
+    media_dir_raw = sys.argv[1]
 media_dir_clean = re.sub('\\\\', '', media_dir_raw)
+
 
 # if media dir not found, bail
 #   isdir() prefers either the escaped version,
@@ -26,7 +32,8 @@ else:
 def safeFilename(filename):
     basename, ext = os.path.splitext(filename)
     basename = re.sub(r'[\W_]+', '-', basename)
-    basename = re.sub(r'^-', '', basename)
+    basename = re.sub(r'^[ -]', '', basename)
+    basename = re.sub(r'[ -]$', '', basename)
     return f"{basename}{ext}"
 
 print("Renaming files")
