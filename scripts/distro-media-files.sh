@@ -10,7 +10,7 @@ media_list="announce radio television train"
 /bin/echo -n "Controller(s): "
 read list
 
-if [ -z $list];then
+if [ -z $list ];then
 	list="$media_list"
 fi
 
