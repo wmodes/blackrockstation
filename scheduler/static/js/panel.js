@@ -3,11 +3,11 @@
 // GLOBALS
 //
 
-statusInterval = 15 * 1000;
+const statusInterval = 15 * 1000;
 // url = "http://localhost:8080/cmd";
-url_pre = "http://"
-url_post = "/cmd"
-var CONTROLLERS = {
+const url_pre = "http://"
+const url_post = "/cmd"
+const CONTROLLERS = {
 	"scheduler":  {"port": 8080,
                  "server": "brs-scheduler.local",
 								 "status" : null},
@@ -34,7 +34,9 @@ var CONTROLLERS = {
 								 "status" : null}
 }
 
-var COMMANDS = {
+const YEARS = [1858, 1888, 1938, 1959, 1982, 2014, 2066, 2110]
+
+const COMMANDS = {
 	"reqStatus": 		{'cmd': 'reqStatus'},
 	"setOff":				{'cmd': 'setOff'},
 	"setOn":				{'cmd': 'setOn'},
@@ -46,12 +48,16 @@ var COMMANDS = {
 								   "note": "Scheduler requires only index, while train subsystem requires all others except index"}
 }
 
-var TRAINS = {
+const TRAINS = {
 	"frt-through" : 2,
 	"frt-stop" : 8,
 	"psgr-through" : 3,
 	"psgr-stop" : 6
 }
+
+const BTNCOLORS = "btn-primary btn-secondary btn-success btn-danger btn-warning btn-info btn-light btn-dark";
+const BTNDEFAULT = "btn-secondary";
+const ALERTCOLORS = "bg-primary bg-secondary bg-success bg-danger bg-warning bg-info bg-light bg-dark bg-white text-light"
 
 var nextSlipTime = null;
 var nextTrainTime = null;
@@ -117,7 +123,7 @@ function processAjaxResults(type, controller, results) {
 
 	if (type == "calltrain") {
 		msg = "Train has been called. New calls temporarily disabled."
-		displayCallAlert("alert-warning", msg);
+		displayCallAlert("bg-warning text-dark", msg);
 		setTimeout(function(){
 			clearCallAlert();
 			enableCalls();
@@ -125,7 +131,7 @@ function processAjaxResults(type, controller, results) {
 	}
 	else if (type == "callyear") {
 		msg = "Timeslip triggered. New calls temporarily disabled."
-		displayCallAlert("alert-warning", msg);
+		displayCallAlert("bg-warning text-dark", msg);
 		setTimeout(function(){
 			clearCallAlert();
 			enableCalls();
@@ -223,6 +229,9 @@ function updateTimes() {
 		$("#time-current").html(formatDate(now));
 		// display current year
 		$("#current-year").html(currentYear);
+		$("#years .btn").removeClass(BTNCOLORS);
+		$("#years .btn").addClass(BTNDEFAULT);
+		$("#years .btn." + currentYear).addClass("btn-success");
 		// display timeslip time
 		if (nextSlipTime) {
 			$("#time-slip").html(msToTime(nextSlipTime - now));
@@ -305,39 +314,36 @@ function alertSummary() {
 		statusArray.push(CONTROLLERS[controller].status);
 	}
 	if (statusArray.includes("error")) {
-		displayStatusAlert("alert-danger", "One or more controllers are in Error state");
+		displayStatusAlert("bg-danger text-white", "One or more controllers are in Error state");
 	}
 	else if (statusArray.includes("unknown")) {
-		displayStatusAlert("alert-warning", "One or more controllers are in Unknown state");
+		displayStatusAlert("bg-warning text-dark", "One or more controllers are in Unknown state");
 	}
 	else if (statusArray.includes("off") || statusArray.includes("on")) {
-		displayStatusAlert("alert-warning", "One or more controllers are not in Auto mode");
+		displayStatusAlert("bg-warning text-dark", "One or more controllers are not in Auto mode");
 	}
 	else {
-		displayStatusAlert("alert-success", "All controllers are responsive and in Auto mode");
+		displayStatusAlert("bg-success text-white", "All controllers are responsive and in Auto mode");
 	}
 }
 
 function displayStatusAlert(alertClass, alertText) {
 	alertEl = $("#alert-status");
-	alertColors = ["alert-primary", "alert-secondary", "alert-success", "alert-danger", "alert-warning", "alert-info", "alert-light", "alert-dark"];
-	alertEl.removeClass(alertColors);
+	alertEl.removeClass(ALERTCOLORS);
 	alertEl.html(alertText);
 	alertEl.addClass(alertClass);
 }
 
 function displayCallAlert(alertClass, alertText) {
 	alertEl = $("#alert-calls");
-	alertColors = ["alert-primary", "alert-secondary", "alert-success", "alert-danger", "alert-warning", "alert-info", "alert-light", "alert-dark"];
-	alertEl.removeClass(alertColors);
+	alertEl.removeClass(ALERTCOLORS);
 	alertEl.html(alertText);
 	alertEl.addClass(alertClass);
 }
 
 function clearCallAlert() {
 	alertEl = $("#alert-calls");
-	alertColors = ["alert-primary", "alert-secondary", "alert-success", "alert-danger", "alert-warning", "alert-info", "alert-light", "alert-dark"];
-	alertEl.removeClass(alertColors);
+	alertEl.removeClass(ALERTCOLORS);
 	alertEl.html("No current calls...");
 	alertEl.addClass("alert-dark");
 }
@@ -371,14 +377,13 @@ function changeStatus(controller, status) {
 		btnClass = "btn-success";
 	} else if (status == "on") {
 		btnText = "On";
-		btnClass = "btn-light";
+		btnClass = BTNDEFAULT;
 	}else if (status == "off") {
 		btnText = "Off";
 		btnClass = "btn-dark";
 	}
 	btnEl = $(`[data-contr="${controller}"]`);
-	btnColors = ["btn-primary", "btn-secondary", "btn-success", "btn-danger", "btn-warning", "btn-info", "btn-light", "btn-dark"];
-	btnEl.removeClass(btnColors);
+	btnEl.removeClass(BTNCOLORS);
 	btnEl.html(btnText);
 	btnEl.addClass(btnClass);
 }
@@ -413,6 +418,8 @@ function setupStatusBtns() {
 //
 
 function setupTrainCallBtns() {
+	$("#trains .btn").removeClass(BTNCOLORS);
+	$("#trains .btn").addClass(BTNDEFAULT);
 	$("#trains .btn").click(function() {
 		var controller = "scheduler";
 		var call = $(this).data("call");
@@ -425,6 +432,10 @@ function setupTrainCallBtns() {
 }
 
 function setupTimeslipCallBtns() {
+	for (i=0; i<YEARS.length; i++) {
+		var html = `<div><button class="btn ${BTNDEFAULT} ${YEARS[i]}" data-year="${YEARS[i]}">${YEARS[i]}</button></div>`;
+		$("#years").append(html);
+	}
 	$("#years .btn").click(function() {
 		var controller = "scheduler";
 		var year = $(this).data("year");
