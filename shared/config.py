@@ -51,7 +51,7 @@ CONTROLLERS = {
 
 # Controller parent class
 YEARS = ['1938', '1959', '1982', '2014', '2066', '2110', '1858', '1888']
-VALID_YEARS = YEARS + 'glitch'
+VALID_YEARS = YEARS + ['glitch']
 
 # Scheduler class
 SCHED_DATA = "scheduler/data/schedule.csv"
