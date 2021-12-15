@@ -1,6 +1,7 @@
 import threading
 import subprocess
 import os
+import time
 
 class ThreadedPlayer(threading.Thread):
 
@@ -8,6 +9,7 @@ class ThreadedPlayer(threading.Thread):
     STOP_PLAYING = 'stop'
     EXIT = 'exit'
     SIG_INT = 2
+    EXIT_PLAYER = "killall omxplayer.bin"
 
     def __init__(self, player_command, group=None, name=None):
         super().__init__(group=group, target=None, name=name)
@@ -77,6 +79,8 @@ class ThreadedPlayer(threading.Thread):
         """
         if self.m_player:
             self.m_player.send_signal(ThreadedPlayer.SIG_INT)
+            time.sleep(0.5)
+            os.system(self.EXIT_PLAYER)
             self.m_player = None
 
     def _play(self, playlist):
