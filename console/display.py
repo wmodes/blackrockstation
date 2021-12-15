@@ -168,8 +168,8 @@ class Display(object):
         else:
             train_str = "???"
         # clear the time window
-        self.time_win_lt.clear()
-        self.time_win_rt.clear()
+        self.time_win_lt.erase()
+        self.time_win_rt.erase()
         #
         # left panel
         self.time_win_lt.addstr(0, 1, f"Current Time: {date_str}  ", curses.A_BOLD)
