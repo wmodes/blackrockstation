@@ -27,7 +27,7 @@ class Scheduler(Controller):
         self.__read_schedule()
         self.__sort_schedule()
         self.delayed_events = []
-        self.current_year = config.SCHED_YEARS[0]
+        self.current_year = config.YEARS[0]
         self.last_event = ""
         self.last_timeslip = datetime.now()
         self.cycle_count = 0
@@ -633,14 +633,20 @@ class Scheduler(Controller):
         if year:
             self.current_year = year;
         else:
-            # find out what the index of the current year is
-            index = config.SCHED_YEARS.index(int(self.current_year))
-            # increment one
-            index += 1
-            # make sure we don't have index overrun
-            if index >= len(config.SCHED_YEARS):
-                index = 0
-            self.current_year = config.SCHED_YEARS[index]
+            # # find out what the index of the current year is
+            # index = config.YEARS.index(int(self.current_year))
+            # # increment one
+            # index += 1
+            # # make sure we don't have index overrun
+            # if index >= len(config.YEARS):
+            #     index = 0
+            # self.current_year = config.YEARS[index]
+            #
+            # now we pick years at random, but prevent a repeat
+            new_year = 0
+            while new_year != self.current_year:
+                new_year = random.choice(config.YEARS)
+            self.current_year = new_year
         # record the time of the timeslip to prevent bounce
         self.last_timeslip = datetime.now()
         logging.info(f"Timeslip to {self.current_year}")
