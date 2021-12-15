@@ -9,7 +9,7 @@ class ThreadedPlayer(threading.Thread):
     STOP_PLAYING = 'stop'
     EXIT = 'exit'
     SIG_INT = 2
-    EXIT_PLAYER = "killall omxplayer.bin"
+    EXIT_PLAYER = "killall omxplayer.bin;killall "
 
     def __init__(self, player_command, group=None, name=None):
         super().__init__(group=group, target=None, name=name)

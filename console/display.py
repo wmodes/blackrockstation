@@ -50,7 +50,7 @@ class Display(object):
             self.time_win_height, self.time_win_width,
             self.time_win_y_origin, self.time_win_x_origin)
         self.time_win_wrap.border();
-        self.time_win_wrap.clear
+        self.time_win_wrap.erase()
         self.time_win_wrap.refresh()
         # left panel
         self.time_win_lt = curses.newwin(
@@ -72,7 +72,7 @@ class Display(object):
             self.status_win_height, self.status_win_width,
             self.status_win_y_origin, self.status_win_x_origin)
         self.status_win_wrap.border();
-        self.status_win_wrap.clear
+        self.status_win_wrap.erase()
         self.status_win_wrap.refresh()
         # inner panel
         self.status_win = curses.newwin(
@@ -91,7 +91,7 @@ class Display(object):
             self.sched_win_height, self.sched_win_width,
             self.sched_win_y_origin, self.sched_win_x_origin)
         self.sched_win_wrap.border();
-        self.sched_win_wrap.clear
+        self.sched_win_wrap.erase()
         self.sched_win_wrap.refresh()
         # inner panel
         self.sched_win = curses.newwin(
@@ -128,7 +128,7 @@ class Display(object):
     def display_sched(self, text):
         if not self.screen_avail:
             return
-        self.sched_win.clear
+        self.sched_win.erase()
         self.sched_win.refresh()
         # self.sched_win_wrap.clear
         # self.sched_win_wrap.refresh()
@@ -168,8 +168,8 @@ class Display(object):
         else:
             train_str = "???"
         # clear the time window
-        self.time_win_lt.clear
-        self.time_win_rt.clear
+        self.time_win_lt.erase()
+        self.time_win_rt.erase()
         #
         # left panel
         self.time_win_lt.addstr(0, 1, f"Current Time: {date_str}  ", curses.A_BOLD)
@@ -184,7 +184,7 @@ class Display(object):
     def display_status(self, text=None):
         if not self.screen_avail:
             return
-        self.status_win.clear
+        self.status_win.erase()
         # self.status_win_wrap.clear
         # self.status_win_wrap.refresh()
         # self.corner_fix()
