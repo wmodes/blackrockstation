@@ -176,7 +176,7 @@ class Console(Controller):
         output += f"Arrival: {next['time']}\t"
         output += f"Type: {next['traintype']}\t"
         output += f"Dir: {next['direction']}\n"
-        output += f"Notes: {next['notes']}\n"
+        output += f"Notes: {next['notes']}\n\n"
         # next passenger train
         next = [item for item in event_list if item.get('traintype')=='passenger-stop'][0]
         if next:
