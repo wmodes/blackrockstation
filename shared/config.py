@@ -56,6 +56,7 @@ VALID_YEARS = YEARS + ['glitch']
 # Scheduler class
 SCHED_DATA = "scheduler/data/schedule.csv"
 SCHED_FIELDS = ['event', 'controller', 'time', 'duration', 'direction', 'traintype', 'variance', 'notes', 'announceid', 'time_since_last']
+SCHED_YEARS = YEARS
 SCHED_LOOP_DELAY = 0.25
 SCHED_DEFAULT_LOG = 100
 SCHED_TIMESLIP_INTERVAL = 26        # time in minutes default=26
