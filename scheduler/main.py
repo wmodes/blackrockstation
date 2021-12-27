@@ -81,4 +81,4 @@ def cmd():
 
 context = ('../server.crt', '../server.key')
 app.run(host="0.0.0.0", port=config.CONTROLLERS[whoami]["port"],
-        debug=config.DEBUG,use_reloader=False, ssl_context=context)
+        debug=config.DEBUG,use_reloader=False, ssl_context='adhoc')
