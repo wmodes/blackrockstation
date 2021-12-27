@@ -4,7 +4,6 @@ from shared import config
 from shared.controller import Controller
 from announce.announce import Announce
 from flask import Flask, request, jsonify
-from flask_htpasswd import HtPasswdAuth
 from flask_cors import CORS, cross_origin
 import threading
 from shared.streamtologger import StreamToLogger
@@ -53,10 +52,6 @@ thread_obj.start()
 app = Flask(__name__) # Create the server object
 
 app = flask.Flask(__name__)
-app.config['FLASK_HTPASSWD_PATH'] = '.htpasswd'
-app.config['FLASK_SECRET'] = 'SECRETSECRETSECRET'
-app.config['FLASK_AUTH_ALL']=True
-htpasswd = HtPasswdAuth(app)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 

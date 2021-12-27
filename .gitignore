@@ -145,3 +145,4 @@ experiments/python-vlc/
 radio/data/2066/Icon
 radio/.DS_Store
 media.tar.gz
+.htpasswd

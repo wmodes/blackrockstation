@@ -4,6 +4,7 @@ from shared import config
 from shared.controller import Controller
 from scheduler.scheduler import Scheduler
 from flask import Flask, request, jsonify
+from flask_htpasswd import HtPasswdAuth
 from flask_cors import CORS, cross_origin
 import threading
 from shared.streamtologger import StreamToLogger
@@ -50,11 +51,11 @@ thread_obj.start()
 # flask controller
 #
 # Create the server object
-app = Flask(__name__,
-            static_url_path="",
-            # static_folder="static",
-            # template_folder="template"
-            )
+app = Flask(__name__, static_url_path="")
+app.config['FLASK_HTPASSWD_PATH'] = '.htpasswd'
+app.config['FLASK_SECRET'] = 'SECRETSECRETSECRET'
+app.config['FLASK_AUTH_ALL']=True
+htpasswd = HtPasswdAuth(app)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
