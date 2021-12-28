@@ -53,10 +53,10 @@ thread_obj.start()
 app = Flask(__name__)
 #
 # Configure basic auth with htpasswd file
-app.config['FLASK_HTPASSWD_PATH'] = config.HTPASSWD_FILE
-app.config['FLASK_SECRET'] = 'SECRETSECRETSECRET'
-app.config['FLASK_AUTH_ALL']=True
-htpasswd = HtPasswdAuth(app)
+# app.config['FLASK_HTPASSWD_PATH'] = config.HTPASSWD_FILE
+# app.config['FLASK_SECRET'] = 'SECRETSECRETSECRET'
+# app.config['FLASK_AUTH_ALL']=True
+# htpasswd = HtPasswdAuth(app)
 #
 # Serve CORS header
 domain_list = []
@@ -65,6 +65,7 @@ for host in config.CONTROLLERS.values():
     domain_list.append("http://" + host["altserv"] + ':' + str(host["port"]))
 print(domain_list)
 CORS(app, supports_credentials=True, origins=domain_list)
+# CORS(app, origins="http://brs-scheduler.local:8080/")
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route("/cmd",methods = ['POST', 'GET'])

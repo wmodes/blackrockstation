@@ -73,17 +73,5 @@ def cmd():
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
-# @app.route("/<path:filename>")
-# def upload1():
-#     return send_static_file("json.html")
-
-# @app.route('/json')
-# def send_json():
-#     filepath = "send-json/index.html"
-#     logging.debug(f"looking for static file: {filepath}")
-#     content = get_file(filepath)
-#     return Response(content, mimetype="text/html")
-
-context = ('../server.crt', '../server.key')
 app.run(host="0.0.0.0", port=config.CONTROLLERS[whoami]["port"],
-        debug=config.DEBUG,use_reloader=False)
+        debug=config.DEBUG,use_reloader=False, context=context)
