@@ -53,14 +53,19 @@ thread_obj.start()
 app = Flask(__name__)
 #
 # Configure basic auth with htpasswd file
-app.config['FLASK_HTPASSWD_PATH'] = config.HTPASSWD_FILE
-app.config['FLASK_SECRET'] = 'SECRETSECRETSECRET'
-app.config['FLASK_AUTH_ALL']=True
-htpasswd = HtPasswdAuth(app)
+# app.config['FLASK_HTPASSWD_PATH'] = config.HTPASSWD_FILE
+# app.config['FLASK_SECRET'] = 'SECRETSECRETSECRET'
+# app.config['FLASK_AUTH_ALL'] = True
+# htpasswd = HtPasswdAuth(app)
 #
 # Serve CORS header
-CORS(app)
-# app.config['CORS_HEADERS'] = 'Content-Type'
+domain_list = []
+for host in config.CONTROLLERS.values():
+    domain_list.append("http://" + host["server"] + ':' + str(host["port"]))
+    domain_list.append("http://" + host["altserv"] + ':' + str(host["port"]))
+CORS(app,
+    # supports_credentials=True,
+    origins=domain_list)
 
 @app.route("/cmd",methods = ['POST', 'GET'])
 def cmd():
@@ -69,7 +74,7 @@ def cmd():
     else:
         order_obj = request.get_json(force=True)
     response = jsonify(controller_obj.act_on_order(order_obj))
-    response.headers.add('Access-Control-Allow-Origin', '*')
+    # response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 app.run(host="0.0.0.0", port=config.CONTROLLERS[whoami]["port"],

@@ -54,14 +54,19 @@ thread_obj.start()
 app = Flask(__name__, static_url_path="")
 #
 # Configure basic auth with htpasswd file
-app.config['FLASK_HTPASSWD_PATH'] = config.HTPASSWD_FILE
-app.config['FLASK_SECRET'] = 'SECRETSECRETSECRET'
-app.config['FLASK_AUTH_ALL']=True
-htpasswd = HtPasswdAuth(app)
+# app.config['FLASK_HTPASSWD_PATH'] = config.HTPASSWD_FILE
+# app.config['FLASK_SECRET'] = 'SECRETSECRETSECRET'
+# app.config['FLASK_AUTH_ALL']=True
+# htpasswd = HtPasswdAuth(app)
 #
 # Serve CORS header
-cors = CORS(app)
-#app.config['CORS_HEADERS'] = 'Content-Type'
+domain_list = []
+for host in config.CONTROLLERS.values():
+    domain_list.append("http://" + host["server"] + ':' + str(host["port"]))
+    domain_list.append("http://" + host["altserv"] + ':' + str(host["port"]))
+cors = CORS(app,
+    # supports_credentials=True,
+    origins=domain_list)
 
 @app.route("/cmd",methods = ['POST', 'GET'])
 def cmd():
