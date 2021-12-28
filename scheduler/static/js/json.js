@@ -133,6 +133,12 @@ $("#submit").click(function(){
       // var json = JSON.parse(request);
       $('#results').html(JSON.stringify(request, undefined, 2))
     })
+		.always(function(){
+	    //here is how to access the response header
+	    console.log("Header: " + jqxhr.getResponseHeader("Content-Type"));
+			console.log("Header: " + jqxhr.getResponseHeader("Access-Control-Allow-Origin"));
+			console.log("Header: " + jqxhr.getResponseHeader("Access-Control-Allow-Credentials"));
+	  });
    }
 })
 
