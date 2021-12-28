@@ -59,7 +59,11 @@ app.config['FLASK_AUTH_ALL']=True
 htpasswd = HtPasswdAuth(app)
 #
 # Serve CORS header
-domain_list = list(item['server'] for item in config.CONTROLLERS.values())
+domain_list = []
+for host in config.CONTROLLERS.values():
+    domain_list.append("http://" + host["server"] + ':' + host["port"])
+    domain_list.append("http://" + host["altserv"] + ':' + host["port"])
+print(domain_list)
 CORS(app, supports_credentials=True, origins=domain_list)
 app.config['CORS_HEADERS'] = 'Content-Type'
 

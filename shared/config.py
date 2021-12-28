@@ -31,21 +31,29 @@ COMMS_TIMEOUT = 1
 # Start
 CONTROLLERS = {
 	"scheduler":  {"port": 8080,
-                   "server": "brs-scheduler.local"},
+                   "server": "brs-scheduler.local",
+                   "altserv": "brs-scheduler.lan"},
 	"announce":   {"port": 8081,
-                   "server": "brs-announce.local"},
+                   "server": "brs-announce.local",
+                   "altserv": "brs-announce.lan"},
 	"bridge":     {"port": 8082,
-                   "server": "brs-bridge.local"},
+                   "server": "brs-bridge.local",
+                   "altserv": "brs-bridge.lan"},
 	"crossing":   {"port": 8083,
-                   "server": "brs-crossing.local"},
+                   "server": "brs-crossing.local",
+                   "altserv": "brs-crossing.lan"},
 	"lights":     {"port": 8084,
-                   "server": "brs-lights.local"},
+                   "server": "brs-lights.local",
+                   "altserv": "brs-lights.lan"},
 	"radio":      {"port": 8085,
-                   "server": "brs-radio.local"},
+                   "server": "brs-radio.local",
+                   "altserv": "brs-radio.lan"},
 	"train":      {"port": 8086,
-                   "server": "brs-train.local"},
+                   "server": "brs-train.local",
+                   "altserv": "brs-train.lan"},
 	"television": {"port": 8087,
-                   "server": "brs-television.local"}
+                   "server": "brs-television.local",
+                   "altserv": "brs-television.lan"}
 }
 HTPASSWD_FILE = ".htpasswd"
 HTUSER = "brs"
