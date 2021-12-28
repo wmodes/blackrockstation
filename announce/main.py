@@ -64,7 +64,8 @@ for host in config.CONTROLLERS.values():
     domain_list.append("http://" + host["server"] + ':' + str(host["port"]))
     domain_list.append("http://" + host["altserv"] + ':' + str(host["port"]))
 print(domain_list)
-CORS(app, supports_credentials=True, origins=domain_list)
+CORS(app, supports_credentials=True, origins=domain_list,
+    allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials"],)
 # CORS(app, origins="http://brs-scheduler.local:8080/")
 app.config['CORS_HEADERS'] = 'Content-Type'
 
