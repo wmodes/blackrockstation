@@ -5,7 +5,7 @@ from shared.controller import Controller
 from announce.announce import Announce
 from flask import Flask, request, jsonify
 from flask_htpasswd import HtPasswdAuth
-from flask_cors import CORS
+# from flask_cors import CORS
 import threading
 from shared.streamtologger import StreamToLogger
 import logging
@@ -59,8 +59,8 @@ app.config['FLASK_AUTH_ALL']=True
 htpasswd = HtPasswdAuth(app)
 #
 # Serve CORS header
-cors_opts = {"CORS_SUPPORTS_CREDENTIALS" : True}
-CORS(app, supports_credentials=True)
+# cors_opts = {"CORS_SUPPORTS_CREDENTIALS" : True}
+# CORS(app, supports_credentials=True)
 # app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route("/cmd",methods = ['POST', 'GET'])
@@ -70,7 +70,7 @@ def cmd():
     else:
         order_obj = request.get_json(force=True)
     response = jsonify(controller_obj.act_on_order(order_obj))
-    response.headers.add('Access-Control-Allow-Origin', '*')
+    # response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 app.run(host="0.0.0.0", port=config.CONTROLLERS[whoami]["port"],
