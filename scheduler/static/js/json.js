@@ -123,17 +123,20 @@ $("#submit").click(function(){
         data: JSON.stringify(json)
       };
     }
-    $.ajax(ajax_obj)
-    .done(function(data) {
+    jqxhr = $.ajax(ajax_obj)
+
+		jqxhr.done(function(data) {
       //var json = JSON.parse(data);
       results = JSON.stringify(data, undefined, 2).replace(/\\n/g, '<br>');
       $('#results').html(results)
     })
-    .fail(function(request,error) {
+
+		jqxhr.fail(function(request,error) {
       // var json = JSON.parse(request);
       $('#results').html(JSON.stringify(request, undefined, 2))
     })
-		.always(function(){
+
+		jqxhr.always(function(){
 	    //here is how to access the response header
 	    console.log("Header: " + jqxhr.getResponseHeader("Content-Type"));
 			console.log("Header: " + jqxhr.getResponseHeader("Access-Control-Allow-Origin"));
