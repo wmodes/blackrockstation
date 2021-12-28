@@ -61,8 +61,8 @@ htpasswd = HtPasswdAuth(app)
 # Serve CORS header
 domain_list = []
 for host in config.CONTROLLERS.values():
-    domain_list.append("http://" + host["server"] + ':' + host["port"])
-    domain_list.append("http://" + host["altserv"] + ':' + host["port"])
+    domain_list.append("http://" + host["server"] + ':' + str(host["port"])
+    domain_list.append("http://" + host["altserv"] + ':' + str(host["port"]))
 print(domain_list)
 CORS(app, supports_credentials=True, origins=domain_list)
 app.config['CORS_HEADERS'] = 'Content-Type'
