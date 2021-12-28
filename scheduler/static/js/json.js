@@ -20,8 +20,8 @@ CONTROLLERS = {
 	"television": {"port": 8087,
                    "server": "brs-television.local"}
 }
-HTUSER = "brs"
-HTPASS = "bl@ckr0ck"
+HTUSER = "brs";
+HTPASS = "bl@ckr0ck";
 
 var COMMANDS = {
 	"help": 				{'cmd': 'help'},

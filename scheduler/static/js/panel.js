@@ -33,8 +33,8 @@ const CONTROLLERS = {
                  "server": "brs-television.local",
 								 "status" : null}
 }
-HTUSER = "brs"
-HTPASS = "bl@ckr0ck"
+HTUSER = "brs";
+HTPASS = "bl@ckr0ck";
 
 const YEARS = [1858, 1888, 1938, 1959, 1982, 2014, 2066, 2110]
 
