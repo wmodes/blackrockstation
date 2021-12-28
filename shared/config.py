@@ -47,7 +47,9 @@ CONTROLLERS = {
 	"television": {"port": 8087,
                    "server": "brs-television.local"}
 }
-
+HTPASSWD_FILE = ".htpasswd"
+HTUSER = "brs"
+HTPASS = "bl@ckr0ck"
 
 # Controller parent class
 YEARS = ['1938', '1959', '1982', '2014', '2066', '2110', '1858', '1888']

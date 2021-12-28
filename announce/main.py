@@ -46,12 +46,18 @@ controller_obj = init_controller_obj()
 thread_obj = threading.Thread(target=program_loop,  args=(controller_obj,), daemon=True)
 thread_obj.start()
 
-# flask controller
+# Flask controller
 #
+# Create the server object
+app = Flask(__name__)
 #
-app = Flask(__name__) # Create the server object
-
-app = flask.Flask(__name__)
+# Configure basic auth with htpasswd file
+app.config['FLASK_HTPASSWD_PATH'] = config.HTPASSWD_FILE
+app.config['FLASK_SECRET'] = 'SECRETSECRETSECRET'
+app.config['FLASK_AUTH_ALL']=True
+htpasswd = HtPasswdAuth(app)
+#
+# Serve CORS header
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 

@@ -62,7 +62,7 @@ class Comms(object):
         logging.info(f"Sending command to {controller}: {str(cmd_obj)}")
         server = self.__controller_table[controller]
         try:
-            response = requests.post(server, json=cmd_obj, timeout=config.COMMS_TIMEOUT)
+            response = requests.post(server, json=cmd_obj, timeout=config.COMMS_TIMEOUT, auth=(config.HTUSER, config.HTPASS))
             return_val = json.loads(response.text)
         except (requests.exceptions.RequestException, json.decoder.JSONDecodeError) as error:
             return_val = {'status': 'FAIL',
