@@ -5,7 +5,7 @@ from shared.controller import Controller
 from scheduler.scheduler import Scheduler
 from flask import Flask, request, jsonify
 from flask_htpasswd import HtPasswdAuth
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 import threading
 from shared.streamtologger import StreamToLogger
 import logging
@@ -61,7 +61,7 @@ htpasswd = HtPasswdAuth(app)
 #
 # Serve CORS header
 cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
+#app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route("/cmd",methods = ['POST', 'GET'])
 def cmd():
