@@ -52,10 +52,6 @@ thread_obj.start()
 #
 # Create the server object
 app = Flask(__name__, static_url_path="")
-app.config['FLASK_HTPASSWD_PATH'] = '.htpasswd'
-app.config['FLASK_SECRET'] = 'SECRETSECRETSECRET'
-app.config['FLASK_AUTH_ALL']=True
-htpasswd = HtPasswdAuth(app)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
