@@ -33,6 +33,8 @@ const CONTROLLERS = {
                  "server": "brs-television.local",
 								 "status" : null}
 }
+HTUSER = "brs"
+HTPASS = "bl@ckr0ck"
 
 const YEARS = [1858, 1888, 1938, 1959, 1982, 2014, 2066, 2110]
 
@@ -83,6 +85,9 @@ function submitCmd(type, controller, cmdObj) {
     // make request
     var ajax_obj = {
       url: requestURL,
+			headers: {
+				"Authorization": "Basic " + btoa(HTUSER + ":" + HTPASS)
+			},
       type: method,
       dataType: "json"
     };
@@ -92,7 +97,9 @@ function submitCmd(type, controller, cmdObj) {
     // make request
     var ajax_obj = {
       url: requestURL,
-      // url: "/get",
+			headers: {
+				"Authorization": "Basic " + btoa(HTUSER + ":" + HTPASS)
+			},
       type: method,
       dataType: "json",
       contentType: "application/json",

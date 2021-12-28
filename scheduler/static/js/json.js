@@ -20,6 +20,8 @@ CONTROLLERS = {
 	"television": {"port": 8087,
                    "server": "brs-television.local"}
 }
+HTUSER = "brs"
+HTPASS = "bl@ckr0ck"
 
 var COMMANDS = {
 	"help": 				{'cmd': 'help'},
@@ -100,8 +102,11 @@ $("#submit").click(function(){
       // make request
       var ajax_obj = {
         url: requestURL,
+			  headers: {
+		    	"Authorization": "Basic " + btoa(HTUSER + ":" + HTPASS)
+			  },
         type: method,
-        dataType: "json"
+        dataType: "json",
       };
     }
     else if(method == "POST") {
@@ -109,7 +114,9 @@ $("#submit").click(function(){
       // make request
       var ajax_obj = {
         url: requestURL,
-        // url: "/get",
+			  headers: {
+		    	"Authorization": "Basic " + btoa(HTUSER + ":" + HTPASS)
+			  },
         type: method,
         dataType: "json",
         contentType: "application/json",
