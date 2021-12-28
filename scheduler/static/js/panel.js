@@ -84,10 +84,10 @@ function submitCmd(type, controller, cmdObj) {
     var requestURL = url + '?' + $.param(cmdObj);
     // make request
     var ajax_obj = {
-      url: requestURL,
-			headers: {
-				"Authorization": "Basic " + btoa(HTUSER + ":" + HTPASS)
+			beforeSend: function (xhr) {
+    		xhr.setRequestHeader ("Authorization", "Basic " + btoa(HTUSER + ":" + HTPASS));
 			},
+      url: requestURL,
       type: method,
       dataType: "json"
     };
@@ -96,10 +96,10 @@ function submitCmd(type, controller, cmdObj) {
     var requestURL = url;
     // make request
     var ajax_obj = {
-      url: requestURL,
-			headers: {
-				"Authorization": "Basic " + btoa(HTUSER + ":" + HTPASS)
+			beforeSend: function (xhr) {
+    		xhr.setRequestHeader ("Authorization", "Basic " + btoa(HTUSER + ":" + HTPASS));
 			},
+      url: requestURL,
       type: method,
       dataType: "json",
       contentType: "application/json",
