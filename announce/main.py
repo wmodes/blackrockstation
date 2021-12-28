@@ -59,9 +59,9 @@ app.config['FLASK_AUTH_ALL']=True
 htpasswd = HtPasswdAuth(app)
 #
 # Serve CORS header
-# cors_opts = {"CORS_SUPPORTS_CREDENTIALS" : True}
-# CORS(app, supports_credentials=True)
-# app.config['CORS_HEADERS'] = 'Content-Type'
+domain_list = list(item['server'] for item in config.CONTROLLERS.values())
+CORS(app, supports_credentials=True, origins=domain_list)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route("/cmd",methods = ['POST', 'GET'])
 def cmd():
