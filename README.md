@@ -1,5 +1,5 @@
 # Black Rock Station
-Code for Black Rock Station, honorarium art project for Burning Man 2021.
+Code for Black Rock Station, honorarium art project for Burning Man 2021-2.
 
 Various subsystems (lights, audio, video, etc) rely on a network of semi-autonomous controller modules receiving orders from a central scheduling controller.
 
