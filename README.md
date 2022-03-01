@@ -6,7 +6,7 @@ Various subsystems (lights, audio, video, etc) rely on a network of semi-autonom
 ## Authors
 
 * Author: Black Rock Transportation Company <info@blackrocktrainstation.com>
-* Date: Apr 2021
+* Date: Apr 2021 - Aug 2022
 * License: MIT
 
 ## Dependencies
@@ -15,8 +15,7 @@ You must have the following software installed before you attempt to install the
 
 * Sox
 * VLC
-* Sip
-* PyQt5
+* mplayer
 
 If you are developing on MacOS, use `brew install`. If you are installing on the Raspberry Pi, use `apt-get install`.
 
@@ -41,6 +40,10 @@ Clone the repo from Github, then `cd blackrockstation` into the new repoI’m  f
 Install the python module requirements with:
 
 `% pip install -r requirements.txt`
+
+Additionally, if you are developing on MacOS, install fake-rpi, a package intended to provide a lightweight (dependency-free) fake interface for Raspberry Pi GPIO:
+
+`% pip install fake-rpi
 
 You'll probably need the media files for testing. Download the mediafiles to the root:
 
