@@ -155,7 +155,7 @@ RADIO_TRANSITION_SEC = 0.6
 
 # Train class
 TRAIN_FILE_TABLE = "train/data/file-table.csv"
-TRAIN_PLAYER_CMD = ["./player/omxplaylist.py", "--autoplay"]
+TRAIN_PLAYER_CMD = ["mplayer", "-really-quiet"]
 TRAIN_FILE_FIELDS = ['year', 'traintype', 'filename']
 TRAIN_TYPES = ["freight-through", "freight-stop", "passenger-through", "passenger-stop"]
 TRAIN_AUDIO_DIR = "train/data/"
