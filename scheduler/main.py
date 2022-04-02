@@ -4,7 +4,7 @@ from shared import config
 from shared.controller import Controller
 from scheduler.scheduler import Scheduler
 from flask import Flask, request, jsonify
-from flask_htpasswd import HtPasswdAuth
+# from flask_htpasswd import HtPasswdAuth
 from flask_cors import CORS
 import threading
 from shared.streamtologger import StreamToLogger

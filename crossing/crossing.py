@@ -19,6 +19,7 @@ class Crossing(Controller):
         super().__init__()
         self.whoami = "crossing"
         self.status = config.STATE_OFF
+        self.mode = config.MODE_AUTO
         self.init_crossing()
         self.set_crossing()
 
@@ -40,6 +41,7 @@ class Crossing(Controller):
         return {
             "controller" : self.whoami,
             "running" : True,
+            "mode" : self.mode2str(self.mode),
             "state" : self.onoff(self.status)
         }
 
@@ -53,6 +55,9 @@ class Crossing(Controller):
         Possible comnmands:
             - setOn
             - setOff
+            - setAuto
+            - stateOn
+            - stateOff
             - reqStatus
             - reqLog [num_events]
         """
@@ -102,7 +107,8 @@ class Crossing(Controller):
         #
         elif order['cmd'].lower() == "setoff":
             self.mode = config.MODE_OFF
-            self.set_off()
+            self.status = config.STATE_OFF
+            self.set_crossing()
             return_val = {'status': 'OK',
                           'cmd': 'setOff'}
             return return_val
@@ -114,9 +120,61 @@ class Crossing(Controller):
         #
         elif order['cmd'].lower() == "seton":
             self.mode = config.MODE_ON
-            self.set_on()
+            self.status = config.STATE_ON
+            self.set_crossing()
             return_val = {'status': 'OK',
                           'cmd': 'setOn'}
+            return return_val
+        #
+        # set on
+        # Format: {
+        #   "cmd" : "setAuto"
+        # }
+        #
+        elif order['cmd'].lower() == "setauto":
+            self.mode = config.MODE_AUTO
+            self.status = config.STATE_OFF
+            self.set_crossing()
+            return_val = {'status': 'OK',
+                          'cmd': 'setOn'}
+            return return_val
+        #
+        # state off
+        # Format: {
+        #   "cmd" : "stateOff"
+        # }
+        #
+        elif order['cmd'].lower() == "stateoff":
+            if self.mode != config.MODE_AUTO:
+                error = "stateOff ignored when not in AUTO mode. Use setAuto command."
+                logging.warning(error)
+                return_val = {'status': 'FAIL',
+                              'cmd': 'stateOff',
+                              'error': error}
+                return return_val
+            self.status = config.STATE_OFF
+            self.set_crossing()
+            return_val = {'status': 'OK',
+                          'cmd': 'stateOff'}
+            return return_val
+        #
+        # state on
+        # Format: {
+        #   "cmd" : "stateOn"
+        # }
+        #
+        elif order['cmd'].lower() == "stateon":
+            if self.mode != config.MODE_AUTO:
+                error = "stateOn ignored when not in AUTO mode. Use setAuto command."
+                logging.warning(error)
+                return_val = {'status': 'FAIL',
+                              'cmd': 'stateOn',
+                              'error': error}
+                return return_val
+            self.status = config.STATE_ON
+            self.set_crossing()
+            return_val = {'status': 'OK',
+                          'cmd': 'stateOn'}
             return return_val
         #
         # help
@@ -125,6 +183,9 @@ class Crossing(Controller):
             cmds = [
                 {'cmd': 'setOff'},
                 {'cmd': 'setOn'},
+                {'cmd': 'setAuto'},
+                {'cmd': 'stateOff'},
+                {'cmd': 'stateOn'},
                 {'cmd': 'reqStatus'},
                 {'cmd': 'reqLog',
                  'qty': '10'}
@@ -143,22 +204,6 @@ class Crossing(Controller):
                           'cmd': order['cmd'],
                           'error': error}
             return return_val
-
-    """
-        ACTIONS
-    """
-
-    def set_off(self):
-        """Set status off."""
-        logging.info("Setting off")
-        self.status = config.STATE_OFF
-        self.set_crossing()
-
-    def set_on(self):
-        """Set status ob."""
-        logging.info("Setting on")
-        self.status = config.STATE_ON
-        self.set_crossing()
 
     """
         CROSSING

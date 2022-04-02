@@ -36,6 +36,8 @@ var COMMANDS = {
 									 'year': 1938},
 	"setGo":				{'cmd': 'setGo',
 						       'direction': 'westbound'},
+	"stateOff":			{'cmd': 'stateOff'},
+	"stateOn":			{'cmd': 'stateOn'},
 	"order":				{'cmd': 'order',
 									 'controller': 'radio',
 								   'relay': {'cmd': 'reqstatus'}},
@@ -157,6 +159,9 @@ $(".cmd-button").click(function(){
 	}
 	else if (cmd == "setGo" || cmd == "setStop") {
 			$('input[name=controller][value=bridge]').prop("checked", true);
+	}
+	else if (cmd == "stateOn" || cmd == "stateOff") {
+			$('input[name=controller][value=crossing]').prop("checked", true);
 	}
 	else if (cmd == "setTrain") {
 			$('input[name=controller][value=train]').prop("checked", true);

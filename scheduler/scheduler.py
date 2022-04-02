@@ -514,11 +514,11 @@ class Scheduler(Controller):
             #       set off
             if event['event'] == "on":
                 order = {
-                    "cmd" : "setOn"
+                    "cmd" : "stateOn"
                 }
             elif event['event'] == "off":
                 order = {
-                    "cmd" : "setOff"
+                    "cmd" : "stateOff"
                 }
             #TODO: Convert above to True/False?
             self.send_order_to_controller("crossing", order)
