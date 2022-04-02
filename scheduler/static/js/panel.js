@@ -47,7 +47,9 @@ const COMMANDS = {
 									 'year': 1938},
 	"setTrain":			{"cmd": "setTrain",
 								   "index": 6,
-								   "note": "Scheduler requires only index, while train subsystem requires all others except index"}
+								   "note": "Scheduler requires only index, while train subsystem requires all others except index"},
+	"stateOff":				{'cmd': 'stateOff'},
+	"stateOn":				{'cmd': 'stateOn'},
 }
 
 const TRAINS = {
@@ -397,7 +399,7 @@ function changeStatus(controller, status) {
 
 function setupStatusBtns() {
 	$(".controller .btn").click(function() {
-		var activeContrs = ["announce", "lights", "radio", "television", "train"];
+		var activeContrs = ["announce", "crossing", "lights", "radio", "television", "train"];
 		var controller = $(this).data("contr");
 		if (activeContrs.includes(controller)) {
 			var currentStatus = CONTROLLERS[controller].status;
