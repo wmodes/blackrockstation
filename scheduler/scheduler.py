@@ -12,6 +12,7 @@ import re
 import random
 import shutil
 from curses import wrapper
+import pprint
 
 logger = logging.getLogger()
 logger.setLevel(config.LOG_LEVEL)
@@ -26,6 +27,11 @@ class Scheduler(Controller):
         self.schedule = []
         self.__read_schedule()
         self.__sort_schedule()
+        logging.debug("Schedule:");
+        logging.debug(pprint.pformat(self.schedule));
+        self.filetable = self.__read_filetable()
+        logging.debug("Filetable:");
+        logging.debug(pprint.pformat(self.filetable));
         self.delayed_events = []
         self.current_year = config.YEARS[0]
         self.last_event = ""
@@ -52,6 +58,28 @@ class Scheduler(Controller):
             self.schedule, key=lambda k: time.strptime(k['time'], "%H:%M"))
         for index in range(len(self.schedule)):
             self.schedule[index]["index"] = index
+
+    def __read_filetable(self):
+        """Read filetable into memory."""
+        logging.info('Reading file table')
+        filetable = {}
+        with open(config.SCHED_FILE_TABLE, newline='') as csvfile:
+            reader = csv.DictReader(csvfile, config.TRAIN_FILE_FIELDS)
+            # skips the header line
+            next(reader)
+            for row in reader:
+                # skip blank lines
+                if row['year'] == '':
+                    continue
+                # add filename to filetable
+                index = f"{row['year']}-{row['traintype']}"
+                filetable[index] = {
+                    'year': row['year'],
+                    'traintype': row['traintype'],
+                    'filename': row['filename'],
+                    'duration': row['duration']
+                }
+        return filetable
 
 
     """
@@ -410,6 +438,7 @@ class Scheduler(Controller):
                 self.last_event = event
                 # make event happen
                 if event['controller'] == "train":
+                    self.add_extra_train_info(event)
                     self.trigger_train(event)
                 else:
                     self.trigger_event(event)
@@ -470,6 +499,7 @@ class Scheduler(Controller):
     def set_train(self, index):
         event = self.schedule[index]
         if event['controller'] == "train":
+            self.add_extra_train_info(event)
             self.trigger_train(event)
         else:
             self.trigger_event(event)
@@ -555,21 +585,49 @@ class Scheduler(Controller):
                 return
             self.send_order_to_controller(event['controller'], order)
 
+    def add_extra_train_info(self, train_event):
+        train_event['year'] = self.current_year
+        index = f"{self.current_year}-{train_event['traintype']}"
+        train_event['duration'] = self.filetable[index]['duration']
+
     def trigger_train(self, train_event):
         """
         Trigger the events that happen with a train.
 
         train_event comes from the schedule
+        duration comes from the filetable
+
+        train_event: {
+            'time_dt': time_dt,
+            'direction': direction,
+            'traintype': traintype,
+            'announceid': announceid,
+            'year': current_year,
+            'duration': duration
+        }
         """
+        logging.debug("Here's what that event looks like:");
+        logging.debug(pprint.pformat(train_event));
         # let's calculate the timing of some things to schedule the next few events
         now_dt = datetime.now()
         # time_announce_arrival = now_dt
         # time_signal_is_go = now_dt
-        time_we_hear_train = now_dt +  timedelta(minutes=config.SCHED_BRIDGE_BEFORE)
-        time_crossing_is_on = time_we_hear_train  + timedelta(minutes=config.SCHED_CROSSING_DELAY)
-        time_departure_announce = time_we_hear_train + timedelta(minutes=float(train_event['duration'])/2)
-        time_signal_is_stop = time_we_hear_train + timedelta(minutes=float(train_event['duration'])) - timedelta(minutes=config.SCHED_DEPART_TIME)
-        time_crossing_is_off = time_we_hear_train + timedelta(minutes=float(train_event['duration'])) - timedelta(minutes=config.SCHED_CROSSING_DELAY)
+        time_we_hear_train = now_dt + \
+            timedelta(seconds=config.SCHED_BRIDGE_DELAY_ON_SEC)
+        time_crossing_is_on = time_we_hear_train  + \
+            timedelta(seconds=config.SCHED_CROSSING_DELAY_SEC)
+        time_departure_announce = time_we_hear_train + \
+            timedelta(seconds=float(train_event['duration'])) - timedelta(seconds=config.SCHED_BOARDING_ANNOUNCE_SEC)
+        time_signal_is_stop = time_we_hear_train + \
+            timedelta(seconds=float(train_event['duration'])) - timedelta(seconds=config.SCHED_BRIDGE_DELAY_OFF_SEC)
+        time_crossing_is_off = time_we_hear_train + \
+            timedelta(seconds=float(train_event['duration'])) - timedelta(seconds=config.SCHED_CROSSING_DELAY_SEC)
+        logging.debug(f"duration: {train_event['duration']}")
+        logging.debug(f"time_we_hear_train: {time_we_hear_train}")
+        logging.debug(f"time_crossing_is_on: {time_crossing_is_on}")
+        logging.debug(f"time_departure_announce: {time_departure_announce}")
+        logging.debug(f"time_signal_is_stop: {time_signal_is_stop}")
+        logging.debug(f"time_crossing_is_off: {time_crossing_is_off}")
         #
         # 1) BRIDGE signal turns green as soon as train enters the
         #   block, i.e., several minutes before we can hear it
@@ -580,7 +638,7 @@ class Scheduler(Controller):
             "time_dt": datetime.now() + timedelta(seconds=1)
         })
         #
-        # 2) ANNOUNCE arrival when train approached station
+        # 2) ANNOUNCE arrival as train is approaching station
         #   i.e., we when begin to hear it
         if train_event['announceid'] != "":
             self.delay_event({
@@ -602,7 +660,7 @@ class Scheduler(Controller):
         })
         #
         # 5) ANNOUNCE departure before train leaves station
-        #   i.e., halfway through duration
+        #   i.e., about 2 monutes before it is gone
         if train_event['announceid'] != "":
             self.delay_event({
                 "controller": "announce",

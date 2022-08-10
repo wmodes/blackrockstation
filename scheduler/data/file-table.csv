@@ -1,40 +1,33 @@
-Year,Type,Filename,Description,Recording Location
-1858,freight-through,1858-freight-through.mp3,Older steam locomotive,
-1858,freight-stop,1858-freight-stop.mp3,Older steam locomotive,
-1858,passenger-through,1858-passenger-through.mp3,Older steam locomotive,
-1858,passenger-stop,1858-passenger-stop.mp3,Older steam locomotive,
-,,,,
-1888,freight-through,1888-freight-through.mp3,Older steam locomotive,
-1888,freight-stop,1888-freight-stop.mp3,Older steam locomotive,
-1888,passenger-through,1888-passenger-through.mp3,Older steam locomotive,
-1888,passenger-stop,1888-passenger-stop.mp3,Older steam locomotive,
-,,,,
-1938,freight-through,1938-freight-through.mp3,Younger steam locomotive,
-1938,freight-stop,1938-freight-stop.mp3,Younger steam locomotive,
-1938,passenger-through,1938-passenger-through.mp3,Younger steam locomotive,
-1938,passenger-stop,1938-passenger-stop.mp3,Younger steam locomotive,
-,,,,
-1959,freight-through,1959-freight-through.mp3,Early diesel electromotive,
-1959,freight-stop,1959-freight-stop.mp3,Early diesel electromotive,
-1959,passenger-through,1959-passenger-through.mp3,Early diesel electromotive,
-1959,passenger-stop,1959-passenger-stop.mp3,Early diesel electromotive,
-,,,,
-1982,freight-through,1982-freight-through.mp3,Older deisel,
-1982,freight-stop,1982-freight-stop.mp3,Older deisel,
-1982,passenger-through,1982-passenger-through.mp3,Older deisel,
-1982,passenger-stop,1982-passenger-stop.mp3,Older deisel,
-,,,,
-2014,freight-through,2014-freight-through.mp3,Older deisel,
-2014,freight-stop,2014-freight-stop.mp3,Older deisel,
-2014,passenger-through,2014-passenger-through.mp3,Newer deisel,Amtrak San Jose
-2014,passenger-stop,2014-passenger-stop.mp3,Newer deisel,Amtrak San Jose
-,,,,
-2066,freight-through,2066-freight-through.mp3,Lumbering broken freight,??
-2066,freight-stop,2066-freight-stop.mp3,None,N/A
-2066,passenger-through,2066-passenger-through.mp3,None,N/A
-2066,passenger-stop,2066-passenger-stop.mp3,None,N/A
-,,,,
-2110,freight-through,2110-freight-through.mp3,Full electric,
-2110,freight-stop,2110-freight-stop.mp3,Full electric,
-2110,passenger-through,2110-passenger-through.mp3,"Full electric, very future",
-2110,passenger-stop,2110-passenger-stop.mp3,"Full electric, very future",
+Year,Type,Filename,Duration (sec),Description,Recording Location
+1858,freight-through,01-1858-freight-through.mp3,60.00,Older steam locomotive,
+1858,freight-stop,02-1858-freight-stop.mp3,120.00,Older steam locomotive,
+1858,passenger-through,03-1858-passenger-through.mp3,180.00,Older steam locomotive,
+1858,passenger-stop,04-1858-passenger-stop.mp3,240.00,Older steam locomotive,
+1888,freight-through,05-1888-freight-through.mp3,300.00,Older steam locomotive,
+1888,freight-stop,06-1888-freight-stop.mp3,360.00,Older steam locomotive,
+1888,passenger-through,07-1888-passenger-through.mp3,420.00,Older steam locomotive,
+1888,passenger-stop,08-1888-passenger-stop.mp3,480.00,Older steam locomotive,
+1938,freight-through,09-1938-freight-through.mp3,540.00,Younger steam locomotive,
+1938,freight-stop,10-1938-freight-stop.mp3,600.00,Younger steam locomotive,
+1938,passenger-through,11-1938-passenger-through.mp3,660.00,Younger steam locomotive,
+1938,passenger-stop,12-1938-passenger-stop.mp3,720.00,Younger steam locomotive,
+1959,freight-through,13-1959-freight-through.mp3,780.00,Early diesel electromotive,
+1959,freight-stop,14-1959-freight-stop.mp3,840.00,Early diesel electromotive,
+1959,passenger-through,15-1959-passenger-through.mp3,900.00,Early diesel electromotive,
+1959,passenger-stop,16-1959-passenger-stop.mp3,960.00,Early diesel electromotive,
+1982,freight-through,17-1982-freight-through.mp3,1020.00,Older deisel,
+1982,freight-stop,18-1982-freight-stop.mp3,1080.00,Older deisel,
+1982,passenger-through,19-1982-passenger-through.mp3,1140.00,Older deisel,
+1982,passenger-stop,20-1982-passenger-stop.mp3,1200.00,Older deisel,
+2014,freight-through,21-2014-freight-through.mp3,1260.00,Older deisel,
+2014,freight-stop,22-2014-freight-stop.mp3,1320.00,Older deisel,
+2014,passenger-through,23-2014-passenger-through.mp3,1380.00,Newer deisel,Amtrak San Jose
+2014,passenger-stop,24-2014-passenger-stop.mp3,1440.00,Newer deisel,Amtrak San Jose
+2066,freight-through,25-2066-freight-through.mp3,1500.00,Lumbering broken freight,??
+2066,freight-stop,26-2066-freight-stop.mp3,1560.00,None,N/A
+2066,passenger-through,27-2066-passenger-through.mp3,1620.00,None,N/A
+2066,passenger-stop,28-2066-passenger-stop.mp3,1680.00,None,N/A
+2110,freight-through,29-2110-freight-through.mp3,1740.00,Full electric,
+2110,freight-stop,30-2110-freight-stop.mp3,1800.00,Full electric,
+2110,passenger-through,31-2110-passenger-through.mp3,1860.00,"Full electric, very future",
+2110,passenger-stop,32-2110-passenger-stop.mp3,1920.00,"Full electric, very future",

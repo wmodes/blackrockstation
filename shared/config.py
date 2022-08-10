@@ -15,7 +15,7 @@ DEBUG = False
 ID_FILE = ".identity"
 PKG_ROOT = "blackrockstation"
 LOG_DIR = "logs/"
-LOG_LEVEL = logging.INFO
+LOG_LEVEL = logging.DEBUG
 ORDER_FILE = ".order"   # temp solution for comms orders
 STATE_OFF = 0
 STATE_ON = 1
@@ -65,7 +65,8 @@ VALID_YEARS = YEARS + ['glitch']
 
 # Scheduler class
 SCHED_DATA = "scheduler/data/schedule.csv"
-SCHED_FIELDS = ['event', 'controller', 'time', 'duration', 'direction', 'traintype', 'variance', 'notes', 'announceid', 'time_since_last']
+SCHED_FILE_TABLE = "train/data/file-table.csv"
+SCHED_FIELDS = ['event', 'controller', 'time', 'direction', 'traintype', 'variance', 'notes', 'announceid', 'time_since_last']
 SCHED_YEARS = YEARS
 SCHED_LOOP_DELAY = 0.25
 SCHED_DEFAULT_LOG = 100
@@ -77,9 +78,10 @@ SCHED_PERIODIC = [
     {"controller": "announce", "announceid": "periodic-announcement-3", "times_per_day": 6},
     {"controller": "announce", "announceid": "periodic-announcement-4", "times_per_day": 6}
 ]
-SCHED_DEPART_TIME = 1.5      # time in minutes
-SCHED_BRIDGE_BEFORE = 2       # time in minutes
-SCHED_CROSSING_DELAY = 0.5     # time in minutes
+SCHED_BRIDGE_DELAY_ON_SEC = 90       # time in seconds
+SCHED_CROSSING_DELAY_SEC = 30       # time in seconds
+SCHED_BRIDGE_DELAY_OFF_SEC = 60          # time in seconds
+SCHED_BOARDING_ANNOUNCE_SEC = 110       # time in seconds
 
 # Console class
 CONSOLE_LOOP_DELAY = 0.25
@@ -156,12 +158,12 @@ RADIO_TRANSITION_SEC = 0.6
 # Train class
 TRAIN_FILE_TABLE = "train/data/file-table.csv"
 TRAIN_PLAYER_CMD = ["mplayer", "-nolirc", "-really-quiet"]
-TRAIN_FILE_FIELDS = ['year', 'traintype', 'filename']
+TRAIN_FILE_FIELDS = ['year', 'traintype', 'filename', 'duration']
 TRAIN_TYPES = ["freight-through", "freight-stop", "passenger-through", "passenger-stop"]
 TRAIN_AUDIO_DIR = "train/data/"
-TRAIN_TMP_FILE = "train/data/tmp-audio.mp3"
+TRAIN_TMP_FILE = "train/data/tmp-audio.wav"
 TRAIN_LOOP_DELAY = 0.25
-TRAIN_AUDIO_EXT = ".mp3"
+TRAIN_AUDIO_EXT = ".wav"
 TRAIN_VOLUME = 1.0
 
 # TV class

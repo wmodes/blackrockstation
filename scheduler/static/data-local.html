@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Data Interface</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/json.css">
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/shared-local.js" defer ></script>
+    <script src="js/data-local.js" defer ></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <main class="container-fluid">
+      <section id="title-section" class="group">
+        <h1>BRS Data Interface</h1>
+          <a id=links href="panel-local.html" class="btn btn-secondary">Panel &gt;&gt;</a>
+        </a>
+      </section>
+      <section class="group">
+        <div class="flexbox">
+          <div id="form-field" class="flexchild">
+            <h2>JSON</h2>
+            <textarea id="json"></textarea><br>
+            <div id="msgs"></div>
+            <button id="submit" class="btn btn-secondary">Send</button>
+            <label><input type="radio" name="method" value="GET">GET</label>
+            <label><input type="radio" name="method" value="POST" checked>POST</label><br>
+          </div>
+          <div class="flexchild radiobox">
+              <h2>Controller</h2>    <label><input type="radio" name="controller"
+                value="scheduler" checked>scheduler</label><br>
+              <label><input type="radio" name="controller"
+                value="announce">announce</label><br>
+              <label><input type="radio" name="controller"
+                value="bridge">bridge</label><br>
+              <label><input type="radio" name="controller"
+                value="crossing">crossing</label><br>
+              <label><input type="radio" name="controller"
+                value="lights">lights</label><br>
+              <label><input type="radio" name="controller"
+                value="radio">radio</label><br>
+              <label><input type="radio" name="controller"
+                value="train">train</label><br>
+              <label><input type="radio" name="controller"
+                value="television">television</label><br>
+          </div class="flexchild">
+          <div class="flexchild buttonbox">
+            <h2>Commands</h2>
+            <div class="flexbox">
+              <div class="flexchild">
+                <h3>Shared</h3>
+                <button class="btn btn-secondary cmd-button" data-cmd="help">help</button><br>
+                <button class="btn btn-secondary cmd-button" data-cmd="reqStatus">reqStatus</button><br>
+                <button class="btn btn-secondary cmd-button" data-cmd="reqLog">reqLog</button><br>
+                <button class="btn btn-secondary cmd-button" data-cmd="setOff">setOff</button><br>
+                <button class="btn btn-secondary cmd-button" data-cmd="setOn">setOn</button><br>
+                <button class="btn btn-secondary cmd-button" data-cmd="setAuto">setAuto</button><br>
+                <button class="btn btn-secondary cmd-button" data-cmd="setGlitch">setGlitch</button><br>
+                <button class="btn btn-secondary cmd-button" data-cmd="setYear">setYear</button><br>
+              </div>
+              <div class="flexchild">
+                <h3>Unique</h3>
+                <button class="btn btn-secondary cmd-button" data-cmd="order">order</button><br>
+                <button class="btn btn-secondary cmd-button" data-cmd="reqTrains">reqTrains</button><br>
+                <button class="btn btn-secondary cmd-button" data-cmd="reqAllTrains">reqAllTrains</button><br>
+                <button class="btn btn-secondary cmd-button" data-cmd="setAnnounce">setAnnounce</button><br>
+                <button class="btn btn-secondary cmd-button" data-cmd="setGo">setGo</button><br>
+                <button class="btn btn-secondary cmd-button" data-cmd="setStop">setStop</button><br>
+                <button class="btn btn-secondary cmd-button" data-cmd="stateOn">stateOn</button><br>
+                <button class="btn btn-secondary cmd-button" data-cmd="stateOff">stateOff</button><br>
+                <button class="btn btn-secondary cmd-button" data-cmd="setTrain">setTrain</button><br>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="group">
+        <pre><code id="results"></code></pre>
+      </section>
+    </main>
+  </body>
+</html>

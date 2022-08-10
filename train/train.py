@@ -226,7 +226,8 @@ class Train(Controller):
                           'error': error}
             return return_val
         filepath = config.TRAIN_AUDIO_DIR
-        filename = filepath + self.filetable[f"{year}-{traintype}"]
+        index = f"{year}-{traintype}"
+        filename = filepath + self.filetable[index]['filename']
         logging.debug(f"Train audio filename: {filename}")
         # confirm file is there
         file = Path(filename)

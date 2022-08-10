@@ -1,0 +1,45 @@
+
+#content {
+  margin-left: auto;
+  margin-right: auto;
+  width: 650px;
+}
+
+#title {
+  font-size: 120%;
+  text-align: center;
+  font-weight: bold;
+}
+.state {
+  text-transform: uppercase;
+}
+
+.state:before, .city-solo:before {
+  content: ' ';
+  display: block;
+}
+
+.spacer {
+  margin: 0;
+}
+
+.city {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.carrier {
+
+}
+
+.yard {
+  font-weight: bold;
+}
+
+.two-col {
+  columns: 2;
+}
+
+.year {
+  font-size: 75%;
+}
