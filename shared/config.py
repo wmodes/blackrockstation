@@ -65,8 +65,8 @@ VALID_YEARS = YEARS + ['glitch']
 
 # Scheduler class
 SCHED_DATA = "scheduler/data/schedule.csv"
-SCHED_FILE_TABLE = "train/data/file-table.csv"
 SCHED_FIELDS = ['event', 'controller', 'time', 'direction', 'traintype', 'variance', 'notes', 'announceid', 'time_since_last']
+SCHED_FILE_TABLE = "train/data/file-table.csv"
 SCHED_YEARS = YEARS
 SCHED_LOOP_DELAY = 0.25
 SCHED_DEFAULT_LOG = 100
@@ -106,7 +106,7 @@ ANNOUNCE_FILE_TABLE = "announce/data/file-table.csv"
 ANNOUNCE_PLAYER_CMD = ["./player/omxplaylist.py", "--autoplay"]
 ANNOUNCE_AUDIO_DIR = "announce/data/"
 ANNOUNCE_GLITCH_DIR = "announce/data/glitch/"
-ANNOUNCE_FILE_FIELDS = ['announcement', 'announceid', 'year', 'filename', 'notes']
+ANNOUNCE_FILE_FIELDS = ['announcement', 'year', 'type', 'freq', 'announceid', 'filename', 'notes', 'text']
 ANNOUNCE_LOOP_DELAY = 0.25
 ANNOUNCE_AUDIO_EXT = ".mp3"
 ANNOUNCE_VOLUME = "0.8"
@@ -157,8 +157,8 @@ RADIO_TRANSITION_SEC = 0.6
 
 # Train class
 TRAIN_FILE_TABLE = "train/data/file-table.csv"
-TRAIN_PLAYER_CMD = ["mplayer", "-nolirc", "-really-quiet"]
 TRAIN_FILE_FIELDS = ['year', 'traintype', 'filename', 'duration']
+TRAIN_PLAYER_CMD = ["mplayer", "-nolirc", "-really-quiet"]
 TRAIN_TYPES = ["freight-through", "freight-stop", "passenger-through", "passenger-stop"]
 TRAIN_AUDIO_DIR = "train/data/"
 TRAIN_TMP_FILE = "train/data/tmp-audio.wav"

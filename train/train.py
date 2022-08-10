@@ -43,7 +43,7 @@ class Train(Controller):
         """Read filetable into memory."""
         logging.info('Reading file table')
         filetable = {}
-        with open(config.TRAIN_FILE_TABLE, newline='') as csvfile:
+        with open(config.SCHED_FILE_TABLE, newline='') as csvfile:
             reader = csv.DictReader(csvfile, config.TRAIN_FILE_FIELDS)
             # skips the header line
             next(reader)
@@ -53,7 +53,12 @@ class Train(Controller):
                     continue
                 # add filename to filetable
                 index = f"{row['year']}-{row['traintype']}"
-                filetable[index] = row['filename']
+                filetable[index] = {
+                    'year': row['year'],
+                    'traintype': row['traintype'],
+                    'filename': row['filename'],
+                    'duration': row['duration']
+                }
         return filetable
 
     """
