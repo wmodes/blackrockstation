@@ -599,8 +599,7 @@ class Scheduler(Controller):
             #   form: set announce *id* *year*
             order = {
                 "cmd" : "setAnnounce",
-                "announceid" : event['announceid'],
-                "year" : self.current_year
+                "announceid" : event['announceid']
             }
             self.send_order_to_controller("announce", order)
         elif event['controller'] == "crossing":
@@ -709,7 +708,7 @@ class Scheduler(Controller):
         if train_event['announceid'] != "":
             self.delay_event({
                 "controller": "announce",
-                "announceid": f"{train_event['announceid']}-announce-arrival",
+                "announceid": f"{self-current_year}-{train_event['announceid']}-announce-arrival",
                 "time_dt": datetime.now() + timedelta(seconds=15)
             })
         #
@@ -730,7 +729,7 @@ class Scheduler(Controller):
         if train_event['announceid'] != "":
             self.delay_event({
                 "controller": "announce",
-                "announceid": f"{train_event['announceid']}-announce-departure",
+                "announceid": f"{self-current_year}-{train_event['announceid']}-announce-departure",
                 "time_dt": time_departure_announce
             })
         #

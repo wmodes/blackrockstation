@@ -199,14 +199,14 @@ class Announce(Controller):
         #   "year" : *year*
         # }
         elif order['cmd'].lower() == "setannounce":
-            if "announceid" not in order or "year" not in order:
+            if "announceid" not in order:
                 error = f"invalid order received: {order}"
                 logging.warning(error)
                 return_val = {'status': 'FAIL',
                               'cmd': 'setGlitch',
                               'error': error}
                 return return_val
-            return_val = self.set_announce(order['announceid'], order['year'])
+            return_val = self.set_announce(order['announceid'])
             return return_val
         #
         # help
@@ -261,15 +261,8 @@ class Announce(Controller):
         # we use our new player
         self._play_playlist(filename)
 
-    def set_announce(self, announceid, year):
+    def set_announce(self, announceid):
         """Play announcement."""
-        if str(year) not in config.VALID_YEARS:
-            error = f"Invalid year: {year}"
-            logging.warning(error)
-            return_val = {'status': 'FAIL',
-                          'cmd': 'setAnnounce',
-                          'error': error}
-            return return_val
         if self.mode == config.MODE_OFF:
             error = "No action taken when not in ON or AUTO modes. Use setAuto command."
             logging.warning(error)
@@ -278,7 +271,7 @@ class Announce(Controller):
                           'error': error}
             return return_val
         filepath = config.ANNOUNCE_AUDIO_DIR
-        filename = f"{str(year)}-{announceid}{config.ANNOUNCE_AUDIO_EXT}"
+        filename = f"{announceid}{config.ANNOUNCE_AUDIO_EXT}"
         self.most_recent = filepath + filename
         logging.info(f"Playing audio: {filepath}{filename}")
         # unreliable
