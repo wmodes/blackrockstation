@@ -34,6 +34,7 @@ def safeFilename(filename):
     basename = re.sub(r'[\W_]+', '-', basename)
     basename = re.sub(r'^[ -]', '', basename)
     basename = re.sub(r'[ -]$', '', basename)
+    basename = basename.lower()
     return f"{basename}{ext}"
 
 print("Renaming files")
@@ -44,14 +45,18 @@ full_src_dir = f"{media_dir_clean}"
 filelist = [f for f in os.listdir(full_src_dir)]
 
 try:
+    filelist = os.listdir(full_src_dir)
+    print(filelist)
     for file in filelist:
         if re.search(media_re, file):
+            renamed_file = safeFilename(file)
             # Note source and dest dirs could have spaces and need to be quoted
             source = f"{full_src_dir}/{file}"
-            dest = f"{full_src_dir}/{safeFilename(file)}"
+            dest = f"{full_src_dir}/{renamed_file}"
             # unlike on the command line, complicated cli options don't need
             # to be quoted when using subprocess options
-            if not os.path.isfile(dest):
+            if renamed_file not in filelist:
+            # if not os.path.isfile(dest):
                 print(f"Renaming {source} to {dest}")
                 os.rename(source, dest)
             else:

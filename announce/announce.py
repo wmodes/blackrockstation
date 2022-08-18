@@ -10,6 +10,7 @@ import csv
 import time
 import glob
 import random
+import pprint
 
 logger = logging.getLogger()
 logger.setLevel(config.LOG_LEVEL)
@@ -23,7 +24,10 @@ class Announce(Controller):
         self.whoami = "announce"
         self.mode = config.MODE_AUTO
         self.glitchtable = self.__read_files()
-        self.filetable = self.__read_filetable()
+        self.announce_files = {}
+        self.__read_announce_table(self.announce_files)
+        logging.debug("announce_files:");
+        logging.debug(pprint.pformat(self.announce_files))
         self.most_recent = ""
         # unreliable
         # mixer.init()
@@ -39,10 +43,9 @@ class Announce(Controller):
         SETUP
     """
 
-    def __read_filetable(self):
-        """Read file with list of possible announcements."""
-        logging.info('Reading file table')
-        filetable = {}
+    def __read_announce_table(self, announce_files):
+        """Create one file dict based on a CSV file with list of possible announcements."""
+        logging.info('Reading announce file table')
         with open(config.ANNOUNCE_FILE_TABLE, newline='') as csvfile:
             reader = csv.DictReader(csvfile, config.ANNOUNCE_FILE_FIELDS)
             # skips the header line
@@ -52,8 +55,7 @@ class Announce(Controller):
                 if row['announcement'] == '':
                     continue;
                 index = row['announceid']
-                filetable[index] = row['filename']
-        return filetable
+                announce_files[index] = row['filename']
 
     def __read_files(self):
         """

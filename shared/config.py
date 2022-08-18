@@ -66,7 +66,10 @@ VALID_YEARS = YEARS + ['glitch']
 # Scheduler class
 SCHED_DATA = "scheduler/data/schedule.csv"
 SCHED_FIELDS = ['event', 'controller', 'time', 'direction', 'traintype', 'variance', 'notes', 'announceid', 'time_since_last']
-SCHED_FILE_TABLE = "train/data/file-table.csv"
+SCHED_TRAIN_FILE_TABLE = "train/data/file-table.csv"
+SCHED_TRAIN_FILE_FIELDS = ['year', 'traintype', 'filename', 'duration']
+SCHED_ANNOUNCE_FILE_TABLE = "announce/data/file-table.csv"
+SCHED_ANNOUNCE_FILE_FIELDS = ['announcement', 'year', 'type', 'times_per_day', 'announceid', 'filename', 'notes', 'text']
 SCHED_YEARS = YEARS
 SCHED_LOOP_DELAY = 0.25
 SCHED_DEFAULT_LOG = 100
@@ -103,10 +106,10 @@ CONSOLE_MAX_COL = 25
 
 # Announce class
 ANNOUNCE_FILE_TABLE = "announce/data/file-table.csv"
+ANNOUNCE_FILE_FIELDS = ['announcement', 'year', 'type', 'times_per_day', 'announceid', 'filename', 'notes', 'text']
 ANNOUNCE_PLAYER_CMD = ["./player/omxplaylist.py", "--autoplay"]
 ANNOUNCE_AUDIO_DIR = "announce/data/"
 ANNOUNCE_GLITCH_DIR = "announce/data/glitch/"
-ANNOUNCE_FILE_FIELDS = ['announcement', 'year', 'type', 'freq', 'announceid', 'filename', 'notes', 'text']
 ANNOUNCE_LOOP_DELAY = 0.25
 ANNOUNCE_AUDIO_EXT = ".mp3"
 ANNOUNCE_VOLUME = "0.8"

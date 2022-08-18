@@ -24,14 +24,30 @@ class Scheduler(Controller):
         """Initialize Scheduler class."""
         super().__init__()
         self.whoami = "scheduler"
+        #
+        # get event schedule
         self.schedule = []
-        self.__read_schedule()
-        self.__sort_schedule()
-        logging.debug("Schedule:");
-        logging.debug(pprint.pformat(self.schedule));
-        self.filetable = self.__read_filetable()
-        logging.debug("Filetable:");
-        logging.debug(pprint.pformat(self.filetable));
+        self.__read_schedule(self.schedule)
+        self.__sort_schedule(self.schedule)
+        logging.debug("Schedule:")
+        logging.debug(pprint.pformat(self.schedule))
+        #
+        # get list of audio files
+        self.train_file_table = {}
+        self.__read_train_file_table(self.train_file_table)
+        logging.debug("train_file_table:");
+        logging.debug(pprint.pformat(self.train_file_table))
+        #
+        # get list of announcements
+        self.train_announce_files = {}
+        self.periodic_announce_events = {}
+        self.__read_announce_table(self.train_announce_files, self.periodic_announce_events)
+        logging.debug("train_announce_files:");
+        logging.debug(pprint.pformat(self.train_announce_files))
+        logging.debug("periodic_announce_events:");
+        logging.debug(pprint.pformat(self.periodic_announce_events))
+        #
+        # internal tracking stuff
         self.delayed_events = []
         self.current_year = config.YEARS[0]
         self.last_event = ""
@@ -42,44 +58,71 @@ class Scheduler(Controller):
         SETUP
     """
 
-    def __read_schedule(self):
+    def __read_schedule(self, schedule):
         logging.info('Reading schedule')
         with open(config.SCHED_DATA, newline='') as csvfile:
-            reader = csv.DictReader(csvfile,                    config.SCHED_FIELDS,restkey='Extras')
+            reader = csv.DictReader(csvfile,                    config.SCHED_FIELDS, restkey='Extras')
             # skips the header line
             next(reader)
             for row in reader:
                 if row['event'] != '':
-                    self.schedule.append(dict(row))
+                    schedule.append(dict(row))
 
+    def __sort_schedule(self, schedule):
+        schedule = sorted(
+            schedule, key=lambda k: time.strptime(k['time'], "%H:%M"))
+        for index in range(len(schedule)):
+            schedule[index]["index"] = index
 
-    def __sort_schedule(self):
-        self.schedule = sorted(
-            self.schedule, key=lambda k: time.strptime(k['time'], "%H:%M"))
-        for index in range(len(self.schedule)):
-            self.schedule[index]["index"] = index
-
-    def __read_filetable(self):
-        """Read filetable into memory."""
+    def __read_train_file_table(self, train_file_table):
+        """Read train_file_table into memory."""
         logging.info('Reading file table')
-        filetable = {}
-        with open(config.SCHED_FILE_TABLE, newline='') as csvfile:
-            reader = csv.DictReader(csvfile, config.TRAIN_FILE_FIELDS)
+        with open(config.SCHED_TRAIN_FILE_TABLE, newline='') as csvfile:
+            reader = csv.DictReader(csvfile, config.SCHED_TRAIN_FILE_FIELDS)
             # skips the header line
             next(reader)
             for row in reader:
                 # skip blank lines
                 if row['year'] == '':
                     continue
-                # add filename to filetable
+                # add filename to train_file_table
                 index = f"{row['year']}-{row['traintype']}"
-                filetable[index] = {
+                train_file_table[index] = {
                     'year': row['year'],
                     'traintype': row['traintype'],
                     'filename': row['filename'],
                     'duration': row['duration']
                 }
-        return filetable
+
+    def __read_announce_table(self, train_files, periodic_events):
+        """Create two file dicts based on a CSV file with lists of possible announcements."""
+        logging.info('Reading file table')
+        with open(config.SCHED_ANNOUNCE_FILE_TABLE, newline='') as csvfile:
+            reader = csv.DictReader(csvfile, config.SCHED_ANNOUNCE_FILE_FIELDS)
+            # skips the header line
+            next(reader)
+            for row in reader:
+                # skip blank lines
+                if row['announcement'] == '':
+                    continue;
+                if row['type'] == "train":
+                    # create a dict of announcement files indexed by id
+                    index = row['announceid']
+                    train_files[index] = row['filename']
+                elif row['type'] == "periodic":
+                    # create a dict of lists indexed by year
+                    year = row['year']
+                    if year not in periodic_events:
+                        periodic_events[year] = []
+                    event = {
+                        'controller': 'announce',
+                        'announcement': row['announcement'],
+                        'times_per_day': row['times_per_day'],
+                        'announceid': row['announceid'],
+                        'filename': row['filename'],
+                        'notes': row['notes']
+                    }
+                    periodic_events[year].append(event)
 
 
     """
@@ -469,14 +512,37 @@ class Scheduler(Controller):
 
         Randomly calculate the chances of any of a list of events happening /right now/
         """
-        denominator = 24 * 60 * 60 * (1/config.SCHED_LOOP_DELAY)
-        for event in config.SCHED_PERIODIC:
-            # an N in 345600 chance
-            if random.random() < event["times_per_day"]/denominator:
+        # calculate number of dice rolls in a day / faces on die
+        die_faces = 24 * 60 * 60 * (1/config.SCHED_LOOP_DELAY)
+        # roll the dice
+        dice_results = random.random() * die_faces
+        # set an index
+        index = 0
+        # logging.debug(f"Looking at {len(self.periodic_announce_events[self.current_year])} periodic events for {self.current_year}")
+        # figure out which event (if any) the dice indicate
+        for event in self.periodic_announce_events[self.current_year]:
+            # examaine a range at the low end of the possible die_faces
+            min = index
+            max = index + int(event['times_per_day'])
+            # logging.debug(f"Event between {min} and {max}: {event}")
+            if dice_results >=min and dice_results <= max:
                 # lucky you! you get chosen!
+                logging.debug("announce event chosen:")
+                logging.debug(pprint.pformat(event))
                 self.trigger_event(event)
                 # only one winner at a time, thank you
                 break
+            index += int(event['times_per_day'])
+        #
+        #
+        # denominator = 24 * 60 * 60 * (1/config.SCHED_LOOP_DELAY)
+        # for event in config.SCHED_PERIODIC:
+        #     # an N in 345600 chance
+        #     if random.random() < event["times_per_day"]/denominator:
+        #         # lucky you! you get chosen!
+        #         self.trigger_event(event)
+        #         # only one winner at a time, thank you
+        #         break
 
     """
         PLAY STUFF
@@ -588,14 +654,14 @@ class Scheduler(Controller):
     def add_extra_train_info(self, train_event):
         train_event['year'] = self.current_year
         index = f"{self.current_year}-{train_event['traintype']}"
-        train_event['duration'] = self.filetable[index]['duration']
+        train_event['duration'] = self.train_file_table[index]['duration']
 
     def trigger_train(self, train_event):
         """
         Trigger the events that happen with a train.
 
         train_event comes from the schedule
-        duration comes from the filetable
+        duration comes from the train_file_table
 
         train_event: {
             'time_dt': time_dt,
