@@ -1,33 +1,33 @@
 Year,Type,Filename,Duration (sec),Description,Recording Location
-1858,freight-through,00-Placeholder-freight.wav,251.05,Older steam locomotive,
-1858,freight-stop,00-Placeholder-freight.wav,251.05,Older steam locomotive,
-1858,passenger-through,00-Placeholder-freight.wav,251.05,Older steam locomotive,
-1858,passenger-stop,00-Placeholder-freight.wav,251.05,Older steam locomotive,
-1888,freight-through,00-Placeholder-freight.wav,251.05,Older steam locomotive,
-1888,freight-stop,00-Placeholder-freight.wav,251.05,Older steam locomotive,
-1888,passenger-through,00-Placeholder-freight.wav,251.05,Older steam locomotive,
-1888,passenger-stop,00-Placeholder-freight.wav,251.05,Older steam locomotive,
-1938,freight-through,00-Placeholder-freight.wav,251.05,Younger steam locomotive,
-1938,freight-stop,00-Placeholder-freight.wav,251.05,Younger steam locomotive,
-1938,passenger-through,00-Placeholder-freight.wav,251.05,Younger steam locomotive,
-1938,passenger-stop,00-Placeholder-freight.wav,251.05,Younger steam locomotive,
-1959,freight-through,00-Placeholder-freight.wav,251.05,Early diesel electromotive,
-1959,freight-stop,00-Placeholder-freight.wav,251.05,Early diesel electromotive,
-1959,passenger-through,03-RC-Diesel-pass-thru-L2R-some-announcements-at-end-v55-edit.wav,356.54,Early diesel electromotive,
-1959,passenger-stop,13-Caltrain-diesel-pass-stop-rev-L2R-w-bells-horn-early-talking-v55-pref-edit.wav,150.42,Early diesel electromotive,
-1982,freight-through,02-Santa-Fe-diesel-freight-thru-mixed-L2R-v60-edit.wav,536.19,Older deisel,
-1982,freight-stop,00-Placeholder-freight.wav,251.05,Older deisel,
-1982,passenger-through,10-Caltrain-diesel-pass-thru-fwd-L2R-w-horn-close-v55-pref-edit.wav,94.85,Older deisel,
-1982,passenger-stop,08-Caltrain-diesel-pass-stop-rev-L2R-w-horn-stops-at-distant-sta-v55-edit-1.wav,88.70,Older deisel,
-2014,freight-through,01-Santa-Fe-diesel-freight-thru-stacks-L2R-v50-edit.wav,251.05,Older deisel,
-2014,freight-stop,00-Placeholder-freight.wav,251.05,Older deisel,
-2014,passenger-through,04-RC-Diesel-pass-thru-L2R-v55-pref-edit.wav,351.00,Newer deisel,Amtrak San Jose
-2014,passenger-stop,07-Amtrak-diesel-pass-stop-rev-L2R-w-bells-stops-at-distant-sta-v55-edit.wav,85.06,Newer deisel,Amtrak San Jose
-2066,freight-through,00-Placeholder-freight.wav,251.05,Lumbering broken freight,??
-2066,freight-stop,00-Placeholder-freight.wav,251.05,None,N/A
-2066,passenger-through,00-Placeholder-freight.wav,251.05,None,N/A
-2066,passenger-stop,00-Placeholder-freight.wav,251.05,None,N/A
-2110,freight-through,00-Placeholder-freight.wav,251.05,Full electric,
-2110,freight-stop,00-Placeholder-freight.wav,251.05,Full electric,
-2110,passenger-through,05-SJ-VTA-electric-pass-thru-L2R-v60-edit-quiet.wav,96.33,"Full electric, very future",
-2110,passenger-stop,00-Placeholder-freight.wav,251.05,"Full electric, very future",
+1858,freight-through,41-frankenstein-stream-freight-thru-uphill-fast-l2r-edit.wav,176.85,Older steam locomotive,
+1858,freight-stop,37-frankenstein-steam-freight-stop-l2r-edit.wav,358.14,Older steam locomotive,
+1858,passenger-through,28-railtown-steam-pass-thru-l2r-some-announcement-noise-and-elaborate-whistle-edit.wav,154.19,Older steam locomotive,
+1858,passenger-stop,34-railtown-steam-pass-stop-l2r-pref-edit.wav,216.32,Older steam locomotive,
+1888,freight-through,40-frankenstein-steam-freight-thru-uphill-fast-l2r-edit.wav,174.00,Older steam locomotive,
+1888,freight-stop,37-frankenstein-steam-freight-stop-l2r-edit.wav,358.14,Older steam locomotive,
+1888,passenger-through,29-railtown-steam-pass-thru-l2r-loud-monring-dove-edit.wav,137.67,Older steam locomotive,
+1888,passenger-stop,34-railtown-steam-pass-stop-l2r-pref-edit.wav,216.32,Older steam locomotive,
+1938,freight-through,41-frankenstein-stream-freight-thru-uphill-fast-l2r-edit.wav,176.85,Younger steam locomotive,
+1938,freight-stop,37-frankenstein-steam-freight-stop-l2r-edit.wav,358.14,Younger steam locomotive,
+1938,passenger-through,33-railtown-steam-pass-thru-l2r-horn-overwhelmed-recorder-edit.wav,166.47,Younger steam locomotive,
+1938,passenger-stop,34-railtown-steam-pass-stop-l2r-pref-edit.wav,216.32,Younger steam locomotive,
+1959,freight-through,02-santa-fe-diesel-freight-thru-mixed-l2r-edit-v2.wav,241.38,Early diesel electromotive,
+1959,freight-stop,01-santa-fe-diesel-freight-thru-stacks-l2r-edit-v2.wav,142.00,Early diesel electromotive,
+1959,passenger-through,03-rc-diesel-pass-thru-l2r-some-announcements-at-end-v55-edit.wav,356.54,Early diesel electromotive,
+1959,passenger-stop,13-caltrain-diesel-pass-stop-rev-l2r-w-bells-horn-early-talking-v55-pref-edit.wav,150.42,Early diesel electromotive,
+1982,freight-through,02-santa-fe-diesel-freight-thru-mixed-l2r-edit-v2.wav,241.38,Older deisel,
+1982,freight-stop,01-santa-fe-diesel-freight-thru-stacks-l2r-edit-v2.wav,142.00,Older deisel,
+1982,passenger-through,10-caltrain-diesel-pass-thru-fwd-l2r-w-horn-close-v55-pref-edit.wav,94.85,Older deisel,
+1982,passenger-stop,08-caltrain-diesel-pass-stop-rev-l2r-w-horn-stops-at-distant-sta-v55-edit-1.wav,88.70,Older deisel,
+2014,freight-through,02-santa-fe-diesel-freight-thru-mixed-l2r-edit-v2.wav,241.38,Older deisel,
+2014,freight-stop,01-santa-fe-diesel-freight-thru-stacks-l2r-edit-v2.wav,142.00,Older deisel,
+2014,passenger-through,10-caltrain-diesel-pass-thru-fwd-l2r-w-horn-close-v55-pref-edit.wav,94.85,Newer deisel,Amtrak San Jose
+2014,passenger-stop,07-amtrak-diesel-pass-stop-rev-l2r-w-bells-stops-at-distant-sta-v55-edit.wav,85.06,Newer deisel,Amtrak San Jose
+2066,freight-through,17-rc-speeder-thru-l2r-clean-fast-edit.wav,87.93,Lumbering broken freight,??
+2066,freight-stop,19-rc-speeder-thru-l2r-riding-dirty-edit.wav,135.88,None,N/A
+2066,passenger-through,20-rc-speeder-thru-l2r-clean-slow-edit.wav,131.54,None,N/A
+2066,passenger-stop,18-rc-speeder-stop-l2r-clean-edit.wav,187.37,None,N/A
+2110,freight-through,43-frankenstein-electric-freight-thru-l2r-edit.wav,136.00,Full electric,
+2110,freight-stop,42-frankenstein-electric-freight-stop-l2r-edit.wav,145.00,Full electric,
+2110,passenger-through,05-sj-vta-electric-pass-thru-l2r-v60-edit.wav,96.33,"Full electric, very future",
+2110,passenger-stop,26-sj-vta-electric-pass-stop-l2r-edit.wav,77.00,"Full electric, very future",
