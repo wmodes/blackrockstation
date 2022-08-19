@@ -512,37 +512,36 @@ class Scheduler(Controller):
 
         Randomly calculate the chances of any of a list of events happening /right now/
         """
-        # calculate number of dice rolls in a day / faces on die
-        die_faces = 24 * 60 * 60 * (1/config.SCHED_LOOP_DELAY)
-        # roll the dice
-        dice_results = random.random() * die_faces
-        # set an index
-        index = 0
-        # logging.debug(f"Looking at {len(self.periodic_announce_events[self.current_year])} periodic events for {self.current_year}")
-        # figure out which event (if any) the dice indicate
-        for event in self.periodic_announce_events[self.current_year]:
-            # examaine a range at the low end of the possible die_faces
-            min = index
-            max = index + int(event['times_per_day'])
-            # logging.debug(f"Event between {min} and {max}: {event}")
-            if dice_results >=min and dice_results <= max:
-                # lucky you! you get chosen!
-                logging.debug("announce event chosen:")
-                logging.debug(pprint.pformat(event))
-                self.trigger_event(event)
-                # only one winner at a time, thank you
-                break
-            index += int(event['times_per_day'])
-        #
-        #
-        # denominator = 24 * 60 * 60 * (1/config.SCHED_LOOP_DELAY)
-        # for event in config.SCHED_PERIODIC:
-        #     # an N in 345600 chance
-        #     if random.random() < event["times_per_day"]/denominator:
+        # # calculate number of dice rolls in a day / faces on die
+        # die_faces = 24 * 60 * 60 * (1/config.SCHED_LOOP_DELAY)
+        # # roll the dice
+        # dice_results = random.random() * die_faces
+        # # set an index
+        # index = 0
+        # # logging.debug(f"Looking at {len(self.periodic_announce_events[self.current_year])} periodic events for {self.current_year}")
+        # # figure out which event (if any) the dice indicate
+        # for event in self.periodic_announce_events[self.current_year]:
+        #     # examaine a range at the low end of the possible die_faces
+        #     min = index
+        #     max = index + int(event['times_per_day'])
+        #     # logging.debug(f"Event between {min} and {max}: {event}")
+        #     if dice_results >=min and dice_results <= max:
         #         # lucky you! you get chosen!
+        #         logging.debug("announce event chosen:")
+        #         logging.debug(pprint.pformat(event))
         #         self.trigger_event(event)
         #         # only one winner at a time, thank you
         #         break
+        #     index += int(event['times_per_day'])
+        #
+        denominator = 24 * 60 * 60 * (1/config.SCHED_LOOP_DELAY)
+        for event in config.SCHED_PERIODIC:
+            # an N in 345600 chance
+            if random.random() < event["times_per_day"]/denominator:
+                # lucky you! you get chosen!
+                self.trigger_event(event)
+                # only one winner at a time, thank you
+                break
 
     """
         PLAY STUFF
