@@ -728,7 +728,7 @@ class Scheduler(Controller):
         if train_event['announceid'] != "":
             self.delay_event({
                 "controller": "announce",
-                "announceid": f"{self-current_year}-{train_event['announceid']}-announce-departure",
+                "announceid": f"{self.current_year}-{train_event['announceid']}-announce-departure",
                 "time_dt": time_departure_announce
             })
         #
