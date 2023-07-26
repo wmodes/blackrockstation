@@ -88,7 +88,7 @@ class Scheduler(Controller):
                 # add filename to train_file_table
                 index = f"{row['year']}-{row['traintype']}"
                 train_file_table[index] = {
-                    'year': row['year'],
+                    'year': str(row['year']),
                     'traintype': row['traintype'],
                     'filename': row['filename'],
                     'duration': row['duration']
@@ -111,7 +111,7 @@ class Scheduler(Controller):
                     train_files[index] = row['filename']
                 elif row['type'] == "periodic":
                     # create a dict of lists indexed by year
-                    year = row['year']
+                    year = str(row['year'])
                     if year not in periodic_events:
                         periodic_events[year] = []
                     event = {
@@ -512,6 +512,7 @@ class Scheduler(Controller):
 
         Randomly calculate the chances of any of a list of events happening /right now/
         """
+        # Adrian's algorithm
         # # calculate number of dice rolls in a day / faces on die
         # die_faces = 24 * 60 * 60 * (1/config.SCHED_LOOP_DELAY)
         # # roll the dice
@@ -533,11 +534,14 @@ class Scheduler(Controller):
         #         # only one winner at a time, thank you
         #         break
         #     index += int(event['times_per_day'])
-        #
+
+        # Not elegant but effective
         denominator = 24 * 60 * 60 * (1/config.SCHED_LOOP_DELAY)
-        for event in config.SCHED_PERIODIC:
+        # logging.debug(f"current_year: {self.current_year} and list: {pprint.pformat(self.periodic_announce_events[self.current_year])}")
+        random.shuffle(self.periodic_announce_events[self.current_year])
+        for event in self.periodic_announce_events[self.current_year]:
             # an N in 345600 chance
-            if random.random() < event["times_per_day"]/denominator:
+            if random.random() < int(event["times_per_day"])/denominator:
                 # lucky you! you get chosen!
                 self.trigger_event(event)
                 # only one winner at a time, thank you
@@ -556,7 +560,7 @@ class Scheduler(Controller):
             return_val = {'status': 'FAIL',
                           'error': error}
             return return_val
-        self.trigger_timeslip(year)
+        self.trigger_timeslip(str(year))
         return_val = {'status': 'OK',
                       'cmd': 'setYear'}
         return return_val
@@ -820,3 +824,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
