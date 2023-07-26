@@ -5,11 +5,25 @@
   width: 650px;
 }
 
-#title {
-  font-size: 120%;
+#title, #title2 {
+  font-size: 110%;
   text-align: center;
   font-weight: bold;
 }
+
+#title, #subtitle, #author {
+  font-size: 110%;
+  text-align: center;
+  margin: 1.75in auto;
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+}
+
 .state {
   text-transform: uppercase;
 }
