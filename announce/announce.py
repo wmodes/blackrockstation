@@ -10,6 +10,7 @@ import csv
 import time
 import glob
 import random
+import pprint
 
 logger = logging.getLogger()
 logger.setLevel(config.LOG_LEVEL)
@@ -23,7 +24,10 @@ class Announce(Controller):
         self.whoami = "announce"
         self.mode = config.MODE_AUTO
         self.glitchtable = self.__read_files()
-        self.filetable = self.__read_filetable()
+        self.announce_files = {}
+        self.__read_announce_table(self.announce_files)
+        logging.debug("announce_files:");
+        logging.debug(pprint.pformat(self.announce_files))
         self.most_recent = ""
         # unreliable
         # mixer.init()
@@ -39,10 +43,9 @@ class Announce(Controller):
         SETUP
     """
 
-    def __read_filetable(self):
-        """Read file with list of possible announcements."""
-        logging.info('Reading file table')
-        filetable = {}
+    def __read_announce_table(self, announce_files):
+        """Create one file dict based on a CSV file with list of possible announcements."""
+        logging.info('Reading announce file table')
         with open(config.ANNOUNCE_FILE_TABLE, newline='') as csvfile:
             reader = csv.DictReader(csvfile, config.ANNOUNCE_FILE_FIELDS)
             # skips the header line
@@ -52,8 +55,7 @@ class Announce(Controller):
                 if row['announcement'] == '':
                     continue;
                 index = row['announceid']
-                filetable[index] = row['filename']
-        return filetable
+                announce_files[index] = row['filename']
 
     def __read_files(self):
         """
@@ -197,14 +199,14 @@ class Announce(Controller):
         #   "year" : *year*
         # }
         elif order['cmd'].lower() == "setannounce":
-            if "announceid" not in order or "year" not in order:
+            if "announceid" not in order:
                 error = f"invalid order received: {order}"
                 logging.warning(error)
                 return_val = {'status': 'FAIL',
                               'cmd': 'setGlitch',
                               'error': error}
                 return return_val
-            return_val = self.set_announce(order['announceid'], order['year'])
+            return_val = self.set_announce(order['announceid'])
             return return_val
         #
         # help
@@ -259,15 +261,8 @@ class Announce(Controller):
         # we use our new player
         self._play_playlist(filename)
 
-    def set_announce(self, announceid, year):
+    def set_announce(self, announceid):
         """Play announcement."""
-        if str(year) not in config.VALID_YEARS:
-            error = f"Invalid year: {year}"
-            logging.warning(error)
-            return_val = {'status': 'FAIL',
-                          'cmd': 'setAnnounce',
-                          'error': error}
-            return return_val
         if self.mode == config.MODE_OFF:
             error = "No action taken when not in ON or AUTO modes. Use setAuto command."
             logging.warning(error)
@@ -276,7 +271,7 @@ class Announce(Controller):
                           'error': error}
             return return_val
         filepath = config.ANNOUNCE_AUDIO_DIR
-        filename = f"{str(year)}-{announceid}{config.ANNOUNCE_AUDIO_EXT}"
+        filename = f"{announceid}{config.ANNOUNCE_AUDIO_EXT}"
         self.most_recent = filepath + filename
         logging.info(f"Playing audio: {filepath}{filename}")
         # unreliable

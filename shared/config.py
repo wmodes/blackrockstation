@@ -65,8 +65,11 @@ VALID_YEARS = YEARS + ['glitch']
 
 # Scheduler class
 SCHED_DATA = "scheduler/data/schedule.csv"
-SCHED_FILE_TABLE = "train/data/file-table.csv"
 SCHED_FIELDS = ['event', 'controller', 'time', 'direction', 'traintype', 'variance', 'notes', 'announceid', 'time_since_last']
+SCHED_TRAIN_FILE_TABLE = "train/data/file-table.csv"
+SCHED_TRAIN_FILE_FIELDS = ['year', 'traintype', 'filename', 'duration']
+SCHED_ANNOUNCE_FILE_TABLE = "announce/data/file-table.csv"
+SCHED_ANNOUNCE_FILE_FIELDS = ['announcement', 'year', 'type', 'times_per_day', 'announceid', 'filename', 'notes', 'text']
 SCHED_YEARS = YEARS
 SCHED_LOOP_DELAY = 0.25
 SCHED_DEFAULT_LOG = 100
@@ -103,10 +106,10 @@ CONSOLE_MAX_COL = 25
 
 # Announce class
 ANNOUNCE_FILE_TABLE = "announce/data/file-table.csv"
+ANNOUNCE_FILE_FIELDS = ['announcement', 'year', 'type', 'times_per_day', 'announceid', 'filename', 'notes', 'text']
 ANNOUNCE_PLAYER_CMD = ["./player/omxplaylist.py", "--autoplay"]
 ANNOUNCE_AUDIO_DIR = "announce/data/"
 ANNOUNCE_GLITCH_DIR = "announce/data/glitch/"
-ANNOUNCE_FILE_FIELDS = ['announcement', 'announceid', 'year', 'filename', 'notes']
 ANNOUNCE_LOOP_DELAY = 0.25
 ANNOUNCE_AUDIO_EXT = ".mp3"
 ANNOUNCE_VOLUME = "0.8"
@@ -133,14 +136,14 @@ LIGHTS_GLITCH_LENGTH = 2        # longest glitch in seconds
 LIGHTS_TOTAL = 4
 LIGHTS_TABLE = {
     "glitch": [STATE_ON, STATE_ON, STATE_ON, STATE_ON],
-    "1858": [STATE_ON, STATE_OFF, STATE_OFF, STATE_OFF],
-    "1888": [STATE_ON, STATE_OFF, STATE_OFF, STATE_OFF],
-    "1938": [STATE_ON, STATE_OFF, STATE_OFF, STATE_OFF],
-    "1959": [STATE_ON, STATE_ON, STATE_OFF, STATE_OFF],
+    "1858": [STATE_ON, STATE_OFF, STATE_ON, STATE_OFF],
+    "1888": [STATE_ON, STATE_OFF, STATE_ON, STATE_OFF],
+    "1938": [STATE_ON, STATE_OFF, STATE_ON, STATE_OFF],
+    "1959": [STATE_ON, STATE_ON, STATE_ON, STATE_OFF],
     "1982": [STATE_OFF, STATE_ON, STATE_OFF, STATE_OFF],
-    "2014": [STATE_OFF, STATE_ON, STATE_OFF, STATE_OFF],
-    "2066": [STATE_OFF, STATE_OFF, STATE_OFF, STATE_OFF],
-    "2110": [STATE_ON, STATE_OFF, STATE_OFF, STATE_OFF]
+    "2014": [STATE_OFF, STATE_ON, STATE_ON, STATE_OFF],
+    "2066": [STATE_OFF, STATE_OFF, STATE_ON, STATE_OFF],
+    "2110": [STATE_ON, STATE_OFF, STATE_ON, STATE_OFF]
 }
 LIGHT_NAME_TABLE = ["Pendant", "Fluorescent", "Undefined3", "Undefined4"]
 LIGHTS_PINOUT_SCHEME = GPIO.BCM   # Broadcom pin numbering (NOT Wiring Pin numbering)
@@ -157,8 +160,8 @@ RADIO_TRANSITION_SEC = 0.6
 
 # Train class
 TRAIN_FILE_TABLE = "train/data/file-table.csv"
-TRAIN_PLAYER_CMD = ["mplayer", "-nolirc", "-really-quiet"]
 TRAIN_FILE_FIELDS = ['year', 'traintype', 'filename', 'duration']
+TRAIN_PLAYER_CMD = ["mplayer", "-nolirc", "-really-quiet"]
 TRAIN_TYPES = ["freight-through", "freight-stop", "passenger-through", "passenger-stop"]
 TRAIN_AUDIO_DIR = "train/data/"
 TRAIN_TMP_FILE = "train/data/tmp-audio.wav"
