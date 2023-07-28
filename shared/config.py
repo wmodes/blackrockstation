@@ -11,7 +11,7 @@ import RPi.GPIO as GPIO
 import logging
 
 # Shared config
-DEBUG = False
+DEBUG = True
 ID_FILE = ".identity"
 PKG_ROOT = "blackrockstation"
 LOG_DIR = "logs/"
