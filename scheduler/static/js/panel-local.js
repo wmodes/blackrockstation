@@ -231,7 +231,7 @@ function formatDate(d) {
 	if (sec < 10) {
 	    sec = "0" + sec;
 	}
-	return `${day} ${mo} ${dt}, ${yr} ${hr}:${min}:${sec}`;
+	return `${day} ${mo} ${dt} ${hr}:${min}:${sec}`;
 }
 
 function msToTime(duration) {
